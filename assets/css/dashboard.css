@@ -1,0 +1,389 @@
+/* ---------- RESET & BASE STYLES ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", Verdana, sans-serif;
+}
+
+body {
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+:root {
+  --Primary-color: #205781;
+  --Secondary-color: #4f959d;
+  --fill-color: #d5e6e7;
+  --base-font-color: #333332;
+  --second-font-color: #777776;
+}
+
+/* ---------- DASHBOARD ---------- */
+.dashboard-header {
+  background-color: var(--Primary-color);
+  color: white;
+  padding: 30px 30px 8px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.dashboard-header .dashboard-links {
+  display: flex;
+  gap: 12px;
+}
+
+.dashboard-header .dashboard-links a {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dashboard-header .dashboard-links a.active {
+  border-bottom: 4px solid rgb(60, 148, 230);
+}
+
+.content-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-sidebar {
+  margin: 30px;
+  width: 400px;
+}
+
+.dashboard-sidebar ul {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.dashboard-sidebar ul li {
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+  width: 100%;
+}
+
+.dashboard-sidebar ul li.active {
+  background-color: var(--fill-color);
+  border-left: solid 8px #205781;
+}
+
+.beasiswa-list {
+  margin: 30px 12px;
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+  flex-wrap: wrap;
+}
+
+/* ------- BEASISWA MD START ------- */
+
+.beasiswa-list .beasiswa-card-md {
+  display: flex;
+  background: var(--fill-color);
+  border-radius: 8px;
+  padding: 14px 8px;
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+.beasiswa-card-md .card-content {
+  display: flex;
+  gap: 6px;
+}
+
+.beasiswa-card-md .head-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.beasiswa-card-md .degrees {
+  display: flex;
+  gap: 8px;
+}
+
+.beasiswa-card-md .degree {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: #4f959d;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  border-radius: 50%;
+}
+
+.beasiswa-card-md .title {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.beasiswa-card-md .start-date,
+.beasiswa-card-md .deadline {
+  font-size: 12px;
+}
+
+.beasiswa-card-md .dates {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* ------- BEASISWA LG START ------- */
+
+.beasiswa-list .beasiswa-card {
+  display: none;
+  background: var(--fill-color);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 16px 12px;
+  width: 900px;
+  flex: 1 1 auto;
+}
+
+.card-info {
+  padding: 12px;
+  border-right: 2px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.degrees {
+  display: flex;
+  gap: 8px;
+}
+
+.degree {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  background: #4f959d;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 50%;
+}
+
+.dates {
+  margin-top: 12px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.start-date {
+  font-weight: 600;
+}
+
+.deadline {
+  font-weight: 600;
+  color: #d0352a;
+}
+
+.card-content {
+  margin-left: 16px;
+  padding: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.beasiswa-card .card-content .head-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.beasiswa-card .title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.location {
+  font-size: 12px;
+  color: #666;
+}
+
+.beasiswa-card .bookmark {
+  display: flex;
+  justify-content: end;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bookmark-btn:hover {
+  background: #ddd;
+}
+
+/* ---------- TEAM LIST START ---------- */
+
+.team-list {
+  display: flex;
+  margin: 24px 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card-fteam {
+  background-color: var(--fill-color);
+  padding: 20px;
+  align-items: center;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+  flex: 1 1 300px;
+}
+
+.card-fteam .head-card {
+  padding: 12px;
+  border-bottom: 2px solid #999998;
+}
+
+.head-card h3 {
+  font-size: 16px;
+}
+.head-card p,
+.info-uni span {
+  font-size: 12px;
+}
+
+.head-card .info-uni {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.card-fteam .body-card {
+  margin: 12px 0;
+  padding: 0 12px;
+}
+
+.card-fteam .body-card p {
+  font-size: 12px;
+}
+
+.card-fteam .foot-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.foot-card .profile-team {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 12px;
+}
+
+.foot-card .profile-team img {
+  width: 35px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+
+.profile-team .detail-info {
+  display: flex;
+  flex-direction: column;
+}
+.detail-info .team-name {
+  font-size: 12px;
+  font-weight: 700;
+}
+.detail-info .date-team {
+  font-weight: 500;
+  font-size: 12px;
+}
+.foot-card .card-btn {
+  padding: 12px;
+  font-size: 12px;
+  background-color: var(--Primary-color);
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+  color: white;
+  cursor: pointer;
+}
+
+.foot-card .card-btn:hover {
+  background-color: #1a4667;
+}
+/* ---------- TEAM LIST END ---------- */
+
+@media (min-width: 640px) {
+  .content-section {
+    flex-direction: row;
+  }
+}
+@media (min-width: 768px) {
+}
+@media (min-width: 1080px) {
+  .beasiswa-list .beasiswa-card-md {
+    display: none;
+  }
+  .beasiswa-list .beasiswa-card {
+    display: flex;
+  }
+
+  .dashboard-sidebar {
+    width: 300px;
+  }
+  .dashboard-header .dashboard-links {
+    gap: 40px;
+  }
+
+  .dashboard-header .dashboard-links a {
+    font-size: 16px;
+  }
+}
+@media (min-width: 1280px) {
+}

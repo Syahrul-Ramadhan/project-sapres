@@ -1,0 +1,279 @@
+/* ---------- RESET & BASE STYLES ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", Verdana, sans-serif;
+  color: var(--base-font-color);
+}
+
+body {
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  border: none;
+}
+
+:root {
+  --Primary-color: #205781;
+  --Secondary-color: #4f959d;
+  --fill-color: #d5e6e7;
+  --base-font-color: #333332;
+  --second-font-color: #777776;
+}
+
+/* ---------- FORUM START ---------- */
+.forum-container {
+  margin-bottom: 60px;
+}
+.forum-header {
+  width: 100%;
+  padding: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--Primary-color);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-direction: column;
+}
+
+.header-content img {
+  width: 150px;
+  height: 150px;
+}
+
+.header-content .tittle {
+  display: flex;
+  flex-direction: column;
+}
+
+.tittle h5 {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.tittle h4 {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+}
+
+.forum-body {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.forum-body .how-to {
+  padding: 12px 18px;
+  background-color: var(--fill-color);
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.forum-body .how-to:hover {
+  background-color: var(--Primary-color);
+  color: white;
+}
+
+.forum-content {
+  display: flex;
+  gap: 40px;
+  flex-direction: column;
+}
+
+.category-container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.category-container h5,
+.recently-container h5 {
+  padding-left: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.category-content,
+.recently-content {
+  margin-top: 12px;
+}
+
+.beasiswa-forum {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  background-color: #fed9d6;
+  border-left: 4px solid #fa4032;
+  width: 100%;
+  cursor: pointer;
+}
+
+.beasiswa-forum:hover {
+  background-color: #fa4032;
+  color: white;
+}
+
+.lomba-forum {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  background-color: #d6e9fe;
+  border-left: 4px solid #328ffa;
+  width: 100%;
+  cursor: pointer;
+}
+
+.lomba-forum:hover {
+  background-color: #328ffa;
+  color: white;
+}
+
+.tim-forum {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  background-color: #d1ffde;
+  border-left: 4px solid #32fa67;
+  width: 100%;
+  cursor: pointer;
+}
+
+.tim-forum:hover {
+  background-color: #32fa67;
+  color: white;
+}
+
+.faq-forum {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  border-left: 4px solid #fa4032;
+  width: 100%;
+  cursor: pointer;
+}
+
+.faq-forum:hover {
+  background-color: #fa4032;
+  color: white;
+}
+
+.tittle-forum {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: inherit;
+}
+
+.tittle-forum h4,
+.tittle-forum span {
+  font-weight: 600;
+  font-size: 20px;
+  color: inherit;
+}
+
+.desc-forum {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+}
+.desc-forum img {
+  width: 45px;
+  height: 45px;
+}
+.desc-forum p {
+  font-size: 14px;
+  color: inherit;
+  display: flex;
+}
+
+.recently-container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.question-items {
+  display: flex;
+  border-top: 1px solid #d3d3d3;
+  border-bottom: 1px solid #d3d3d3;
+  padding: 12px;
+  gap: 40px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.question-items .question,
+.question-items .date {
+  max-width: 500px;
+  font-size: 14px;
+}
+
+@media (min-width: 640px) {
+  .forum-header {
+    justify-content: start;
+  }
+  .header-content {
+    flex-direction: row;
+    padding: 60px 120px;
+  }
+  .tittle h5 {
+    font-size: 20px;
+  }
+
+  .tittle h4 {
+    font-size: 28px;
+  }
+  .forum-body .how-to {
+    font-size: 14px;
+  }
+}
+@media (min-width: 768px) {
+  .forum-content {
+    flex-direction: row;
+  }
+  .question-items .question,
+  .question-items .date {
+    font-size: 16px;
+  }
+
+  .forum-header {
+    padding: 30px;
+  }
+}
+@media (min-width: 1080px) {
+  .beasiswa-forum,
+  .lomba-forum,
+  .tim-forum,
+  .faq-forum {
+    max-width: 400px;
+  }
+}
+@media (min-width: 1280px) {
+}

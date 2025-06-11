@@ -1,0 +1,47 @@
+/* ---------- RESET & BASE STYLES ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", Verdana, sans-serif;
+}
+
+body {
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+:root {
+  --Primary-color: #205781;
+  --Secondary-color: #4f959d;
+  --fill-color: #d5e6e7;
+  --base-font-color: #333332;
+  --second-font-color: #777776;
+}
+
+/* ---------- LOMBA START ---------- */
+
+.main-container {
+  margin-left: 250px;
+}
+
+.main-container .tittle {
+  margin-left: 30px;
+  padding-top: 30px;
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--Primary-color);
+  margin-bottom: 24px;
+}
+
+/* ---------- LOMBA END ---------- */
