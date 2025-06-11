@@ -1,0 +1,271 @@
+/* ---------- RESET & BASE STYLES ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", Verdana, sans-serif;
+  color: var(--base-font-color);
+}
+
+body {
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  border: none;
+}
+
+:root {
+  --Primary-color: #205781;
+  --Secondary-color: #4f959d;
+  --fill-color: #d5e6e7;
+  --base-font-color: #333332;
+  --second-font-color: #777776;
+}
+
+/* ---------- FORUM START ---------- */
+.section-container {
+  margin-top: 0;
+  margin-bottom: 60px;
+}
+
+.section-content {
+  width: 100%;
+}
+
+.header-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 60px;
+}
+
+.header-container.beasiswa {
+  background-color: #fa4032;
+}
+.header-container.lomba {
+  background-color: #328ffa;
+}
+.header-container.tim {
+  background-color: #32fa67;
+}
+.header-container.faq {
+  background-color: salmon;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-content .tittle,
+.header-content .desc {
+  color: white;
+}
+
+.header-content .tittle {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.header-content .desc {
+  font-size: 16px;
+}
+
+.body-container {
+  margin: 24px 60px 0 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+}
+
+.how-to {
+  padding: 12px 18px;
+  background-color: var(--fill-color);
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.how-to:hover {
+  background-color: var(--Primary-color);
+  color: white;
+}
+
+.question-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.question-table th,
+.question-table td {
+  padding: 12px;
+  text-align: center;
+}
+
+.question-table th {
+  font-weight: bold;
+}
+
+.question-table .question-content {
+  border-top: 1px solid #d3d3d3;
+  border-bottom: 1px solid #d3d3d3;
+  cursor: pointer;
+}
+
+.question-table .question,
+.question-table .topic {
+  text-align: start;
+}
+
+.question-table td a {
+  text-decoration: none;
+}
+
+.question-table td a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- FORUM CHAT PAGE------------ */
+main {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.post-section {
+  width: 70%;
+  margin: 30px 60px;
+}
+
+.post-container {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #d3d3d3;
+  padding-bottom: 20px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-header img {
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+
+.post-desc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.post-desc h2 {
+  font-weight: 600;
+  font-size: 18px;
+  color: #979797;
+}
+
+.post-desc .date {
+  font-weight: 400;
+  color: #979797;
+}
+
+.post-content {
+  margin: 24px 30px;
+}
+
+.post-content p,
+.post-content li {
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.post-content li {
+  list-style-type: disc;
+  margin-left: 24px;
+}
+
+.post-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.post-footer .reply {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.post-footer .like,
+.post-footer .link,
+.reply {
+  cursor: pointer;
+}
+
+.post-footer .like:hover {
+  color: salmon;
+}
+.post-footer .link:hover,
+.reply:hover {
+  color: var(--Primary-color);
+}
+
+.post-footer .like path,
+.post-footer .link path,
+.reply span,
+.reply svg,
+.reply svg path {
+  color: inherit;
+}
+
+@media (min-width: 640px) {
+  .how-to {
+    font-size: 14px;
+  }
+}
+@media (min-width: 768px) {
+  .forum-content {
+    flex-direction: row;
+  }
+  .question-items .question,
+  .question-items .date {
+    font-size: 16px;
+  }
+
+  .forum-header {
+    padding: 30px;
+  }
+}
+@media (min-width: 1080px) {
+}
+@media (min-width: 1280px) {
+}
