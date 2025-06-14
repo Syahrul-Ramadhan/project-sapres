@@ -29,14 +29,19 @@ switch ($action) {
 function handleRegister() {
     global $pdo;
     
-    $fullname = $_POST['fullname'] ?? '';
-    $email = $_POST['email'] ?? '';
+    $fullname = trim($_POST['fullname'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
     
     // Basic validation
     if (empty($fullname) || empty($email) || empty($password)) {
         echo json_encode(['success' => false, 'message' => 'Semua field harus diisi']);
+        return;
+    }
+    
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo json_encode(['success' => false, 'message' => 'Format email tidak valid']);
         return;
     }
     
@@ -62,24 +67,35 @@ function handleRegister() {
         
         // Hash password and insert user
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)");
-        $stmt->execute([$fullname, $email, $hashedPassword]);
+        $stmt = $pdo->prepare("INSERT INTO users (fullname, email, password, role) VALUES (?, ?, ?, 'user')");
+        $result = $stmt->execute([$fullname, $email, $hashedPassword]);
         
-        echo json_encode(['success' => true, 'message' => 'Registrasi berhasil! Silakan login.']);
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Registrasi berhasil! Silakan login.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mendaftar, silakan coba lagi']);
+        }
         
     } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
+        error_log("Registration error: " . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Terjadi kesalahan sistem']);
     }
 }
 
 function handleLogin() {
     global $pdo;
     
-    $email = $_POST['email'] ?? '';
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
+    $remember = $_POST['remember'] ?? '0';
     
     if (empty($email) || empty($password)) {
         echo json_encode(['success' => false, 'message' => 'Email dan password harus diisi']);
+        return;
+    }
+    
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo json_encode(['success' => false, 'message' => 'Format email tidak valid']);
         return;
     }
     
@@ -87,7 +103,7 @@ function handleLogin() {
         // Get user
         $stmt = $pdo->prepare("SELECT id, fullname, email, password, role FROM users WHERE email = ?");
         $stmt->execute([$email]);
-        $user = $stmt->fetch();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$user || !password_verify($password, $user['password'])) {
             echo json_encode(['success' => false, 'message' => 'Email atau password salah']);
@@ -98,34 +114,124 @@ function handleLogin() {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['fullname'];
         $_SESSION['user_email'] = $user['email'];
-        $_SESSION['user_role'] = $user['role'];
+        $_SESSION['role'] = $user['role'];
+        
+        // Handle remember me
+        if ($remember === '1') {
+            $token = bin2hex(random_bytes(32));
+            setcookie('remember_token', $token, time() + (86400 * 30), '/', '', false, true); // 30 days, httponly
+            
+            // Store token in database (optional - you can create a remember_tokens table)
+            try {
+                $stmt = $pdo->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
+                $stmt->execute([hash('sha256', $token), $user['id']]);
+            } catch (Exception $e) {
+                // Log but don't fail login
+                error_log("Remember token storage failed: " . $e->getMessage());
+            }
+        }
         
         // Create session record in database
         createSessionRecord($user['id']);
         
-        // Redirect based on role
-        $redirect = ($user['role'] === 'admin') ? 'admin/dashboardAdmin.php' : 'dashboard.php';
+        // Determine redirect based on role and request
+        $redirect = determineRedirect($user['role']);
         
         echo json_encode([
             'success' => true, 
             'message' => 'Login berhasil!',
-            'redirect' => $redirect
+            'redirect' => $redirect,
+            'user' => [
+                'id' => $user['id'],
+                'name' => $user['fullname'],
+                'email' => $user['email'],
+                'role' => $user['role']
+            ]
         ]);
         
     } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
+        error_log("Login error: " . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Terjadi kesalahan sistem']);
     }
 }
 
 function handleLogout() {
-    if (isset($_SESSION['user_id'])) {
-        deactivateSession($_SESSION['user_id']);
+    global $pdo;
+    
+    try {
+        // Deactivate session in database
+        if (isset($_SESSION['user_id'])) {
+            deactivateSession($_SESSION['user_id']);
+        }
+        
+        // Clear remember me cookie and token
+        if (isset($_COOKIE['remember_token'])) {
+            setcookie('remember_token', '', time() - 3600, '/', '', false, true);
+            
+            // Clear token from database
+            if (isset($_SESSION['user_id'])) {
+                $stmt = $pdo->prepare("UPDATE users SET remember_token = NULL WHERE id = ?");
+                $stmt->execute([$_SESSION['user_id']]);
+            }
+        }
+        
+        // Destroy session
+        session_unset();
+        session_destroy();
+        
+        // Start new session to prevent session fixation
+        session_start();
+        session_regenerate_id(true);
+        
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Logout berhasil', 
+            'redirect' => '../index.php'
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("Logout error: " . $e->getMessage());
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Logout berhasil', 
+            'redirect' => '../index.php'
+        ]);
     }
+}
+
+function determineRedirect($role) {
+    // Check for specific redirect request
+    $requestedRedirect = $_GET['redirect'] ?? $_POST['redirect'] ?? '';
     
-    session_unset();
-    session_destroy();
-    
-    echo json_encode(['success' => true, 'message' => 'Logout berhasil', 'redirect' => 'login.php']);
+    if ($role === 'admin') {
+        // Admin redirects
+        switch ($requestedRedirect) {
+            case 'lomba':
+                return 'admin/lombaAdmin.php';
+            case 'beasiswa':
+                return 'admin/beasiswaAdmin.php';
+            case 'tim':
+                return 'admin/timAdmin.php';
+            case 'forum':
+                return 'admin/forumAdmin.php';
+            default:
+                return 'admin/dashboardAdmin.php';
+        }
+    } else {
+        // Regular user redirects
+        switch ($requestedRedirect) {
+            case 'beasiswa':
+                return 'beasiswa.php';
+            case 'lomba':
+                return 'lomba.php';
+            case 'tim':
+                return 'cariTim.php';
+            case 'forum':
+                return 'forum.php';
+            default:
+                return 'dashboard.php';
+        }
+    }
 }
 
 function createSessionRecord($userId) {
@@ -136,12 +242,15 @@ function createSessionRecord($userId) {
         $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
         
-        // Deactivate old sessions
+        // Deactivate old sessions for this user
         $stmt = $pdo->prepare("UPDATE user_sessions SET is_active = 0 WHERE user_id = ?");
         $stmt->execute([$userId]);
         
-        // Create new session
-        $stmt = $pdo->prepare("INSERT INTO user_sessions (user_id, session_id, ip_address, user_agent) VALUES (?, ?, ?, ?)");
+        // Create new session record
+        $stmt = $pdo->prepare("
+            INSERT INTO user_sessions (user_id, session_id, ip_address, user_agent, is_active) 
+            VALUES (?, ?, ?, ?, 1)
+        ");
         $stmt->execute([$userId, $sessionId, $ipAddress, $userAgent]);
         
     } catch (Exception $e) {
@@ -154,10 +263,110 @@ function deactivateSession($userId) {
     global $pdo;
     
     try {
-        $stmt = $pdo->prepare("UPDATE user_sessions SET is_active = 0 WHERE user_id = ? AND is_active = 1");
-        $stmt->execute([$userId]);
+        $sessionId = session_id();
+        $stmt = $pdo->prepare("
+            UPDATE user_sessions 
+            SET is_active = 0, last_activity = CURRENT_TIMESTAMP 
+            WHERE user_id = ? AND session_id = ?
+        ");
+        $stmt->execute([$userId, $sessionId]);
     } catch (Exception $e) {
         error_log("Session deactivation failed: " . $e->getMessage());
+    }
+}
+
+// Handle GET requests for logout (direct URL access)
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'logout') {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    // Deactivate session
+    if (isset($_SESSION['user_id'])) {
+        deactivateSession($_SESSION['user_id']);
+    }
+    
+    // Clear remember me cookie
+    if (isset($_COOKIE['remember_token'])) {
+        setcookie('remember_token', '', time() - 3600, '/', '', false, true);
+    }
+    
+    // Destroy session
+    session_unset();
+    session_destroy();
+    
+    // Redirect to login page
+    header('Location: ../login.php?message=logged_out');
+    exit;
+}
+
+// Auto-login with remember token (call this function on protected pages)
+function checkRememberToken() {
+    global $pdo;
+    
+    if (isset($_COOKIE['remember_token']) && !isset($_SESSION['user_id'])) {
+        try {
+            $token = $_COOKIE['remember_token'];
+            $hashedToken = hash('sha256', $token);
+            
+            $stmt = $pdo->prepare("SELECT id, fullname, email, role FROM users WHERE remember_token = ?");
+            $stmt->execute([$hashedToken]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user) {
+                // Start session
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+                
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_name'] = $user['fullname'];
+                $_SESSION['user_email'] = $user['email'];
+                $_SESSION['role'] = $user['role'];
+                
+                // Create session record
+                createSessionRecord($user['id']);
+                
+                return true;
+            } else {
+                // Invalid token, clear cookie
+                setcookie('remember_token', '', time() - 3600, '/', '', false, true);
+            }
+        } catch (Exception $e) {
+            error_log("Remember token check failed: " . $e->getMessage());
+        }
+    }
+    
+    return false;
+}
+
+// Rate limiting function (optional)
+function checkRateLimit($identifier, $maxAttempts = 5, $timeWindow = 300) {
+    global $pdo;
+    
+    try {
+        // Clean old attempts
+        $stmt = $pdo->prepare("DELETE FROM login_attempts WHERE attempted_at < DATE_SUB(NOW(), INTERVAL ? SECOND)");
+        $stmt->execute([$timeWindow]);
+        
+        // Count recent attempts
+        $stmt = $pdo->prepare("SELECT COUNT(*) as attempts FROM login_attempts WHERE identifier = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL ? SECOND)");
+        $stmt->execute([$identifier, $timeWindow]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result['attempts'] >= $maxAttempts) {
+            return false;
+        }
+        
+        // Record this attempt
+        $stmt = $pdo->prepare("INSERT INTO login_attempts (identifier, attempted_at) VALUES (?, NOW())");
+        $stmt->execute([$identifier]);
+        
+        return true;
+    } catch (Exception $e) {
+        // If rate limiting fails, allow the request
+        error_log("Rate limiting error: " . $e->getMessage());
+        return true;
     }
 }
 ?>
