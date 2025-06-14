@@ -1,9 +1,15 @@
+<?php
+require_once 'php/check_login.php';
+// Get user info from session
+$user_name = $_SESSION['user_name'];
+$user_id = $_SESSION['user_id'];
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sapres</title>
+    <title>Dashboard - <?php echo htmlspecialchars($user_name); ?></title>
     <link
       rel="icon"
       type="image/png"
