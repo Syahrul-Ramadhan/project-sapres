@@ -80,17 +80,29 @@ switch ($action) {
 
     // ---- DELETE ----
     case 'delete_discussion':
-        $topic_id = $_POST['topic_id'] ?? 0;
-        // Hapus parent dan semua children-nya
-        $stmt = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ? OR parent_id = ?");
-        $stmt->bind_param("ii", $topic_id, $topic_id);
-        if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'message' => 'Seluruh diskusi berhasil dihapus.']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Gagal menghapus diskusi.']);
-        }
-        $stmt->close();
-        break;
+    $topic_id = $_POST['topic_id'] ?? 0;
+
+    mysqli_begin_transaction($koneksi); // Memulai transaksi
+
+    try {
+        // Hapus semua balasan terlebih dahulu
+        $stmt_replies = $koneksi->prepare("DELETE FROM forum WHERE parent_id = ?");
+        $stmt_replies->bind_param("i", $topic_id);
+        $stmt_replies->execute();
+
+        // Kemudian hapus topik utamanya
+        $stmt_main = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ?");
+        $stmt_main->bind_param("i", $topic_id);
+        $stmt_main->execute();
+
+        mysqli_commit($koneksi); // Jika semua berhasil, simpan perubahan
+        echo json_encode(['success' => true, 'message' => 'Seluruh diskusi berhasil dihapus.']);
+
+    } catch (mysqli_sql_exception $exception) {
+        mysqli_rollback($koneksi); // Jika ada error, batalkan semua perubahan
+        echo json_encode(['success' => false, 'message' => 'Gagal menghapus diskusi.']);
+    }
+    break;
 
     case 'delete_message':
         $message_id = $_POST['message_id'] ?? 0;
