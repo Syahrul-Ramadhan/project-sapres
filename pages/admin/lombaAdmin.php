@@ -1,16 +1,16 @@
 <?php
 // Start session and authentication
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// if (session_status() === PHP_SESSION_NONE) {
+//     session_start();
+// }
 
-require_once '../php/config.php';
-require_once '../php/admin_auth.php';
+require_once '../php/koneksi.php';
+// require_once '../php/admin_auth.php';
 
-$adminAuth = new AdminAuth($pdo);
-$adminAuth->requireAdminLogin();
-$adminInfo = $adminAuth->getAdminInfo();
-$admin_name = $adminInfo ? $adminInfo['fullname'] : 'Admin';
+// $adminAuth = new AdminAuth($koneksi);
+// $adminAuth->requireAdminLogin();
+// $adminInfo = $adminAuth->getAdminInfo();
+// $admin_name = $adminInfo ? $adminInfo['fullname'] : 'Admin';
 
 // Get lomba data
 $lombaList = [];
@@ -18,7 +18,7 @@ $stats = ['total' => 0, 'active' => 0, 'expired' => 0];
 
 try {
     // Get stats
-    $stmt = $pdo->query("SELECT 
+    $stmt = $koneksi->query("SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN is_active = 1 AND deadline >= CURDATE() THEN 1 ELSE 0 END) as active,
         SUM(CASE WHEN deadline < CURDATE() THEN 1 ELSE 0 END) as expired
@@ -26,7 +26,7 @@ try {
     $stats = $stmt->fetch(PDO::FETCH_ASSOC) ?: $stats;
     
     // Get lomba list
-    $stmt = $pdo->query("SELECT * FROM lomba ORDER BY created_at DESC");
+    $stmt = $koneksi->query("SELECT * FROM lomba ORDER BY created_at DESC");
     $lombaList = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
 } catch (Exception $e) {
@@ -40,9 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     try {
         switch ($_POST['action']) {
             case 'add':
-                $stmt = $pdo->prepare("INSERT INTO lomba (title, organizer, description, start_date, deadline, level, scope, category, external_url, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $koneksi->prepare("INSERT INTO lomba (title, cost, organizer, description, start_date, deadline, level, scope, category, external_url, is_active) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $result = $stmt->execute([
                     $_POST['title'],
+                    $_POST['cost'],
                     $_POST['organizer'],
                     $_POST['description'] ?? '',
                     $_POST['start_date'],
@@ -57,9 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 break;
                 
             case 'edit':
-                $stmt = $pdo->prepare("UPDATE lomba SET title = ?, organizer = ?, description = ?, start_date = ?, deadline = ?, level = ?, scope = ?, category = ?, external_url = ?, is_active = ? WHERE id = ?");
+                $stmt = $koneksi->prepare("UPDATE lomba SET title = ?, cost = ?,organizer = ?, description = ?, start_date = ?, deadline = ?, level = ?, scope = ?, category = ?, external_url = ?, is_active = ? WHERE id = ?");
                 $result = $stmt->execute([
                     $_POST['title'],
+                    $_POST['cost'],
                     $_POST['organizer'],
                     $_POST['description'] ?? '',
                     $_POST['start_date'],
@@ -75,20 +77,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 break;
                 
             case 'get':
-                $stmt = $pdo->prepare("SELECT * FROM lomba WHERE id = ?");
+                $stmt = $koneksi->prepare("SELECT * FROM lomba WHERE id = ?");
                 $stmt->execute([$_POST['id']]);
                 $lomba = $stmt->fetch(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'data' => $lomba]);
                 break;
                 
             case 'toggle_status':
-                $stmt = $pdo->prepare("UPDATE lomba SET is_active = ? WHERE id = ?");
+                $stmt = $koneksi->prepare("UPDATE lomba SET is_active = ? WHERE id = ?");
                 $result = $stmt->execute([$_POST['status'], $_POST['id']]);
                 echo json_encode(['success' => $result]);
                 break;
                 
             case 'delete':
-                $stmt = $pdo->prepare("DELETE FROM lomba WHERE id = ?");
+                $stmt = $koneksi->prepare("DELETE FROM lomba WHERE id = ?");
                 $result = $stmt->execute([$_POST['id']]);
                 echo json_encode(['success' => $result]);
                 break;
@@ -755,7 +757,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="profile">
                     <img src="../../assets/img/user_profile/default_profile.png" alt="Profile Picture">
                     <div class="profile-info">
-                        <h4><?php echo htmlspecialchars($admin_name); ?></h4>
+                        <!-- <h4><?php echo htmlspecialchars($admin_name); ?></h4> -->
                         <p>Admin</p>
                     </div>
                 </div>
@@ -960,6 +962,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </div>
                     </div>
                     
+                    <div class="form-group">
+                        <label for="cost">Biaya</label>
+                        <input type="text" id="cost" name="cost" placeholder="Biaya lomba..."></input>
+                    </div>
                     <div class="form-group">
                         <label for="description">Deskripsi</label>
                         <textarea id="description" name="description" placeholder="Deskripsi lomba..."></textarea>
@@ -1316,6 +1322,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 document.getElementById('start_date').value = lomba.start_date;
                 document.getElementById('deadline').value = lomba.deadline;
                 document.getElementById('category').value = lomba.category || '';
+                document.getElementById('cost').value = lomba.cost || '';
                 document.getElementById('description').value = lomba.description || '';
                 document.getElementById('external_url').value = lomba.external_url || '';
                 document.getElementById('is_active').value = lomba.is_active;
