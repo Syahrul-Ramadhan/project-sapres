@@ -12,6 +12,18 @@
     <link rel="stylesheet" href="../../assets/css/admin/timAdmin.css">
 </head>
 <body>
+
+    <?php
+      include "../php/koneksi.php";
+
+      $sql = "SELECT * FROM tim";
+      $hasil_query = mysqli_query($koneksi, $sql);
+
+
+      if ($hasil_query && mysqli_num_rows($hasil_query) > 0) {
+      
+    ?>
+
 <!-- SIDE NAV START -->
         <div class="side-nav">
         <div class="container">
@@ -50,8 +62,129 @@
         <h2 class="tittle">Manajemen Tim</h2>
 
         <div class="tim-container">
+            <div class="tim-content-header">
+                <input type="text" placeholder="Cari Tim..." id="searchTim" oninput="searchTim()">
+            </div>
 
+            <div class="tim-content">
+                <table class="tim-table">
+                    <thead>
+                        <tr>
+                            <th>Id Tim</th>
+                            <th>Nama Tim</th>
+                            <th>Jumlah Anggota</th>
+                            <th>Jenjang Tim</th>
+                            <th>Kategori</th>
+                            <th>Judul Lomba</th>
+                            <th>Asal Instansi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data beasiswa akan dimasukkan di sini -->
+                        <?php
+                            while ($data = mysqli_fetch_array($hasil_query)): 
+                                    echo "<tr class='table-content' data-id='{$data['tim_id']}' 
+                                            data-nama='{$data['nama_tim']}' 
+                                            data-anggota='{$data['jumlah_anggota']}' 
+                                            data-jenjang='{$data['jenjang_tim']}' 
+                                            data-kategori='{$data['kategori_lomba']}' 
+                                            data-judul='{$data['judul_lomba']}' 
+                                            data-asal='{$data['asal_instansi']}' 
+                                            data-deskripsi='{$data['deskripsi']}' 
+                                            data-syarat='{$data['syarat_ketentuan']}' 
+                                            data-ktm='{$data['cek_ktm']}' 
+                                            data-link='{$data['link']}' 
+                                            data-tanggal='{$data['created_at']}'> 
+                                            <td class='first-col'>{$data['tim_id']}</td>
+                                            <td>{$data['nama_tim']}</td>
+                                            <td>{$data['jumlah_anggota']}</td>
+                                            <td>{$data['jenjang_tim']}</td>
+                                            <td>{$data['kategori_lomba']}</td>
+                                            <td>{$data['judul_lomba']}</td>
+                                            <td>{$data['asal_instansi']}</td>
+                                            <td class = 'last-col'><a href=proses/deleteTim.php?id=".$data['tim_id']." class='deletebtn'>Delete</a></td>
+                                          </tr>";
+                            endwhile;
+                        ?>
+                    </tbody>
+                </table>
+
+                <!-- detail Pop-up -->
+                <div class="tim-pop-up detail-pop-up" style="display: none;">
+                    <div class="pop-up-content">
+                        <span id="detail-closeBtn" class="close"><img src="../../assets/img/icons/dashboard-admin/close.png" alt="close" width="24px"></span>
+                        <h2>Data Tim</h2>
+                                <table class="table-detail">
+                                    <tr>
+                                    <td>Nama Tim</td>
+                                    <td>:</td>
+                                    <td>
+                                        <div class="detail-nama"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Jumlah Anggota</td>
+                                    <td>:</td>
+                                    <td>
+                                        <div class="detail-jumlah"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Jenjang Tim</td>
+                                    <td>:</td>
+                                    <td><div class="detail-jenjang"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Kategori Lomba</td>
+                                    <td>:</td>
+                                    <td><div class="detail-kategori"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Judul Lomba</td>
+                                    <td>:</td>
+                                    <td><div class="detail-judul"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Asal Instansi</td>
+                                    <td>:</td>
+                                    <td><div class="detail-asal-instansi"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Daskripsi Tim</td>
+                                    <td>:</td>
+                                    <td>
+                                        <div class="detail-deskripsi"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Syarat Ketentuan</td>
+                                    <td>:</td>
+                                    <td><div class="detail-syarat"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>KTM</td>
+                                    <td>:</td>
+                                    <td><div class="detail-ktm"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Tanggal</td>
+                                    <td>:</td>
+                                    <td><div class="detail-tanggal"></div></td>
+                                </tr>
+                                </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+            <?php 
+    } else {
+        echo "Data tidak ditemukan.";
+      }
+      ?>
+    <script src="../../assets/js/admin/timAdmin.js"></script>
+
 </body>
 </html>

@@ -405,7 +405,7 @@ ul {
   display: flex;
   flex-direction: column;
   text-align: center;
-  height: 800px;
+  height: 850px;
 }
 
 .filter-head {
@@ -608,6 +608,31 @@ ul {
   z-index: 4;
   left: 0;
 }
+
+.filter-footer {
+  padding: 12px 0 18px;
+  display: flex;
+  gap: 12px;
+}
+
+.btn-apply-filter {
+  background-color: var(--Primary-color);
+  color: white;
+  border: none;
+}
+.btn-apply-filter:hover {
+  background-color: #1a4667;
+}
+
+.btn-clear-filter {
+  border: 1px solid #ddd;
+  background-color: white;
+  color: #333;
+}
+.btn-clear-filter:hover {
+  background-color: #f0f0f0;
+}
+
 /* ---------- FILTER END ---------- */
 
 /* ---------- YEAR AND MONTH SET START ---------- */
@@ -642,7 +667,7 @@ ul {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px;
+  padding: 30px 50px;
   gap: 8px;
   position: relative;
   z-index: 30;
@@ -712,12 +737,12 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-bottom: 12px;
 }
 
 .req h4 {
   font-weight: 600;
   color: #777776;
-  margin-bottom: 4px;
 }
 
 .req ul {
@@ -729,7 +754,7 @@ ul {
 .req ul li {
   font-size: 14px;
   background-color: var(--fill-color);
-  padding: 8px;
+  padding: 8px 16px;
   border-radius: 12px;
   -webkit-border-radius: 12px;
   -moz-border-radius: 12px;
