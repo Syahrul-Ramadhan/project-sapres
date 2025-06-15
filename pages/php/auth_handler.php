@@ -186,15 +186,15 @@ function handleLogout() {
         echo json_encode([
             'success' => true, 
             'message' => 'Logout berhasil', 
-            'redirect' => '../index.php'
+            'redirect' => 'login.php'
         ]);
         
     } catch (Exception $e) {
         error_log("Logout error: " . $e->getMessage());
         echo json_encode([
             'success' => true, 
-            'message' => 'Logout berhasil', 
-            'redirect' => '../index.php'
+            'message' => 'Logout gagal', 
+            'redirect' => 'login.php' // Redirect ke halaman login
         ]);
     }
 }

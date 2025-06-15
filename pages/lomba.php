@@ -1,5 +1,5 @@
 <?php
-require_once 'php/config.php';
+require_once 'php/koneksi.php';
 
 // Initialize variables
 $lombaList = [];
@@ -75,9 +75,9 @@ try {
     
     // Get total count
     $countSql = "SELECT COUNT(*) as total FROM lomba l WHERE $whereClause";
-    $countStmt = $pdo->prepare($countSql);
+    $countStmt = $koneksi->prepare($countSql);
     $countStmt->execute($params);
-    $totalLomba = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+    $totalLomba = $countStmt->fetch()['total'];
     
     // Calculate pagination
     $currentPage = max(1, intval($_GET['page'] ?? 1));
@@ -96,13 +96,13 @@ try {
             ORDER BY $orderBy 
             LIMIT $itemsPerPage OFFSET $offset";
     
-    $stmt = $pdo->prepare($sql);
+    $stmt = $koneksi->prepare($sql);
     $stmt->execute($params);
     $lombaList = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Get categories for filter
     $categorySql = "SELECT DISTINCT category FROM lomba WHERE category IS NOT NULL AND category != '' AND is_active = 1 ORDER BY category";
-    $categoryStmt = $pdo->query($categorySql);
+    $categoryStmt = $koneksi->query($categorySql);
     $categories = $categoryStmt->fetchAll(PDO::FETCH_COLUMN);
     
 } catch (Exception $e) {

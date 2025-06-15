@@ -57,7 +57,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const dropdownMenu = document.querySelector(".dropdown-profile");
   const profileBtn = document.querySelector(".profile-btn");
 
-  const isLoggedIn = localStorage.getItem("status");
+  // Check login status using session (not localStorage)
+  const isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
 
   if (isLoggedIn === "true") {
     // Tampilkan profil jika sudah login
@@ -86,11 +87,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Logout function
   logoutBtn.addEventListener("click", function () {
-    localStorage.setItem("status", "false");
-
-    // Redirect ke login
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 500);
+    // Hapus status dari session dan logout di server
+    fetch("php/auth_handler.php", {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "logout",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.href = data.redirect; // Mengarah ke login.php
+        } else {
+          alert('Logout gagal: ' + data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   });
 });
+

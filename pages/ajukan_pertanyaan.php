@@ -25,13 +25,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $query = "INSERT INTO forum (user_id, kategori, pesan, id_penanya, tanggal_pesan)
-              VALUES ('$user_id', '$kategori', '$pesan', '$id_penanya', '$tanggal_pesan')";
+              VALUES (:user_id, :kategori, :pesan, :id_penanya, :tanggal_pesan)";
 
-    if (mysqli_query($koneksi, $query)) {
+    $stmt = $koneksi->prepare($query);
+    $result = $stmt->execute([
+        ':user_id' => $user_id,
+        ':kategori' => $kategori,
+        ':pesan' => $pesan,
+        ':id_penanya' => $id_penanya,
+        ':tanggal_pesan' => $tanggal_pesan
+    ]);
+
+    if ($result) {
         echo "Sukses";
     } else {
         http_response_code(500);
-        echo "Gagal: " . mysqli_error($koneksi);
+        echo "Gagal: " . implode(" ", $stmt->errorInfo());
     }
 }
 ?>

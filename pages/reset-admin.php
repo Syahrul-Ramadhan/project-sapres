@@ -1,5 +1,5 @@
 <?php
-require_once 'php/config.php';
+require_once 'php/koneksi.php';
 
 // Reset admin password
 $email = 'admin@sapres.com';
