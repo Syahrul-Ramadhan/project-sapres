@@ -1,0 +1,103 @@
+/* ---------- RESET & BASE STYLES ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", Verdana, sans-serif;
+}
+
+body {
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+:root {
+  --Primary-color: #205781;
+  --Secondary-color: #4f959d;
+  --fill-color: #d5e6e7;
+  --base-font-color: #333332;
+  --second-font-color: #777776;
+}
+
+/* ---------- SIDE NAV ---------- */
+.side-nav {
+  width: 250px;
+  height: 100vh;
+  background-color: var(--fill-color);
+  color: var(--base-font-color);
+  padding: 24px;
+  position: fixed;
+}
+
+.container {
+  margin-left: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.side-nav h2 {
+  font-weight: bold;
+  font-size: 24px;
+  color: var(--Primary-color);
+  margin-bottom: 24px;
+}
+
+.nav-header .nav-list ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav-header .nav-list li {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.nav-header .nav-list li img {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-footer {
+  margin-bottom: 12px;
+}
+
+.nav-footer .profile {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.nav-footer .profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+
+.nav-footer .log-out {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+}
+/* ---------- SIDE NAV ---------- */
+/* ---------- DASHBOARD ---------- */

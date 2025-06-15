@@ -1,0 +1,362 @@
+/* ---------- RESET & BASE STYLES ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", Verdana, sans-serif;
+  color: var(--base-font-color);
+}
+
+body {
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  border: none;
+}
+
+:root {
+  --Primary-color: #205781;
+  --Secondary-color: #4f959d;
+  --fill-color: #d5e6e7;
+  --base-font-color: #333332;
+  --second-font-color: #777776;
+}
+
+/* ---------- FORUM START ---------- */
+.forum-container {
+  margin-bottom: 60px;
+}
+.forum-header {
+  width: 100%;
+  padding: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--Primary-color);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-direction: column;
+}
+
+.header-content img {
+  width: 150px;
+  height: 150px;
+}
+
+.header-content .tittle {
+  display: flex;
+  flex-direction: column;
+}
+
+.tittle h5 {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.tittle h4 {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+}
+
+.forum-body {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.forum-body .container-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.forum-body .container-button .how-to-btn {
+  padding: 12px 18px;
+  background-color: var(--fill-color);
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.forum-body .how-to-btn:hover {
+  background-color: var(--Primary-color);
+  color: white;
+}
+
+.forum-content {
+  display: flex;
+  max-width: 1200px; /* Anda bisa ganti angka ini sesuai selera, 1140px atau 1200px adalah standar umum */
+
+  /* 2. KUNCI UTAMA: Tengahkan container dengan margin auto */
+  margin-left: auto;
+  margin-right: auto;
+
+  /* 3. (Sangat disarankan) Beri padding agar di layar kecil konten tidak menempel ke tepi */
+  padding-left: 20px;
+  padding-right: 20px;
+  gap: 40px;
+  flex-direction: column;
+}
+
+.category-container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.category-container h5,
+.recently-container h5 {
+  padding-left: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.category-content,
+.recently-content {
+  margin-top: 12px;
+}
+
+.beasiswa-forum {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  background-color: #fed9d6;
+  border-left: 4px solid #fa4032;
+  width: 100%;
+  cursor: pointer;
+}
+
+.beasiswa-forum:hover {
+  background-color: #fa4032;
+  color: white;
+}
+
+.lomba-forum {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  background-color: #d6e9fe;
+  border-left: 4px solid #328ffa;
+  width: 100%;
+  cursor: pointer;
+}
+
+.lomba-forum:hover {
+  background-color: #328ffa;
+  color: white;
+}
+
+.tim-forum {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  background-color: #d1ffde;
+  border-left: 4px solid #32fa67;
+  width: 100%;
+  cursor: pointer;
+}
+
+.tim-forum:hover {
+  background-color: #32fa67;
+  color: white;
+}
+
+.umum-forum {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  border-left: 4px solid salmon;
+  width: 100%;
+  cursor: pointer;
+}
+
+.umum-forum:hover {
+  background-color: salmon;
+  color: white;
+}
+
+.tittle-forum {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: inherit;
+}
+
+.tittle-forum h4,
+.tittle-forum span {
+  font-weight: 600;
+  font-size: 20px;
+  color: inherit;
+}
+
+.desc-forum {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+}
+.desc-forum img {
+  width: 45px;
+  height: 45px;
+}
+.desc-forum p {
+  font-size: 14px;
+  color: inherit;
+  display: flex;
+}
+
+.recently-container { 
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.question-items {
+  display: flex;
+  border-top: 1px solid #d3d3d3;
+  border-bottom: 1px solid #d3d3d3;
+  padding: 12px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.question-items .question {
+  text-align: left;
+  overflow-wrap: break-word;
+  min-width: 0;
+  margin-right: 20px; 
+}
+
+.question-items .date {
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.form-container {
+  background: #f5f5f5;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.form-container h2 {
+  margin-bottom: 20px;
+}
+
+.form-container select,
+.form-container textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.form-container button {
+  padding: 12px 24px;
+  background-color: #205781;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.form-container .close-modal {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+}
+
+/* .question-items .question,
+.question-items .date {
+  max-width: 500px;
+  font-size: 14px;
+} */
+
+@media (min-width: 640px) {
+  .forum-header {
+    justify-content: start;
+  }
+  .header-content {
+    flex-direction: row;
+    padding: 60px 120px;
+  }
+  .tittle h5 {
+    font-size: 20px;
+  }
+
+  .tittle h4 {
+    font-size: 28px;
+  }
+  .forum-body .how-to-btn {
+    font-size: 14px;
+  }
+}
+@media (min-width: 768px) {
+  .forum-content {
+    flex-direction: row;
+  }
+  /* .question-items .question,
+  .question-items .date {
+    font-size: 16px;
+  } */
+
+  .forum-header {
+    padding: 30px;
+  }
+}
+@media (min-width: 1080px) {
+  .beasiswa-forum,
+  .lomba-forum,
+  .tim-forum,
+  .umum-forum {
+    max-width: 400px;
+  }
+}
+@media (min-width: 1280px) {
+}
