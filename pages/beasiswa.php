@@ -17,6 +17,42 @@
     />
   </head>
   <body>
+    <?php
+    include "php/koneksi.php";
+
+    // $sql = "SELECT * FROM beasiswa";
+    // $result = $koneksi->query($sql);
+
+    // Default bulan dan tahun saat ini
+    $currentMonth = isset($_GET['month']) ? (int)$_GET['month'] : (int)date('m');
+    $currentYear = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
+
+    // Validasi nilai
+    if ($currentMonth < 1 || $currentMonth > 12) $currentMonth = (int)date('m');
+    if ($currentYear < 2000) $currentYear = (int)date('Y');
+    
+    // Pagination setup
+    $limit = 6;
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    if ($page < 1) $page = 1;
+    $offset = ($page - 1) * $limit;
+
+    // Ambil data beasiswa berdasarkan bulan & tahun
+    $sql = "SELECT * FROM beasiswa 
+            WHERE MONTH(mulai_beasiswa) = $currentMonth 
+            AND YEAR(mulai_beasiswa) = $currentYear 
+            ORDER BY mulai_beasiswa DESC 
+            LIMIT $limit OFFSET $offset";
+    $result = $koneksi->query($sql);
+
+    // Query untuk hitung total data
+    $totalResult = $koneksi->query("SELECT COUNT(*) as total FROM beasiswa
+                                  WHERE MONTH(mulai_beasiswa) = $currentMonth 
+                                  AND YEAR(mulai_beasiswa) = $currentYear");
+    $totalData = $totalResult->fetch(PDO::FETCH_ASSOC)['total'];
+    $totalPages = ceil($totalData / $limit);
+
+    ?>
     <!-- NAVBAR START -->
     <nav class="navbar">
       <div class="nav-responsive">
@@ -201,52 +237,52 @@
               <div class="checkbox-filter">
                 <label class="checkbox-label"
                   >SMP
-                  <input type="checkbox" />
+                  <input type="checkbox" value="SMP"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >SMA
-                  <input type="checkbox" />
+                  <input type="checkbox" value="SMA"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >D3
-                  <input type="checkbox" />
+                  <input type="checkbox" value="D3"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >D4
-                  <input type="checkbox" />
+                  <input type="checkbox" value="D4"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >S1
-                  <input type="checkbox" />
+                  <input type="checkbox" value="S1"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >S2
-                  <input type="checkbox" />
+                  <input type="checkbox" value="S2"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >S3
-                  <input type="checkbox" />
+                  <input type="checkbox" value="S3"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >Non Degree
-                  <input type="checkbox" />
+                  <input type="checkbox" value="Non Degree"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >Gap Year
-                  <input type="checkbox" />
+                  <input type="checkbox" value="Gap Year"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >Profesi
-                  <input type="checkbox" />
+                  <input type="checkbox" value="Profesi"/>
                   <span class="custom-checkbox"></span
                 ></label>
               </div>
@@ -256,23 +292,27 @@
               <div class="checkbox-filter">
                 <label class="checkbox-label"
                   >Fully Funded
-                  <input type="checkbox" />
+                  <input type="checkbox" value="Fully Funded"/>
                   <span class="custom-checkbox"></span
                 ></label>
                 <label class="checkbox-label"
                   >Partially Funded
-                  <input type="checkbox" />
+                  <input type="checkbox" value="Partially Funded"/>
                   <span class="custom-checkbox"></span
                 ></label>
               </div>
             </div>
             <div class="filter-negara">
               <h4>Negara</h4>
-              <input type="text" placeholder="Cari negara" />
+              <input type="text" id="filter-negara" placeholder="Cari negara" />
             </div>
             <div class="filter-univ">
               <h4>Universitas</h4>
-              <input type="text" placeholder="Cari universitas" />
+              <input type="text" id="filter-univ" placeholder="Cari universitas" />
+            </div>
+            <div class="filter-footer">
+              <button id="applyFilter" class="btn btn-apply-filter">Terapkan</button>
+              <button class="btn btn-clear-filter">Bersihkan</button>
             </div>
           </div>
         </div>
@@ -443,7 +483,7 @@
       <div class="main-content">
         <!-- YEAR SET START -->
         <div class="year-container">
-          <h1>2025</h1>
+          <h1 id="selected-year"><?= $currentYear ?></h1>
           <div class="arrow-btn">
             <div class="prev-btn">
               <svg
@@ -488,18 +528,16 @@
         <!-- MONTH SET START -->
         <div class="month-container">
           <ul class="month-list">
-            <li>Jan</li>
-            <li>Feb</li>
-            <li>Mar</li>
-            <li>Apr</li>
-            <li>Mei</li>
-            <li>Jun</li>
-            <li>Jul</li>
-            <li>Agu</li>
-            <li>Sep</li>
-            <li>Okt</li>
-            <li>Nov</li>
-            <li>Des</li>
+          <?php 
+            $months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            for ($i = 1; $i <= 12; $i++): 
+          ?>
+            <li class="month-item <?= $i === $currentMonth ? 'active' : '' ?>" 
+                data-month="<?= $i ?>"
+                onclick="changeMonth(<?= $i ?>)">
+                <?= $months[$i - 1] ?>
+            </li>
+          <?php endfor; ?>
           </ul>
         </div>
         <!-- MONTH SET END -->
@@ -586,452 +624,109 @@
         <div class="beasiswa-container">
           <h3>Daftar Beasiswa</h3>
           <div class="beasiswa-list">
-            <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card-md btn-detail-beasiswa"
-              data-category="sweden"
-            >
-              <div class="card-content">
-                <div class="head-card">
-                  <div class="degrees">
-                    <span class="degree">S3</span>
-                  </div>
-                  <div class="bookmark">
-                    <div class="bookmark-btn">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#333332"
-                        fill="none"
-                      >
-                        <path
-                          d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
+            <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
+              <a
+                href="detailBeasiswa.php?id=<?= $row['beasiswa_id'] ?>"
+                class="beasiswa-card-md btn-detail-beasiswa" data-jenjang="<?= $row['jenjang_beasiswa'] ?>" data-tipe="<?= $row['tipe_pendanaan'] ?>" data-negara="<?= $row['lokasi_beasiswa'] ?>" data-univ="<?= $row['asal_instansi'] ?>">
+              >
+                <div class="card-content">
+                  <div class="head-card">
+                        <div class="degrees">
+                      <?php 
+                      $jenjang = explode(',', $row['jenjang_beasiswa']); 
+                      foreach ($jenjang as $j): ?>
+                          <span class="degree"><?= htmlspecialchars(trim($j)) ?></span>
+                          <?php endforeach; ?>
+                        </div>
+                    <div class="bookmark">
+                      <div class="bookmark-btn">
+                        <!-- SVG bookmark icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#333332" fill="none">
+                          <path
+                            d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="body-card">
-                  <h2 class="title">
-                    Swedish Collegium Advanced Study Fellowship Programme 2026
-                  </h2>
-                  <p class="location">Swedia</p>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 17 Mar 2025</p>
-                  <p class="deadline">Deadline: 02 Jun 2025</p>
-                </div>
-              </div>
-            </a>
-            <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card-md btn-detail-beasiswa"
-              data-category="NTU"
-            >
-              <div class="card-content">
-                <div class="head-card">
-                  <div class="degrees">
-                    <span class="degree">S1</span>
-                    <span class="degree">S2</span>
+
+                  <div class="body-card">
+                    <h2 class="title"><?= htmlspecialchars($row['judul_beasiswa']) ?></h2>
+                    <p class="location"><?= htmlspecialchars($row['lokasi_beasiswa']) ?></p>
                   </div>
-                  <div class="bookmark">
-                    <div class="bookmark-btn">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#333332"
-                        fill="none"
-                      >
-                        <path
-                          d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
+
+                  <div class="dates">
+                    <p class="start-date">Mulai: <?= date("d M Y", strtotime($row['mulai_beasiswa'])) ?></p>
+                    <p class="deadline">Deadline: <?= date("d M Y", strtotime($row['penutupan_beasiswa'])) ?></p>
                   </div>
                 </div>
-                <div class="body-card">
-                  <h2 class="title">NTU Singapore Global Connect Fellowship</h2>
-                  <p class="location">Singapura</p>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 21 Jan 2025</p>
-                  <p class="deadline">Deadline: 11 Feb 2025</p>
-                </div>
-              </div>
-            </a>
-            <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card-md btn-detail-beasiswa"
-              data-category="gyeongsang"
-            >
-              <div class="card-content">
-                <div class="head-card">
-                  <div class="degrees">
-                    <span class="degree">S2</span>
-                    <span class="degree">S3</span>
-                  </div>
-                  <div class="bookmark">
-                    <div class="bookmark-btn">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#333332"
-                        fill="none"
-                      >
-                        <path
-                          d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <h2 class="title">
-                    Gyeongsang National University Scholarship
-                  </h2>
-                  <p class="location">Korea Selatan</p>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 01 Mar 2025</p>
-                  <p class="deadline">Deadline: 28 Mar 2025</p>
-                </div>
-              </div>
-            </a>
-            <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card-md btn-detail-beasiswa"
-              data-category="fulbright"
-            >
-              <div class="card-content">
-                <div class="head-card">
-                  <div class="degrees">
-                    <span class="degree">S1</span>
-                    <span class="degree">S2</span>
-                  </div>
-                  <div class="bookmark">
-                    <div class="bookmark-btn">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#333332"
-                        fill="none"
-                      >
-                        <path
-                          d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <h2 class="title">
-                    Fulbright Foreign Language Teaching Assistant (FLTA)
-                  </h2>
-                  <p class="location">Amerika Serikat</p>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 10 Mar 2025</p>
-                  <p class="deadline">Deadline: 15 Apr 2025</p>
-                </div>
-              </div>
-            </a>
-            <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card-md btn-detail-beasiswa"
-              data-category="matsumae"
-            >
-              <div class="card-content">
-                <div class="head-card">
-                  <div class="degrees">
-                    <span class="degree">S3</span>
-                  </div>
-                  <div class="bookmark">
-                    <div class="bookmark-btn">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        color="#333332"
-                        fill="none"
-                      >
-                        <path
-                          d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <h2 class="title">
-                    Matsumae International Foundation Research S3 Fellowship
-                    2026
-                  </h2>
-                  <p class="location">Jepang</p>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 01 Mar 2025</p>
-                  <p class="deadline">Deadline: 30 Jun 2025</p>
-                </div>
-              </div>
-            </a>
+              </a>
           </div>
           <div class="beasiswa-list">
             <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card btn-detail-beasiswa"
-              data-category="sweden"
-            >
-              <div class="card-info">
-                <div class="degrees">
-                  <span class="degree">S3</span>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 17 Mar 2025</p>
-                  <p class="deadline">Deadline: 02 Jun 2025</p>
-                </div>
-              </div>
-              <div class="card-content">
-                <div class="head-card">
-                  <h2 class="title">
-                    Swedish Collegium Advanced Study Fellowship Programme 2026
-                  </h2>
-                  <p class="location">Swedia</p>
-                </div>
-                <div class="bookmark">
-                  <div class="bookmark-btn">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
+                  href="detailBeasiswa.php?id=<?= $row['beasiswa_id'] ?>"
+                  class="beasiswa-card btn-detail-beasiswa" data-jenjang="<?= $row['jenjang_beasiswa'] ?>" data-tipe="<?= $row['tipe_pendanaan'] ?>" data-negara="<?= $row['lokasi_beasiswa'] ?>" data-univ="<?= $row['asal_instansi'] ?>"
+                >
+                  <div class="card-info">
+                        <div class="degrees">
+                      <?php 
+                      $jenjang = explode(',', $row['jenjang_beasiswa']); 
+                      foreach ($jenjang as $j): ?>
+                          <span class="degree"><?= htmlspecialchars(trim($j)) ?></span>
+                          <?php endforeach; ?>
+                        </div>
+                    <div class="dates">
+                      <p class="start-date">Mulai: <?= date("d M Y", strtotime($row['mulai_beasiswa'])) ?></p>
+                      <p class="deadline">Deadline: <?= date("d M Y", strtotime($row['penutupan_beasiswa'])) ?></p>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </a>
-            <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card btn-detail-beasiswa"
-              data-category="NTU"
-            >
-              <div class="card-info">
-                <div class="degrees">
-                  <span class="degree">S1</span>
-                  <span class="degree">S2</span>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 21 Jan 2025</p>
-                  <p class="deadline">Deadline: 11 Feb 2025</p>
-                </div>
-              </div>
-              <div class="card-content">
-                <div class="head-card">
-                  <h2 class="title">NTU Singapore Global Connect Fellowship</h2>
-                  <p class="location">Singapura</p>
-                </div>
-                <div class="bookmark">
-                  <div class="bookmark-btn">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
+                  <div class="card-content">
+                    <div class="head-card">
+                      <h2 class="title"><?= htmlspecialchars($row['judul_beasiswa']) ?></h2>
+                      <p class="location"><?= htmlspecialchars($row['lokasi_beasiswa']) ?></p>
+                    </div>
+                    <div class="bookmark">
+                      <div class="bookmark-btn">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          color="#333332"
+                          fill="none"
+                        >
+                          <path
+                            d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </a>
-            <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card btn-detail-beasiswa"
-              data-category="gyeongsang"
-            >
-              <div class="card-info">
-                <div class="degrees">
-                  <span class="degree">S2</span>
-                  <span class="degree">S3</span>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 01 Mar 2025</p>
-                  <p class="deadline">Deadline: 28 Mar 2025</p>
-                </div>
-              </div>
-              <div class="card-content">
-                <div class="head-card">
-                  <h2 class="title">
-                    Gyeongsang National University Scholarship
-                  </h2>
-                  <p class="location">Korea Selatan</p>
-                </div>
-                <div class="bookmark">
-                  <div class="bookmark-btn">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </a>
-            <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card btn-detail-beasiswa"
-              data-category="fulbright"
-            >
-              <div class="card-info">
-                <div class="degrees">
-                  <span class="degree">S1</span>
-                  <span class="degree">S2</span>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 10 Mar 2025</p>
-                  <p class="deadline">Deadline: 15 Apr 2025</p>
-                </div>
-              </div>
-              <div class="card-content">
-                <div class="head-card">
-                  <h2 class="title">
-                    Fulbright Foreign Language Teaching Assistant (FLTA)
-                  </h2>
-                  <p class="location">Amerika Serikat</p>
-                </div>
-                <div class="bookmark">
-                  <div class="bookmark-btn">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </a>
-            <a
-              href="detailBeasiswa.html"
-              class="beasiswa-card btn-detail-beasiswa"
-              data-category="matsumae"
-            >
-              <div class="card-info">
-                <div class="degrees">
-                  <span class="degree">S3</span>
-                </div>
-                <div class="dates">
-                  <p class="start-date">Mulai: 01 Mar 2025</p>
-                  <p class="deadline">Deadline: 30 Jun 2025</p>
-                </div>
-              </div>
-              <div class="card-content">
-                <div class="head-card">
-                  <h2 class="title">
-                    Matsumae International Foundation Research S3 Fellowship
-                    2026
-                  </h2>
-                  <p class="location">Jepang</p>
-                </div>
-                <div class="bookmark">
-                  <div class="bookmark-btn">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </a>
+                </a>
+            <?php endwhile; ?>
           </div>
 
           <div class="pagination">
-            <button class="pagination-btn active" data-page="1">1</button>
-            <button class="pagination-btn" data-page="2">2</button>
-            <button class="pagination-btn" data-page="3">3</button>
-            <button class="pagination-btn next" id="next-page">
-              <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
+          <?php if ($page > 1): ?>
+            <a href="?page=<?= $page - 1 ?>" class="pagination-btn">&laquo;</a>
+          <?php endif; ?>
+
+          <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="?page=<?= $i ?>" <?= $i === $page ? 'style="font-weight: bold; background-color: #205781; color: white;"' : '' ?> class="pagination-btn"><?= $i ?></a>
+          <?php endfor; ?>
+
+          <?php if ($page < $totalPages): ?>
+            <a href="?page=<?= $page + 1 ?>" class="pagination-btn">&raquo;</a>
+          <?php endif; ?>
+        </div>
         </div>
         <!-- DAFTAR BEASISWA END -->
       </div>

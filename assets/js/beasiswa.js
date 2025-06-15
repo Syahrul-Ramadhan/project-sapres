@@ -38,3 +38,45 @@ document.addEventListener("DOMContentLoaded", function () {
     localStorage.removeItem("selectedType");
   }
 });
+
+// Ambil elemen tahun dari teks h1
+let currentYear = parseInt(
+  document.getElementById("selected-year").textContent
+);
+let currentMonth =
+  parseInt(
+    document.querySelector(".month-item.active")?.getAttribute("data-month")
+  ) || new Date().getMonth() + 1;
+
+function changeYear(diff) {
+  currentYear += diff;
+  redirectToFilter();
+}
+
+function changeMonth(month) {
+  currentMonth = month;
+  redirectToFilter();
+}
+
+function redirectToFilter() {
+  const url = new URL(window.location.href);
+  url.searchParams.set("year", currentYear);
+  url.searchParams.set("month", currentMonth);
+  url.searchParams.delete("page"); // Reset ke halaman 1 saat filter berubah
+  window.location.href = url.toString();
+}
+
+// Event untuk tombol tahun
+document
+  .querySelector(".prev-btn")
+  ?.addEventListener("click", () => changeYear(-1));
+document
+  .querySelector(".next-btn")
+  ?.addEventListener("click", () => changeYear(1));
+
+// Event untuk bulan
+document.querySelectorAll(".month-item").forEach((item) => {
+  item.addEventListener("click", () => {
+    changeMonth(parseInt(item.getAttribute("data-month")));
+  });
+});

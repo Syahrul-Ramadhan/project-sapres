@@ -14,6 +14,58 @@ closeFilter.addEventListener("click", () => {
   closeFilter.classList.remove("active");
 });
 
+// filter.js
+document.addEventListener("DOMContentLoaded", function () {
+  const cards = document.querySelectorAll(".beasiswa-card");
+
+  const jenjangCheckboxes = document.querySelectorAll(".filter-jenjang");
+  const tipeCheckboxes = document.querySelectorAll(
+    ".filter-tipe input[type='checkbox']"
+  );
+  const negaraInput = document.getElementById("filter-negara");
+  const univInput = document.getElementById("filter-univ");
+
+  const filterElements = [
+    ...jenjangCheckboxes,
+    ...tipeCheckboxes,
+    negaraInput,
+    univInput,
+  ];
+
+  filterElements.forEach((el) => el.addEventListener("input", applyFilters));
+  filterElements.forEach((el) => el.addEventListener("change", applyFilters));
+
+  function applyFilters() {
+    const selectedJenjang = Array.from(jenjangCheckboxes)
+      .filter((cb) => cb.checked)
+      .map((cb) => cb.value);
+
+    const selectedTipe = Array.from(tipeCheckboxes)
+      .filter((cb) => cb.checked)
+      .map((cb) => cb.value);
+
+    const negaraFilter = negaraInput.value.trim().toLowerCase();
+    const univFilter = univInput.value.trim().toLowerCase();
+
+    cards.forEach((card) => {
+      const jenjang = card.dataset.jenjang;
+      const tipe = card.dataset.tipe;
+      const negara = card.dataset.negara.toLowerCase();
+      const univ = card.dataset.univ.toLowerCase();
+
+      const matchJenjang =
+        selectedJenjang.length === 0 || selectedJenjang.includes(jenjang);
+      const matchTipe =
+        selectedTipe.length === 0 || selectedTipe.includes(tipe);
+      const matchNegara = negara.includes(negaraFilter);
+      const matchUniv = univ.includes(univFilter);
+
+      const show = matchJenjang && matchTipe && matchNegara && matchUniv;
+      card.style.display = show ? "block" : "none";
+    });
+  }
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   // Bookmark functionality
   const bookmarkButtons = document.querySelectorAll(".bookmark-btn");
