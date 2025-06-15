@@ -154,16 +154,20 @@
         $queryTopik = "SELECT f.*, u.username 
                       FROM forum f
                       JOIN user u ON f.user_id = u.user_id
-                      WHERE f.forum_id = $forum_id";
-        $topik = mysqli_fetch_assoc(mysqli_query($koneksi, $queryTopik));
+                      WHERE f.forum_id = :forum_id";
+        $stmtTopik = $koneksi->prepare($queryTopik);
+        $stmtTopik->execute(['forum_id' => $forum_id]);
+        $topik = $stmtTopik->fetch();
 
         // Ambil semua balasan dari post utama
         $queryBalasan = "SELECT f.*, u.username 
                         FROM forum f 
                         JOIN user u ON f.user_id = u.user_id
-                        WHERE f.parent_id = $forum_id
+                        WHERE f.parent_id = :forum_id
                         ORDER BY f.waktu_postingan ASC";
-        $balasanResult = mysqli_query($koneksi, $queryBalasan);
+        $stmtBalasan = $koneksi->prepare($queryBalasan);
+        $stmtBalasan->execute(['forum_id' => $forum_id]);
+        $balasanResult = $stmtBalasan->fetchAll(PDO::FETCH_ASSOC);
 
         if (!$topik) {
           echo "<p>Topik tidak ditemukan.</p>";
@@ -183,17 +187,18 @@
             </div>
             <div class="komentar-section">
               <?php
-              $qKomentar = mysqli_query($koneksi, "
-                SELECT f.*, u.username 
+              $queryKomentar = "SELECT f.*, u.username 
                 FROM forum f 
                 JOIN user u ON f.user_id = u.user_id 
-                WHERE f.parent_id = '$forum_id'
-                ORDER BY f.waktu_postingan ASC
-              ");
-              while ($kom = mysqli_fetch_assoc($qKomentar)) {
+                WHERE f.parent_id = :forum_id
+                ORDER BY f.waktu_postingan ASC";
+              $stmtKomentar = $koneksi->prepare($queryKomentar);
+              $stmtKomentar->execute(['forum_id' => $forum_id]);
+              $komentarList = $stmtKomentar->fetchAll(PDO::FETCH_ASSOC);
+              foreach ($komentarList as $kom) {
                 echo "<div class='komentar'>
                         <p><strong>" . htmlspecialchars($kom['username']) . ":</strong> " . htmlspecialchars($kom['pesan']) . "</p>
-                        <small>" . $kom['waktu_postingan'] . "</small>
+                        <small>" . htmlspecialchars($kom['waktu_postingan']) . "</small>
                       </div>";
               }
               ?>

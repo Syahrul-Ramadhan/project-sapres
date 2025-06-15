@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 $action = $_REQUEST['action'] ?? '';
 
-if ($koneksi->connect_error) {
+if (mysqli_connect_errno()) {
     echo json_encode(['success' => false, 'message' => 'Koneksi database gagal']);
     exit;
 }
@@ -24,14 +24,11 @@ switch ($action) {
         }
 
         $stmt = $koneksi->prepare("INSERT INTO forum (user_id, kategori, pesan, id_penanya, tanggal_pesan) VALUES (?, ?, ?, ?, NOW())");
-        $stmt->bind_param("issi", $admin_user_id, $kategori, $pesan, $admin_user_id);
-        
-        if ($stmt->execute()) {
+        if ($stmt->execute([$admin_user_id, $kategori, $pesan, $admin_user_id])) {
             echo json_encode(['success' => true, 'message' => 'Pengumuman berhasil dikirim.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal mengirim pengumuman.']);
         }
-        $stmt->close();
         break;
 
     // ---- READ ----
@@ -41,20 +38,17 @@ switch ($action) {
 
         // Ambil post utama
         $stmt_main = $koneksi->prepare("SELECT f.*, u.username FROM forum f JOIN user u ON f.user_id = u.user_id WHERE f.forum_id = ?");
-        $stmt_main->bind_param("i", $topic_id);
-        $stmt_main->execute();
-        $result_main = $stmt_main->get_result();
-        if ($result_main->num_rows > 0) {
+        $stmt_main->execute([$topic_id]);
+        $result_main = $stmt_main->fetch();
+        if ($result_main) {
             $response['success'] = true;
-            $response['main_post'] = $result_main->fetch_assoc();
+            $response['main_post'] = $result_main;
         }
 
-        // Ambil semua balasan
+        // Ambil semua balasan menggunakan fetchAll()
         $stmt_replies = $koneksi->prepare("SELECT f.*, u.username FROM forum f JOIN user u ON f.user_id = u.user_id WHERE f.parent_id = ? ORDER BY f.waktu_postingan ASC");
-        $stmt_replies->bind_param("i", $topic_id);
-        $stmt_replies->execute();
-        $result_replies = $stmt_replies->get_result();
-        $response['replies'] = $result_replies->fetch_all(MYSQLI_ASSOC);
+        $stmt_replies->execute([$topic_id]);
+        $response['replies'] = $stmt_replies->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode($response);
         break;
@@ -68,13 +62,11 @@ switch ($action) {
              exit;
         }
         $stmt = $koneksi->prepare("INSERT INTO forum (user_id, pesan, parent_id) VALUES (?, ?, ?)");
-        $stmt->bind_param("isi", $admin_user_id, $pesan, $parent_id);
-        if ($stmt->execute()) {
+        if ($stmt->execute([$admin_user_id, $pesan, $parent_id])) {
             echo json_encode(['success' => true, 'message' => 'Balasan berhasil dikirim.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal mengirim balasan.']);
         }
-        $stmt->close();
         break;
 
 
@@ -83,46 +75,39 @@ switch ($action) {
         $topic_id = $_POST['topic_id'] ?? 0;
         // Hapus parent dan semua children-nya
         $stmt = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ? OR parent_id = ?");
-        $stmt->bind_param("ii", $topic_id, $topic_id);
-        if ($stmt->execute()) {
+        if ($stmt->execute([$topic_id, $topic_id])) {
             echo json_encode(['success' => true, 'message' => 'Seluruh diskusi berhasil dihapus.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal menghapus diskusi.']);
         }
-        $stmt->close();
         break;
 
     case 'delete_message':
         $message_id = $_POST['message_id'] ?? 0;
         // Cek dulu apakah ini parent post
         $stmt_check = $koneksi->prepare("SELECT parent_id FROM forum WHERE forum_id = ?");
-        $stmt_check->bind_param("i", $message_id);
-        $stmt_check->execute();
-        $result_check = $stmt_check->get_result()->fetch_assoc();
+        $stmt_check->execute([$message_id]);
+        $result_check = $stmt_check->fetch();
 
         if ($result_check['parent_id'] === NULL) {
             // Jika ini parent, hapus seluruh diskusi
             $stmt = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ? OR parent_id = ?");
-            $stmt->bind_param("ii", $message_id, $message_id);
+            $stmt = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ? OR parent_id = ?");
+            $stmt->execute([$message_id, $message_id]);
         } else {
             // Jika ini hanya balasan, hapus satu pesan saja
             $stmt = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ?");
-            $stmt->bind_param("i", $message_id);
+            $stmt->execute([$message_id]);
         }
         
-        if ($stmt->execute()) {
+        if ($stmt) {
             echo json_encode(['success' => true, 'message' => 'Pesan berhasil dihapus.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Gagal menghapus pesan.']);
         }
-        $stmt_check->close();
-        $stmt->close();
-        break;
 
     default:
         echo json_encode(['success' => false, 'message' => 'Aksi tidak valid.']);
         break;
 }
-
-$koneksi->close();
 ?>

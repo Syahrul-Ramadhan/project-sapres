@@ -11,10 +11,12 @@
     ];
 
     $sql_counts = "SELECT kategori, COUNT(*) as total FROM forum GROUP BY kategori";
-    $result_counts = mysqli_query($koneksi, $sql_counts);
+    $stmt_counts = $koneksi->prepare($sql_counts);
+    $stmt_counts->execute();
+    $result_counts = $stmt_counts->fetchAll(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($result_counts) > 0) {
-        while ($row = mysqli_fetch_assoc($result_counts)) {
+    if (count($result_counts) > 0) {
+        foreach ($result_counts as $row) {
             if (isset($jumlahKategori[$row['kategori']])) {
                 $jumlahKategori[$row['kategori']] = $row['total'];
             }
@@ -234,14 +236,14 @@
                           FROM forum AS f 
                           JOIN user AS u ON f.user_id = u.user_id 
                           WHERE f.parent_id IS NULL
-                          ORDER BY f.waktu_postingan DESC
-                          LIMIT 8"; // Anda bisa ganti angka 10 jika ingin menampilkan jumlah berbeda
-
-                  $result = mysqli_query($koneksi, $sql);
+                          ORDER BY f.waktu_postingan DESC";
+                  $stmt = $koneksi->prepare($sql);
+                  $stmt->execute();
+                  $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                   // 4. TAMPILKAN DATA (Looping)
-                  if (mysqli_num_rows($result) > 0) {
-                      while($row = mysqli_fetch_assoc($result)) {
+                  if (count($result) > 0) {
+                      foreach($result as $row) {
                           $tanggal_formatted = date('d M Y', strtotime($row['tanggal_pesan']));
               ?>
                           <div class="question-items clickable-row" data-topic-id="<?php echo $row['forum_id']; ?>">
@@ -249,7 +251,7 @@
                               <span class="date"><?php echo $tanggal_formatted; ?></span>
                           </div>
               <?php
-                      } // Akhir loop while
+                      } // Akhir loop foreach
                   } else {
                       echo "<p style='text-align: center; color: #888;'>Belum ada pertanyaan terbaru di forum.</p>";
                   }

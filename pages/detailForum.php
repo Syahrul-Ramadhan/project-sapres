@@ -26,11 +26,11 @@ $sql = "SELECT
         WHERE f.parent_id IS NULL
         ORDER BY f.waktu_postingan DESC";
 
-$result = mysqli_query($koneksi, $sql);
+$stmt = $koneksi->query($sql);
 
-if ($result && mysqli_num_rows($result) > 0) {
+if ($stmt && $stmt->rowCount() > 0) {
     // Gunakan logika pengelompokan yang sudah disesuaikan
-    while ($row = mysqli_fetch_assoc($result)) {
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         foreach ($categories as $key => $details) {
             if ($details['db_value'] === $row['kategori']) {
                 $forumData[$key][] = $row;

@@ -16,7 +16,12 @@ $sql = "SELECT
         WHERE f.parent_id IS NULL
         ORDER BY f.waktu_postingan DESC";
 
-$hasil_query = mysqli_query($koneksi, $sql);
+// Menyiapkan query menggunakan PDO
+$stmt = $koneksi->prepare($sql);
+$stmt->execute();
+
+// Mengambil hasil dengan fetchAll()
+$forumData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,8 +119,8 @@ $hasil_query = mysqli_query($koneksi, $sql);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($hasil_query && mysqli_num_rows($hasil_query) > 0): ?>
-                            <?php while ($data = mysqli_fetch_assoc($hasil_query)): ?>
+                        <?php if (count($forumData) > 0): ?>
+                            <?php foreach ($forumData as $data): ?>
                                 <tr class='table-content' data-id='<?php echo $data['forum_id']; ?>' style="cursor: pointer;">
                                     <td><?php echo $data['forum_id']; ?></td>
                                     <td><?php echo htmlspecialchars(substr($data['pesan'], 0, 50)) . '...'; ?></td>
@@ -127,7 +132,7 @@ $hasil_query = mysqli_query($koneksi, $sql);
                                         <a href="#" class='deletebtn delete-discussion-btn' data-id='<?php echo $data['forum_id']; ?>'>Hapus Diskusi</a>
                                     </td>
                                 </tr>
-                            <?php endwhile; ?>
+                            <?php endforeach; ?>
                         <?php else: ?>
                             <tr><td colspan="7" style="text-align: center;">Belum ada diskusi.</td></tr>
                         <?php endif; ?>
