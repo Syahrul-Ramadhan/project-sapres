@@ -405,7 +405,7 @@ ul {
   display: flex;
   flex-direction: column;
   text-align: center;
-  height: 800px;
+  height: 850px;
 }
 
 .filter-head {
@@ -608,6 +608,31 @@ ul {
   z-index: 4;
   left: 0;
 }
+
+.filter-footer {
+  padding: 12px 0 18px;
+  display: flex;
+  gap: 12px;
+}
+
+.btn-apply-filter {
+  background-color: var(--Primary-color);
+  color: white;
+  border: none;
+}
+.btn-apply-filter:hover {
+  background-color: #1a4667;
+}
+
+.btn-clear-filter {
+  border: 1px solid #ddd;
+  background-color: white;
+  color: #333;
+}
+.btn-clear-filter:hover {
+  background-color: #f0f0f0;
+}
+
 /* ---------- FILTER END ---------- */
 
 /* ---------- YEAR AND MONTH SET START ---------- */

@@ -32,16 +32,264 @@ ul {
 /* ---------- BEASISWA START ---------- */
 
 .main-container {
-  margin-left: 250px;
+  margin-left: 280px;
 }
 
 .main-container .tittle {
-  margin-left: 30px;
   padding-top: 30px;
   font-weight: 700;
   font-size: 24px;
   color: var(--Primary-color);
   margin-bottom: 24px;
+}
+
+.beasiswa-content-header {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+#searchBeasiswa {
+  width: 400px;
+  padding: 8px 12px;
+  border: 1px solid #cdcbc8;
+  border-radius: 12px;
+  font-size: 16px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+}
+
+#searchBeasiswa:focus {
+  outline: none;
+  border-color: var(--second-font-color);
+}
+
+.crud-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-crud {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background-color: var(--Primary-color);
+  color: #fff;
+  font-weight: 500;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-crud:hover {
+  background-color: #548db8;
+}
+
+.beasiswa-content {
+  margin-right: 30px;
+  margin-bottom: 30px;
+}
+
+.beasiswa-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.beasiswa-table th,
+.beasiswa-table td {
+  padding: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.beasiswa-table th {
+  font-weight: 600;
+}
+
+.beasiswa-table .table-content {
+  border-top: 1px solid #cdcbc8;
+  border-bottom: 1px solid #cdcbc8;
+  cursor: pointer;
+}
+
+.beasiswa-table th {
+  border-top: 1px solid #cdcbc8;
+  border-bottom: 1px solid #cdcbc8;
+}
+
+.beasiswa-table .table-content .first-col,
+.beasiswa-table th:first-child {
+  border-left: 1px solid #cdcbc8;
+}
+
+.beasiswa-table .table-content .last-col,
+.beasiswa-table th:last-child {
+  border-right: 1px solid #cdcbc8;
+}
+
+.beasiswa-table td a {
+  text-decoration: none;
+}
+
+.beasiswa-table .table-content:hover {
+  background-color: var(--fill-color);
+}
+
+.beasiswa-table .table-content .editbtn {
+  padding: 4px 12px;
+  background-color: var(--Secondary-color);
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+  color: white;
+}
+
+.beasiswa-table .table-content .editbtn:hover {
+  background-color: #3a7f8b;
+}
+
+.beasiswa-table .table-content .deletebtn {
+  padding: 4px 12px;
+  background-color: #d9534f;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+  color: white;
+}
+
+.beasiswa-table .table-content .deletebtn:hover {
+  background-color: #c9302c;
+}
+
+.beasiswa-pop-up {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pop-up-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  height: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+  overflow: auto;
+}
+
+.pop-up-content .close {
+  cursor: pointer;
+  font-size: 24px;
+  color: #c9302c;
+}
+
+.table-add {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+}
+
+.table-add form {
+  display: flex;
+}
+
+.beasiswa-pop-up h2 {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.table-add {
+  width: 100%;
+  border-collapse: collapse;
+  gap: 12px;
+}
+
+.beasiswa-pop-up td {
+  padding: 10px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="url"],
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  margin: 2px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+}
+textarea {
+  height: 100px;
+}
+
+.beasiswa-pop-up button[type="submit"] {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.beasiswa-pop-up button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.form-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.form-part-1,
+.form-part-2 {
+  flex: 1;
+}
+
+.note {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px dashed #ccc;
+  font-size: 14px;
+  color: #333;
+}
+
+#beasiswaForm {
+  display: flex;
 }
 
 /* ---------- BEASISWA END ---------- */

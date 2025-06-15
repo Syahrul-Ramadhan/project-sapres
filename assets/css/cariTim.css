@@ -89,11 +89,15 @@ ul {
   -ms-border-radius: 12px;
   -o-border-radius: 12px;
   flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-fteam .head-card {
   padding: 12px;
   border-bottom: 2px solid #999998;
+  width: 100%;
 }
 
 .head-card h3 {
@@ -126,22 +130,13 @@ ul {
   justify-content: space-between;
   gap: 12px;
   margin: 16px 0;
+  width: 100%;
 }
 
 .foot-card .profile-team {
   display: flex;
   align-items: center;
   padding: 0 12px;
-  gap: 12px;
-}
-
-.foot-card .profile-team img {
-  width: 35px;
-  border-radius: 50%;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  -ms-border-radius: 50%;
-  -o-border-radius: 50%;
 }
 
 .profile-team .detail-info {
@@ -172,6 +167,51 @@ ul {
 .foot-card .card-btn:hover {
   background-color: #1a4667;
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background-color: white;
+  border: 1px solid #777776;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--base-font-color);
+  transition: all 0.3s ease;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.pagination-btn:hover {
+  background-color: #d5e6e7;
+  color: var(--Primary-color);
+  border-color: var(--Primary-color);
+}
+
+.pagination-btn.active {
+  background-color: var(--Primary-color);
+  color: white;
+  border-color: var(--Primary-color);
+}
+
+.pagination-btn.next {
+  width: auto;
+  padding: 0 12px;
+}
+
 /* ---------- TEAM LIST END ---------- */
 
 /* ---------- MAIN END ---------- */

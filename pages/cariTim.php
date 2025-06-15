@@ -13,6 +13,25 @@
     <link rel="stylesheet" href="../assets/css/cariTim.css" />
   </head>
   <body>
+
+    <?php
+      include "php/koneksi.php";
+      
+      // Pagination setup
+      $limit = 9;
+      $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+      if ($page < 1) $page = 1;
+      $offset = ($page - 1) * $limit;
+
+      $sql = "SELECT * FROM tim LIMIT $limit OFFSET $offset";
+      $hasil_query = mysqli_query($koneksi, $sql);
+
+      // Query untuk hitung total data
+      $totalResult = $koneksi->query("SELECT COUNT(*) as total FROM tim");
+      $totalData = $totalResult->fetch_assoc()['total'];
+      $totalPages = ceil($totalData / $limit);
+    ?>
+
     <!-- NAVBAR START -->
     <nav class="navbar">
       <div class="nav-responsive">
@@ -468,10 +487,15 @@
           <!-- FILTER BTN END -->
           <div class="team-wrap">
             <div class="team-list">
-              <div class="card-fteam">
+              <?php while ($data = $hasil_query->fetch_assoc()): ?>
+              <div class="card-fteam" data-nama="<?= $data['nama_tim'] ?>" data-judul="<?= $data['judul_lomba'] ?>"
+                data-jenis="<?= $data['tipe_lomba'] ?>" data-instansi="<?= $data['asal_instansi'] ?>"
+                data-deskripsi="<?= $data['deskripsi'] ?>" data-syarat="<?= $data['syarat_ketentuan'] ?>"
+                data-created="<?= date('d M Y', strtotime($data['created_at'])) ?>"
+                data-cekktm="<?= $data['cek_ktm'] ?>">
                 <div class="head-card">
-                  <h3>UI/UX Designer</h3>
-                  <p>Techcomfest Competition 2026</p>
+                  <h3><?= htmlspecialchars($data['tipe_lomba'])?></h3>
+                  <p><?= htmlspecialchars($data['judul_lomba']) ?></p>
                   <div class="info-uni">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -494,432 +518,40 @@
                         stroke-width="1.5"
                       />
                     </svg>
-                    <span>Universitas Pendidikan Indonesia</span>
+                    <span><?= htmlspecialchars($data['asal_instansi']) ?></span>
                   </div>
                 </div>
                 <div class="body-card">
                   <p>
-                    Saya membutuhkan seseorang yang mahir dalam merancang desain
-                    antarmuka, untuk bergabung dalam mengikuti lomba Techomfest
-                    di Semarang
+                    <?= htmlspecialchars($data['deskripsi']) ?>
                   </p>
                 </div>
                 <div class="foot-card">
                   <div class="profile-team">
-                    <img
-                      src="../assets/img/Foto profile tim/hexa.png"
-                      alt="tim the hexa"
-                    />
                     <div class="detail-info">
-                      <span class="team-name">The Hexa</span>
-                      <span class="date-team">20 Okt 2025</span>
+                      <span class="team-name"><?= htmlspecialchars($data['nama_tim']) ?></span>
+                      <span class="date-team"><?= htmlspecialchars(date('d M Y', strtotime($data['created_at']))) ?></span>
                     </div>
                   </div>
-                  <div class="card-btn">Bergabung</div>
+                  <div class="card-btn" onclick="openPopUp(this)">Bergabung</div>
                 </div>
               </div>
-              <div class="card-fteam">
-                <div class="head-card">
-                  <h3>UI/UX Designer</h3>
-                  <p>Techcomfest Competition 2026</p>
-                  <div class="info-uni">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                    <span>Universitas Pendidikan Indonesia</span>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <p>
-                    Saya membutuhkan seseorang yang mahir dalam merancang desain
-                    antarmuka, untuk bergabung dalam mengikuti lomba Techomfest
-                    di Semarang
-                  </p>
-                </div>
-                <div class="foot-card">
-                  <div class="profile-team">
-                    <img
-                      src="../assets/img/Foto profile tim/hexa.png"
-                      alt="tim the hexa"
-                    />
-                    <div class="detail-info">
-                      <span class="team-name">The Hexa</span>
-                      <span class="date-team">20 Okt 2025</span>
-                    </div>
-                  </div>
-                  <div class="card-btn">Bergabung</div>
-                </div>
-              </div>
-              <div class="card-fteam">
-                <div class="head-card">
-                  <h3>UI/UX Designer</h3>
-                  <p>Techcomfest Competition 2026</p>
-                  <div class="info-uni">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                    <span>Universitas Pendidikan Indonesia</span>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <p>
-                    Saya membutuhkan seseorang yang mahir dalam merancang desain
-                    antarmuka, untuk bergabung dalam mengikuti lomba Techomfest
-                    di Semarang
-                  </p>
-                </div>
-                <div class="foot-card">
-                  <div class="profile-team">
-                    <img
-                      src="../assets/img/Foto profile tim/hexa.png"
-                      alt="tim the hexa"
-                    />
-                    <div class="detail-info">
-                      <span class="team-name">The Hexa</span>
-                      <span class="date-team">20 Okt 2025</span>
-                    </div>
-                  </div>
-                  <div class="card-btn">Bergabung</div>
-                </div>
-              </div>
-              <div class="card-fteam">
-                <div class="head-card">
-                  <h3>UI/UX Designer</h3>
-                  <p>Techcomfest Competition 2026</p>
-                  <div class="info-uni">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                    <span>Universitas Pendidikan Indonesia</span>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <p>
-                    Saya membutuhkan seseorang yang mahir dalam merancang desain
-                    antarmuka, untuk bergabung dalam mengikuti lomba Techomfest
-                    di Semarang
-                  </p>
-                </div>
-                <div class="foot-card">
-                  <div class="profile-team">
-                    <img
-                      src="../assets/img/Foto profile tim/hexa.png"
-                      alt="tim the hexa"
-                    />
-                    <div class="detail-info">
-                      <span class="team-name">The Hexa</span>
-                      <span class="date-team">20 Okt 2025</span>
-                    </div>
-                  </div>
-                  <div class="card-btn">Bergabung</div>
-                </div>
-              </div>
-              <div class="card-fteam">
-                <div class="head-card">
-                  <h3>UI/UX Designer</h3>
-                  <p>Techcomfest Competition 2026</p>
-                  <div class="info-uni">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                    <span>Universitas Pendidikan Indonesia</span>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <p>
-                    Saya membutuhkan seseorang yang mahir dalam merancang desain
-                    antarmuka, untuk bergabung dalam mengikuti lomba Techomfest
-                    di Semarang
-                  </p>
-                </div>
-                <div class="foot-card">
-                  <div class="profile-team">
-                    <img
-                      src="../assets/img/Foto profile tim/hexa.png"
-                      alt="tim the hexa"
-                    />
-                    <div class="detail-info">
-                      <span class="team-name">The Hexa</span>
-                      <span class="date-team">20 Okt 2025</span>
-                    </div>
-                  </div>
-                  <div class="card-btn">Bergabung</div>
-                </div>
-              </div>
-              <div class="card-fteam">
-                <div class="head-card">
-                  <h3>UI/UX Designer</h3>
-                  <p>Techcomfest Competition 2026</p>
-                  <div class="info-uni">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                    <span>Universitas Pendidikan Indonesia</span>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <p>
-                    Saya membutuhkan seseorang yang mahir dalam merancang desain
-                    antarmuka, untuk bergabung dalam mengikuti lomba Techomfest
-                    di Semarang
-                  </p>
-                </div>
-                <div class="foot-card">
-                  <div class="profile-team">
-                    <img
-                      src="../assets/img/Foto profile tim/hexa.png"
-                      alt="tim the hexa"
-                    />
-                    <div class="detail-info">
-                      <span class="team-name">The Hexa</span>
-                      <span class="date-team">20 Okt 2025</span>
-                    </div>
-                  </div>
-                  <div class="card-btn">Bergabung</div>
-                </div>
-              </div>
-              <div class="card-fteam">
-                <div class="head-card">
-                  <h3>UI/UX Designer</h3>
-                  <p>Techcomfest Competition 2026</p>
-                  <div class="info-uni">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                    <span>Universitas Pendidikan Indonesia</span>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <p>
-                    Saya membutuhkan seseorang yang mahir dalam merancang desain
-                    antarmuka, untuk bergabung dalam mengikuti lomba Techomfest
-                    di Semarang
-                  </p>
-                </div>
-                <div class="foot-card">
-                  <div class="profile-team">
-                    <img
-                      src="../assets/img/Foto profile tim/hexa.png"
-                      alt="tim the hexa"
-                    />
-                    <div class="detail-info">
-                      <span class="team-name">The Hexa</span>
-                      <span class="date-team">20 Okt 2025</span>
-                    </div>
-                  </div>
-                  <div class="card-btn">Bergabung</div>
-                </div>
-              </div>
-              <div class="card-fteam">
-                <div class="head-card">
-                  <h3>UI/UX Designer</h3>
-                  <p>Techcomfest Competition 2026</p>
-                  <div class="info-uni">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                    <span>Universitas Pendidikan Indonesia</span>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <p>
-                    Saya membutuhkan seseorang yang mahir dalam merancang desain
-                    antarmuka, untuk bergabung dalam mengikuti lomba Techomfest
-                    di Semarang
-                  </p>
-                </div>
-                <div class="foot-card">
-                  <div class="profile-team">
-                    <img
-                      src="../assets/img/Foto profile tim/hexa.png"
-                      alt="tim the hexa"
-                    />
-                    <div class="detail-info">
-                      <span class="team-name">The Hexa</span>
-                      <span class="date-team">20 Okt 2025</span>
-                    </div>
-                  </div>
-                  <div class="card-btn">Bergabung</div>
-                </div>
-              </div>
-              <div class="card-fteam">
-                <div class="head-card">
-                  <h3>UI/UX Designer</h3>
-                  <p>Techcomfest Competition 2026</p>
-                  <div class="info-uni">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      color="#333332"
-                      fill="none"
-                    >
-                      <path
-                        d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                      />
-                    </svg>
-                    <span>Universitas Pendidikan Indonesia</span>
-                  </div>
-                </div>
-                <div class="body-card">
-                  <p>
-                    Saya membutuhkan seseorang yang mahir dalam merancang desain
-                    antarmuka, untuk bergabung dalam mengikuti lomba Techomfest
-                    di Semarang
-                  </p>
-                </div>
-                <div class="foot-card">
-                  <div class="profile-team">
-                    <img
-                      src="../assets/img/Foto profile tim/hexa.png"
-                      alt="tim the hexa"
-                    />
-                    <div class="detail-info">
-                      <span class="team-name">The Hexa</span>
-                      <span class="date-team">20 Okt 2025</span>
-                    </div>
-                  </div>
-                  <div class="card-btn">Bergabung</div>
-                </div>
-              </div>
+              <?php endwhile; ?>
             </div>
           </div>
+        </div>
+                <div class="pagination">
+          <?php if ($page > 1): ?>
+            <a href="?page=<?= $page - 1 ?>" class="pagination-btn">&laquo;</a>
+          <?php endif; ?>
+
+          <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="?page=<?= $i ?>" <?= $i === $page ? 'style="font-weight: bold; background-color: #205781; color: white;"' : '' ?> class="pagination-btn"><?= $i ?></a>
+          <?php endfor; ?>
+
+          <?php if ($page < $totalPages): ?>
+            <a href="?page=<?= $page + 1 ?>" class="pagination-btn">&raquo;</a>
+          <?php endif; ?>
         </div>
         <!-- DAFTAR TIM END -->
       </div>
@@ -951,15 +583,14 @@
             </svg>
           </div>
         </div>
-        <img src="../assets/img/Foto profile tim/hexa.png" alt="Hexa" />
         <div class="detail-info-team">
-          <span class="title">UI/UX Designer</span>
-          <span class="lomba">Techcomfest 2026</span>
-          <span class="univ">Universitas Pendidikan Indonesia</span>
+          <span class="title" id="pop-up-title">UI/UX Designer</span>
+          <span class="lomba" id="pop-up-lomba">Techcomfest 2026</span>
+          <span class="univ" id="pop-up-univ">Universitas Pendidikan Indonesia</span>
         </div>
         <div class="req">
           <h4>Syarat dan Ketentuan:</h4>
-          <ul>
+          <ul id="pop-up-syarat">
             <li>Mahasiswa Universitas Pendidikan Indonesia</li>
             <li>Semester 1-5</li>
           </ul>
@@ -984,8 +615,54 @@
     </div>
     <!-- POP UP JOIN TEAM END -->
 
+    <!-- CREATE TEAM START --> 
+    <div class="create-team-container">
+      <div class="create-team-content">
+        <div class="close-create-team">
+          <div class="close-create-team-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              color="#333332"
+              fill="none"
+            >
+              <path
+                d="M19.0005 4.99988L5.00049 18.9999M5.00049 4.99988L19.0005 18.9999"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+        </div>
+        <h3>Buat Tim Baru</h3>
+        <form action="" method="post" id="createTeamForm">
+          <label for="nama_tim">Nama Tim</label>
+          <input type="text" id="nama_tim" name="nama_tim" required />
+          <label for="competitionTitle">Judul Lomba</label>
+          <input type="text" id="competitionTitle" name="competitionTitle" required />
+          <label for="competitionType">Tipe Lomba</label>
+          <select id="competitionType" name="competitionType" required>
+            <option value="">Pilih Tipe Lomba</option>
+            <option value="Hackathon">Hackathon</option>
+            <option value="Desain Grafis">Desain Grafis</option>
+            <option value="UI/UX Design">UI/UX Design</option>
+          </select>
+          <label for="institution">Asal Instansi</label>
+          <input type="text" id="institution" name="institution" required />
+          <label for="description">Deskripsi Tim</label>
+          <textarea id="description" name="description" rows="4" required></textarea>
+          <button type="submit" class="btn btn-create-team">Buat Tim</button>
+        </form>
+      </div>
+    <!-- CREATE TEAM END -->
+
     <!-- FOOTER START -->
-    <?php include 'php/footer.php'; ?>
+    <?php 
+    include 'php/footer.php'; ?>
     <!-- FOOTER END -->
     <!-- Java Script -->
     <script src="../assets/js/main.js"></script>
