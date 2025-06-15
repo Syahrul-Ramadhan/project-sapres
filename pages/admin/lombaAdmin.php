@@ -40,23 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     try {
         switch ($_POST['action']) {
             case 'add':
-                $stmt = $pdo->prepare("INSERT INTO lomba (title, organizer, description, start_date, deadline, level, scope, category, external_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $result = $stmt->execute([
-                    $_POST['title'],
-                    $_POST['organizer'],
-                    $_POST['description'] ?? '',
-                    $_POST['start_date'],
-                    $_POST['deadline'],
-                    $_POST['level'],
-                    $_POST['scope'],
-                    $_POST['category'] ?? 'Umum',
-                    $_POST['external_url'] ?? ''
-                ]);
-                echo json_encode(['success' => $result]);
-                break;
-                
-            case 'edit':
-                $stmt = $pdo->prepare("UPDATE lomba SET title = ?, organizer = ?, description = ?, start_date = ?, deadline = ?, level = ?, scope = ?, category = ?, external_url = ? WHERE id = ?");
+                $stmt = $pdo->prepare("INSERT INTO lomba (title, organizer, description, start_date, deadline, level, scope, category, external_url, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $result = $stmt->execute([
                     $_POST['title'],
                     $_POST['organizer'],
@@ -67,6 +51,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $_POST['scope'],
                     $_POST['category'] ?? 'Umum',
                     $_POST['external_url'] ?? '',
+                    $_POST['is_active'] ?? 1
+                ]);
+                echo json_encode(['success' => $result]);
+                break;
+                
+            case 'edit':
+                $stmt = $pdo->prepare("UPDATE lomba SET title = ?, organizer = ?, description = ?, start_date = ?, deadline = ?, level = ?, scope = ?, category = ?, external_url = ?, is_active = ? WHERE id = ?");
+                $result = $stmt->execute([
+                    $_POST['title'],
+                    $_POST['organizer'],
+                    $_POST['description'] ?? '',
+                    $_POST['start_date'],
+                    $_POST['deadline'],
+                    $_POST['level'],
+                    $_POST['scope'],
+                    $_POST['category'] ?? 'Umum',
+                    $_POST['external_url'] ?? '',
+                    $_POST['is_active'] ?? 1,
                     $_POST['id']
                 ]);
                 echo json_encode(['success' => $result]);
@@ -464,12 +466,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         .status-badge {
-            padding: 4px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
+            text-align: center;
+            min-width: 80px;
+            display: inline-block;
+        }
+
+        .status-badge.active {
             background: #d4edda;
             color: #155724;
+        }
+
+        .status-badge.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge.expired {
+            background: #fff3cd;
+            color: #856404;
         }
 
         .action-btns {
@@ -487,12 +505,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         .btn-edit {
-            background: #17a2b8;
-            color: white;
+            background: #ffc107;
+            color: #212529;
         }
 
         .btn-edit:hover {
-            background: #138496;
+            background: #e0a800;
         }
 
         .btn-delete {
@@ -502,50 +520,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         .btn-delete:hover {
             background: #c82333;
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 24px
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .toggle-slider {
-            background-color: #28a745;
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(26px);
         }
 
         .empty-state {
@@ -570,17 +544,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-content {
             background-color: white;
-            margin: 5% auto;
-            padding: 0;
             border-radius: 12px;
             width: 90%;
             max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
+            position: relative;
         }
 
         .modal-header {
@@ -963,15 +938,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             <label for="start_date">Tanggal Mulai *</label>
                             <input type="date" id="start_date" name="start_date" required>
                         </div>
+                        
                         <div class="form-group">
                             <label for="deadline">Deadline *</label>
                             <input type="date" id="deadline" name="deadline" required>
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="category">Kategori</label>
-                        <input type="text" id="category" name="category" placeholder="Contoh: Teknologi, Bisnis, Seni">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category">Kategori</label>
+                            <input type="text" id="category" name="category" placeholder="Contoh: Teknologi, Bisnis, Seni">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="is_active">Status *</label>
+                            <select id="is_active" name="is_active" required>
+                                <option value="1">Aktif</option>
+                                <option value="0">Tidak Aktif</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -1190,6 +1176,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const deadline = new Date(lomba.deadline);
             const isExpired = deadline < now;
             
+            // Determine status
+            let statusClass = 'inactive';
+            let statusText = 'Tidak Aktif';
+            
+            if (isExpired) {
+                statusClass = 'expired';
+                statusText = 'Berakhir';
+            } else if (lomba.is_active == 1) {
+                statusClass = 'active';
+                statusText = 'Aktif';
+            }
+            
             row.innerHTML = `
                 <td>
                     <div class="lomba-title">${escapeHtml(lomba.title)}</div>
@@ -1208,11 +1206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     </div>
                 </td>
                 <td>
-                    <label class="toggle-switch">
-                        <input type="checkbox" ${lomba.is_active == 1 ? 'checked' : ''} 
-                               onchange="toggleStatus(${lomba.id}, this)">
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
                 </td>
                 <td>
                     <div class="action-btns">
@@ -1287,6 +1281,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             const modal = document.getElementById('lombaModal');
             const form = document.getElementById('lombaForm');
             
+            // Center modal
+            modal.style.display = 'flex';
+            
             if (id) {
                 // Edit mode
                 isEditing = true;
@@ -1301,8 +1298,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 form.reset();
                 document.getElementById('lombaId').value = '';
             }
-            
-            modal.style.display = 'block';
         }
 
         function closeModal() {
@@ -1323,6 +1318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 document.getElementById('category').value = lomba.category || '';
                 document.getElementById('description').value = lomba.description || '';
                 document.getElementById('external_url').value = lomba.external_url || '';
+                document.getElementById('is_active').value = lomba.is_active;
             }
         }
 
@@ -1370,41 +1366,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         // Edit lomba
         function editLomba(id) {
             openModal(id);
-        }
-
-        // Toggle status
-        function toggleStatus(id, checkbox) {
-            const status = checkbox.checked ? 1 : 0;
-            
-            const formData = new FormData();
-            formData.append('action', 'toggle_status');
-            formData.append('id', id);
-            formData.append('status', status);
-            
-            fetch('', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update local data
-                    const lomba = lombaData.find(item => item.id == id);
-                    if (lomba) {
-                        lomba.is_active = status;
-                    }
-                    showAlert('Status berhasil diubah!', 'success');
-                } else {
-                    // Revert checkbox
-                    checkbox.checked = !checkbox.checked;
-                    showAlert('Gagal mengubah status', 'error');
-                }
-            })
-            .catch(error => {
-                // Revert checkbox
-                checkbox.checked = !checkbox.checked;
-                showAlert('Terjadi kesalahan jaringan', 'error');
-            });
         }
 
         // Delete lomba
@@ -1586,7 +1547,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             setTimeout(initTooltips, 100);
         };
 
-        // Export functions (if needed)
+        // Export functions (optional)
         function exportData(format = 'csv') {
             const data = filteredData.map(lomba => ({
                 'Nama Lomba': lomba.title,
@@ -1652,7 +1613,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         .lomba-organizer { color: #666; font-size: 12px; }
                         .status-badge { padding: 2px 8px; border-radius: 10px; background: #d4edda; }
                         @media print {
-                            .action-btns, .toggle-switch { display: none; }
+                            .action-btns { display: none; }
                         }
                     </style>
                 </head>
@@ -1671,6 +1632,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         // Add export and print buttons to action bar (optional)
         document.addEventListener('DOMContentLoaded', function() {
             const actionBar = document.querySelector('.action-bar');
+            
+            // Uncomment to add export and print buttons
+            /*
             const exportBtn = document.createElement('button');
             exportBtn.innerHTML = '<i class="fas fa-download"></i> Export';
             exportBtn.className = 'btn btn-secondary';
@@ -1683,10 +1647,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             printBtn.style.marginLeft = '10px';
             printBtn.onclick = printTable;
             
-            // Uncomment to add export and print buttons
-            // actionBar.appendChild(exportBtn);
-            // actionBar.appendChild(printBtn);
+            actionBar.appendChild(exportBtn);
+            actionBar.appendChild(printBtn);
+            */
         });
     </script>
 </body>
 </html>
+
+
+
