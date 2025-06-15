@@ -20,28 +20,28 @@
         $sql = "SELECT COUNT(*) AS total_beasiswa FROM beasiswa";
         $stmt = $koneksi->prepare($sql);
         $stmt->execute();
-        $data_beasiswa = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data_beasiswa = $stmt->fetch();
         $jumlah_beasiswa = $data_beasiswa['total_beasiswa'];
 
         // Fetch competition data
         $sql = "SELECT COUNT(*) AS total_lomba FROM lomba";
         $stmt = $koneksi->prepare($sql);
         $stmt->execute();
-        $data_lomba = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data_lomba = $stmt->fetch();
         $jumlah_lomba = $data_lomba['total_lomba'];
 
         // Fetch team data
         $sql = "SELECT COUNT(*) AS total_tim FROM tim";
         $stmt = $koneksi->prepare($sql);
         $stmt->execute();
-        $data_tim = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data_tim = $stmt->fetch();
         $jumlah_tim = $data_tim['total_tim'];
 
         // Fetch forum data
         $sql = "SELECT COUNT(*) AS total_forum FROM forum";
         $stmt = $koneksi->prepare($sql);
         $stmt->execute();
-        $data_forum = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data_forum = $stmt->fetch();
         $jumlah_forum = $data_forum['total_forum'];
     ?>
 
