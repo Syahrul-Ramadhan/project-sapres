@@ -104,7 +104,7 @@
                                             <td>" . date('d M Y', strtotime($data['mulai_beasiswa'])) . "</td>
                                             <td>" . date('d M Y', strtotime($data['penutupan_beasiswa'])) . "</td>
                                             <td>{$data['pemberi_beasiswa']}</td>
-                                            <td class = 'last-col'><a  class='editbtn'>Edit</a> | <a href=deleteBeasiswa.php?id=".$data['beasiswa_id']." class='deletebtn'>Delete</a></td>
+                                            <td class = 'last-col'><a  class='editbtn'>Edit</a> | <a href=proses/deleteBeasiswa.php?id=".$data['beasiswa_id']." class='deletebtn'>Delete</a></td>
                                           </tr>";
                             endwhile;
                         ?>
@@ -116,7 +116,7 @@
                     <div class="pop-up-content">
                         <span id="add-closeBtn" class="close"><img src="../../assets/img/icons/dashboard-admin/close.png" alt="close" width="24px"></span>
                         <h2>Tambah Data Beasiswa</h2>
-                            <form id="add-beasiswaForm" method="POST" action="prosesInsertBeasiswa.php">
+                            <form id="add-beasiswaForm" method="POST" action="proses/prosesInsertBeasiswa.php">
                                 <table class="table-add">
                                 <div class="form-part-1">
                                     <tr>
@@ -129,17 +129,16 @@
                                     <td>:</td>
                                     <td>
                                         <!-- //menggunakan checkbox untuk memilih lebih dari satu jenjang -->
-                                        <input type="checkbox" name="jenjang_beasiswa" value="SMP"> SMP
-                                        <input type="checkbox" name="jenjang_beasiswa" value="SMA"> SMA
-                                        <input type="checkbox" name="jenjang_beasiswa" value="S1"> S1
-                                        <input type="checkbox" name="jenjang_beasiswa" value="S2"> S2
-                                        <input type="checkbox" name="jenjang_beasiswa" value="S3"> S3 
-                                        <input type="checkbox" name="jenjang_beasiswa" value="D3"> D3 <br>
-                                        <input type="checkbox" name="jenjang_beasiswa" value="D4"> D4
-                                        <input type="checkbox" name="jenjang_beasiswa" value="Non-degree"> Non-Degree
-                                        <input type="checkbox" name="jenjang_beasiswa" value="Gap-year"> Gap Year <br>
-                                        <input type="checkbox" name="jenjang_beasiswa" value="Profesi"> Profesi
-
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="SMP"> SMP
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="SMA"> SMA
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="S1"> S1
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="S2"> S2
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="S3"> S3 
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="D3"> D3 <br>
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="D4"> D4
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="Non-degree"> Non-Degree
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="Gap-year"> Gap Year <br>
+                                        <input type="checkbox" name="jenjang_beasiswa[]" value="Profesi"> Profesi
                                     </td>
                                 </tr>
                                 <tr>
@@ -208,7 +207,7 @@
                                 </div>
                                 
                                 <tr>
-                                    <td colspan="3" style="text-align:center;">
+                                    <td colspan="3" style="text-align:start;">
                                         <button type="submit">Submit</button>
                                     </td>
                                 </tr>
@@ -222,7 +221,7 @@
                     <div class="pop-up-content">
                         <span id="edit-closeBtn" class="close"><img src="../../assets/img/icons/dashboard-admin/close.png" alt="close" width="24px"></span>
                         <h2>Edit Data Beasiswa</h2>
-                            <form id="edit-beasiswaForm" method="POST" action="prosesUpdateBeasiswa.php">
+                            <form id="edit-beasiswaForm" method="POST" action="proses/prosesUpdateBeasiswa.php">
                                 <input type="hidden" name="edit-beasiswa_id">
                                 <table class="table-add">
                                 <div class="form-part-1">
@@ -235,16 +234,16 @@
                                     <td>Jenjang</td>
                                     <td>:</td>
                                     <td>
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="SMP" id="edit-jenjang-SMP"> SMP
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="SMA" id="edit-jenjang-SMA"> SMA
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="S1" id="edit-jenjang-S1"> S1
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="S2" id="edit-jenjang-S2"> S2
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="S3" id="edit-jenjang-S3"> S3
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="D3" id="edit-jenjang-D3"> D3 <br>
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="D4" id="edit-jenjang-D4"> D4
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="Non-degree" id="edit-jenjang-Non-degree"> Non-Degree
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="Gap-year" id="edit-jenjang-Gap-year"> Gap Year <br>
-                                        <input type="checkbox" name="edit-jenjang_beasiswa" value="Profesi" id="edit-jenjang-Profesi"> Profesi
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="SMP" id="edit-jenjang-SMP"> SMP
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="SMA" id="edit-jenjang-SMA"> SMA
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="S1" id="edit-jenjang-S1"> S1
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="S2" id="edit-jenjang-S2"> S2
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="S3" id="edit-jenjang-S3"> S3
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="D3" id="edit-jenjang-D3"> D3 <br>
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="D4" id="edit-jenjang-D4"> D4
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="Non-degree" id="edit-jenjang-Non-degree"> Non-Degree
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="Gap-year" id="edit-jenjang-Gap-year"> Gap Year <br>
+                                        <input type="checkbox" name="edit-jenjang_beasiswa[]" value="Profesi" id="edit-jenjang-Profesi"> Profesi
                                     </td>
                                 </tr>
                                 <tr>
@@ -313,7 +312,7 @@
                                 </div>
                                 
                                 <tr>
-                                    <td colspan="3" style="text-align:center;">
+                                    <td colspan="3" style="text-align:start;">
                                         <button type="submit">Submit</button>
                                     </td>
                                 </tr>

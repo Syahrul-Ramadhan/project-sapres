@@ -667,7 +667,7 @@ ul {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px;
+  padding: 30px 50px;
   gap: 8px;
   position: relative;
   z-index: 30;
@@ -737,12 +737,12 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-bottom: 12px;
 }
 
 .req h4 {
   font-weight: 600;
   color: #777776;
-  margin-bottom: 4px;
 }
 
 .req ul {
@@ -754,7 +754,7 @@ ul {
 .req ul li {
   font-size: 14px;
   background-color: var(--fill-color);
-  padding: 8px;
+  padding: 8px 16px;
   border-radius: 12px;
   -webkit-border-radius: 12px;
   -moz-border-radius: 12px;

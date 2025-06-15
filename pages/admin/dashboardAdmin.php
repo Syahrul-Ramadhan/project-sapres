@@ -12,6 +12,35 @@
     <link rel="stylesheet" href="../../assets/css/admin/dashboardAdmin.css">
 </head>
 <body>
+
+        <?php
+      include "../php/koneksi.php";
+
+        // Fetch data for the dashboard
+        $sql = "SELECT COUNT(*) AS total_beasiswa FROM beasiswa";
+        $hasil_query = mysqli_query($koneksi, $sql);
+        $data_beasiswa = mysqli_fetch_assoc($hasil_query);
+        $jumlah_beasiswa = $data_beasiswa['total_beasiswa'];
+
+        // Fetch competition data
+        $sql = "SELECT COUNT(*) AS total_lomba FROM lomba";
+        $hasil_query = mysqli_query($koneksi, $sql);
+        $data_lomba = mysqli_fetch_assoc($hasil_query);
+        $jumlah_lomba = $data_lomba['total_lomba'];
+
+        // Fetch team data
+        $sql = "SELECT COUNT(*) AS total_tim FROM tim";
+        $hasil_query = mysqli_query($koneksi, $sql);
+        $data_tim = mysqli_fetch_assoc($hasil_query);
+        $jumlah_tim = $data_tim['total_tim'];
+
+        // Fetch forum data
+        $sql = "SELECT COUNT(*) AS total_forum FROM forum";
+        $hasil_query = mysqli_query($koneksi, $sql);
+        $data_forum = mysqli_fetch_assoc($hasil_query);
+        $jumlah_forum = $data_forum['total_forum'];
+    ?>
+
     <!-- SIDE NAV START -->
         <div class="side-nav">
         <div class="container">
@@ -57,7 +86,7 @@
                     </div>
                     <div class="card-info">
                         <h3>Jumlah Beasiswa</h3>
-                        <p>100</p>
+                        <p><?php echo $jumlah_beasiswa?></p>
                     </div>
                 </div>
 
@@ -67,7 +96,7 @@
                     </div>
                     <div class="card-info">
                         <h3>Jumlah Lomba</h3>
-                        <p>50</p>
+                        <p><?php echo $jumlah_lomba?></p>
                     </div>
                 </div>
 
@@ -77,7 +106,7 @@
                     </div>
                     <div class="card-info">
                         <h3>Jumlah Tim</h3>
-                        <p>20</p>
+                        <p><?php echo $jumlah_tim?></p>
                     </div>
                 </div>
 
@@ -87,7 +116,7 @@
                     </div>
                     <div class="card-info">
                         <h3>Jumlah Forum</h3>
-                        <p>10</p>
+                        <p><?php echo $jumlah_forum?></p>
                     </div>
                 </div>
             </div>

@@ -171,6 +171,13 @@ ul {
   background-color: #c9302c;
 }
 
+.table-content td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Menambahkan ... pada teks yang terpotong */
+  max-width: 200px;
+}
+
 .beasiswa-pop-up {
   position: fixed;
   top: 0;

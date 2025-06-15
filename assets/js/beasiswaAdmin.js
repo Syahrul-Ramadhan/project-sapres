@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Set checkboxes for Jenjang
     const jenjangList = jenjang.split(",");
     document
-      .querySelectorAll("input[name='edit-jenjang_beasiswa']")
+      .querySelectorAll("input[name='edit-jenjang_beasiswa[]']")
       .forEach((checkbox) => {
         checkbox.checked = jenjangList.includes(checkbox.value);
       });

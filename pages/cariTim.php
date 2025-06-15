@@ -485,16 +485,17 @@
             <span>FILTER</span>
           </div>
           <!-- FILTER BTN END -->
+
           <div class="team-wrap">
             <div class="team-list">
               <?php while ($data = $hasil_query->fetch_assoc()): ?>
               <div class="card-fteam" data-nama="<?= $data['nama_tim'] ?>" data-judul="<?= $data['judul_lomba'] ?>"
-                data-jenis="<?= $data['tipe_lomba'] ?>" data-instansi="<?= $data['asal_instansi'] ?>"
+                data-jenis="<?= $data['kategori_lomba'] ?>" data-instansi="<?= $data['asal_instansi'] ?>"
                 data-deskripsi="<?= $data['deskripsi'] ?>" data-syarat="<?= $data['syarat_ketentuan'] ?>"
                 data-created="<?= date('d M Y', strtotime($data['created_at'])) ?>"
                 data-cekktm="<?= $data['cek_ktm'] ?>">
                 <div class="head-card">
-                  <h3><?= htmlspecialchars($data['tipe_lomba'])?></h3>
+                  <h3><?= htmlspecialchars($data['kategori_lomba'])?></h3>
                   <p><?= htmlspecialchars($data['judul_lomba']) ?></p>
                   <div class="info-uni">
                     <svg
@@ -540,7 +541,8 @@
             </div>
           </div>
         </div>
-                <div class="pagination">
+        <div class="buat-tim">+ Buat Tim</div>
+        <div class="pagination">
           <?php if ($page > 1): ?>
             <a href="?page=<?= $page - 1 ?>" class="pagination-btn">&laquo;</a>
           <?php endif; ?>
@@ -618,9 +620,8 @@
     <!-- CREATE TEAM START --> 
     <div class="create-team-container">
       <div class="create-team-content">
-        <div class="close-create-team">
-          <div class="close-create-team-btn">
-            <svg
+        <div class="close-create-team-btn">
+          <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               width="24"
@@ -635,29 +636,71 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               />
-            </svg>
-          </div>
+          </svg>
         </div>
         <h3>Buat Tim Baru</h3>
-        <form action="" method="post" id="createTeamForm">
-          <label for="nama_tim">Nama Tim</label>
-          <input type="text" id="nama_tim" name="nama_tim" required />
-          <label for="competitionTitle">Judul Lomba</label>
-          <input type="text" id="competitionTitle" name="competitionTitle" required />
-          <label for="competitionType">Tipe Lomba</label>
-          <select id="competitionType" name="competitionType" required>
-            <option value="">Pilih Tipe Lomba</option>
-            <option value="Hackathon">Hackathon</option>
-            <option value="Desain Grafis">Desain Grafis</option>
-            <option value="UI/UX Design">UI/UX Design</option>
-          </select>
-          <label for="institution">Asal Instansi</label>
-          <input type="text" id="institution" name="institution" required />
-          <label for="description">Deskripsi Tim</label>
-          <textarea id="description" name="description" rows="4" required></textarea>
-          <button type="submit" class="btn btn-create-team">Buat Tim</button>
-        </form>
+    <form action="proses/prosesInsertTim.php" method="post" id="createTeamForm">
+      <table>
+        <tr>
+          <td><label for="nama_tim">Nama Tim</label></td>
+          <td><input type="text" id="nama_tim" name="nama_tim" required /></td>
+        </tr>
+        <tr>
+          <td><label for="jumlah_anggota">Jumlah Anggota</label></td>
+          <td><input type="text" id="jumlah_anggota" name="jumlah_anggota" required /></td>
+        </tr>
+        <tr>
+          <td><label for="jenjang_tim">Jenjang Tim</label></td>
+          <td>
+            <input type="checkbox" name="jenjang_tim[]" value="SMP"> SMP
+            <input type="checkbox" name="jenjang_tim[]" value="SMA"> SMA
+            <input type="checkbox" name="jenjang_tim[]" value="S1"> S1
+            <input type="checkbox" name="jenjang_tim[]" value="S2"> S2
+            <input type="checkbox" name="jenjang_tim[]" value="S3"> S3
+            <input type="checkbox" name="jenjang_tim[]" value="D3"> D3 <br>
+            <input type="checkbox" name="jenjang_tim[]" value="D4"> D4
+            <input type="checkbox" name="jenjang_tim[]" value="Non-degree"> Non-Degree
+            <input type="checkbox" name="jenjang_tim[]" value="Gap-year"> Gap Year <br>
+            <input type="checkbox" name="jenjang_tim[]" value="Profesi"> Profesi
+          </td>
+        </tr>
+        <tr>
+          <td><label for="judul_lomba">Judul Lomba</label></td>
+          <td><input type="text" id="judul_lomba" name="judul_lomba" required /></td>
+        </tr>
+        <tr>
+          <td><label for="tipe_lomba">Kategori Lomba</label></td>
+          <td><input type="text" name="kategori_lomba" id="kategori_lomba" required /></td>
+        </tr>
+        <tr>
+          <td><label for="asal_instansi">Asal Instansi</label></td>
+          <td><input type="text" id="asal_instansi" name="asal_instansi" required /></td>
+        </tr>
+        <tr>
+          <td><label for="deskripsi">Deskripsi Tim</label></td>
+          <td><textarea id="deskripsi" name="deskripsi" rows="4" required></textarea></td>
+        </tr>
+        <tr>
+          <td><label for="syarat_ketentuan">Syarat dan Ketentuan</label></td>
+          <td><textarea id="syarat_ketentuan" name="syarat_ketentuan" rows="4" required></textarea></td>
+        </tr>
+        <tr>
+          <td><label for="cek_ktm">Cek KTM</label></td>
+          <td><input type="checkbox" name="cek_ktm" value="perlu_ktm"> Perlu KTM</td>
+        </tr>
+        <tr>
+          <td><label for="link">Link Pendaftaran</label></td>
+          <td><input type="text" id="link" name="link" required /></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <button type="submit" name="create_team" class="btn btn-create-team">Buat Tim</button>
+          </td>
+        </tr>
+      </table>
+    </form>
       </div>
+    </div>
     <!-- CREATE TEAM END -->
 
     <!-- FOOTER START -->

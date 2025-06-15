@@ -1,7 +1,7 @@
 <?php
 
     //Koneksi
-    include "../php/koneksi.php";
+    include "../../php/koneksi.php";
 
     // Mengambil data dari form
     $judul = $_POST['edit-judul_beasiswa'];
@@ -18,9 +18,12 @@
     $daftar = $_POST['edit-link_pendaftaran'];
     $id = $_POST['edit-beasiswa_id'];
 
-        // Format tanggal menjadi Y-m-d sebelum memasukkannya ke query
+    // Format tanggal menjadi Y-m-d sebelum memasukkannya ke query
     $pendaftaranValid = date("Y-m-d", strtotime($pendaftaran));  // Mengubah format tanggal
     $penutupanValid = date("Y-m-d", strtotime($penutupan));  // Mengubah format tanggal
+
+    // Gabungkan nilai jenjang yang dipilih menjadi satu string dengan koma
+    $jenjang = implode(",", $jenjang);  // Menggabungkan nilai checkbox menjadi string
 
     // Query untuk update data beasiswa
     $sql = "UPDATE beasiswa SET 
@@ -44,7 +47,8 @@
     // Validasi
     if ($hasil_query) {
         // Kalau berhasil
-        header('Location: beasiswaAdmin.php');
+        // header('Location: ../beasiswaAdmin.php');
+        echo "<script>alert('Data Beasiswa Berhasil Diubah'); window.location.href='../beasiswaAdmin.php';</script>";
     } else {
         // Kalau Gagal
         echo "Data tidak tersimpan, Kembali";

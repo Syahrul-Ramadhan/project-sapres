@@ -85,3 +85,14 @@ document
   .addEventListener("click", function () {
     document.querySelector(".pop-up-container").style.display = "none";
   });
+
+// Show pop-up create team
+const createBtn = document.querySelector(".buat-tim");
+createBtn.addEventListener("click", () => {
+  document.querySelector(".create-team-container").style.display = "flex";
+});
+document
+  .querySelector(".close-create-team-btn")
+  .addEventListener("click", function () {
+    document.querySelector(".create-team-container").style.display = "none";
+  });
