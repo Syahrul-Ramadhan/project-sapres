@@ -32,26 +32,28 @@ ul {
 
 /* ---------- MAIN CONTENT ---------- */
 .main-content {
-  margin-top: 80px;
-  min-height: calc(100vh - 80px);
+  margin-top: 60px; /* Dikurangi dari 80px ke 60px */
+  min-height: calc(100vh - 60px);
 }
 
 .page-title {
   text-align: center;
-  padding: 40px 20px;
+  padding: 30px 20px; /* Dikurangi dari 40px ke 30px */
   background: linear-gradient(135deg, var(--Primary-color), var(--Secondary-color));
   color: white;
+  margin-bottom: 0; /* Pastikan tidak ada margin bawah */
 }
 
 .page-title h1 {
-  font-size: 2.5rem;
+  font-size: 2.2rem; /* Dikurangi sedikit dari 2.5rem */
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* Dikurangi dari 10px */
 }
 
 .page-title p {
-  font-size: 1.1rem;
+  font-size: 1rem; /* Dikurangi dari 1.1rem */
   opacity: 0.9;
+  margin-bottom: 0; /* Pastikan tidak ada margin bawah */
 }
 
 .content-wrapper {
@@ -59,7 +61,7 @@ ul {
   max-width: 1400px;
   margin: 0 auto;
   gap: 30px;
-  padding: 30px 20px;
+  padding: 20px; /* Dikurangi dari 30px 20px */
 }
 
 /* ---------- FILTER SIDEBAR ---------- */
@@ -71,7 +73,7 @@ ul {
   padding: 25px;
   height: fit-content;
   position: sticky;
-  top: 100px;
+  top: 80px; /* Disesuaikan dengan margin-top yang baru */
 }
 
 .filter-header {
@@ -243,58 +245,341 @@ ul {
   flex: 1;
 }
 
-/* Month selector */
+/* Month Selector Styles */
 .month-selector-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, rgba(213, 230, 231, 0.1), rgba(79, 149, 157, 0.05));
+  border-radius: 16px;
   padding: 25px;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
+.month-selector-container .section-title {
+  font-size: 1.8rem;
+  font-weight: 700;
   color: var(--Primary-color);
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.section-title .count {
-  font-size: 1rem;
+.month-selector-container .count {
+  font-size: 1.1rem;
   font-weight: 400;
   color: var(--second-font-color);
+  background: var(--fill-color);
+  padding: 4px 12px;
+  border-radius: 20px;
 }
 
 .month-selector {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 10px;
+  display: flex;
+  gap: 8px; /* Reduced gap */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 15px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--Primary-color) transparent;
+  justify-content: flex-start;
+}
+
+.month-selector::-webkit-scrollbar {
+  height: 6px; /* Thinner scrollbar */
+}
+
+.month-selector::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 3px;
+}
+
+.month-selector::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--Primary-color), var(--Secondary-color));
+  border-radius: 3px;
+}
+
+.month-selector::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, var(--Secondary-color), var(--Primary-color));
 }
 
 .month-button {
-  padding: 12px 8px;
-  text-align: center;
-  background: var(--fill-color);
-  color: var(--Primary-color);
-  border-radius: 8px;
+  flex: 0 0 auto;
+  min-width: 95px; /* Reduced from 120px */
+  height: 48px; /* Reduced from 55px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 2px solid #e8ecef;
+  border-radius: 10px; /* Slightly smaller radius */
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  font-size: 0.9rem;
-  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  font-size: 0.9rem; /* Reduced font size */
+  color: var(--base-font-color);
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 0 10px; /* Reduced padding */
+}
+
+.month-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s;
+}
+
+.month-button:hover::before {
+  left: 100%;
 }
 
 .month-button:hover {
-  background: var(--Secondary-color);
-  color: white;
-  transform: translateY(-2px);
+  border-color: var(--Primary-color);
+  background: var(--fill-color);
+  transform: translateY(-2px); /* Reduced transform */
+  box-shadow: 0 6px 20px rgba(32, 87, 129, 0.15);
+  color: var(--Primary-color);
 }
 
 .month-button.active {
-  background: var(--Primary-color);
+  background: linear-gradient(135deg, var(--Primary-color), var(--Secondary-color));
+  border-color: var(--Primary-color);
   color: white;
-  box-shadow: 0 4px 12px rgba(32, 87, 129, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(32, 87, 129, 0.3);
 }
+
+.month-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25px; /* Reduced indicator width */
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+}
+
+.month-button span {
+  white-space: nowrap;
+  font-weight: inherit;
+  letter-spacing: 0.2px; /* Reduced letter spacing */
+  text-align: center;
+  font-size: inherit;
+}
+
+/* Special styling for "Semua Bulan" button */
+.month-button:first-child {
+  min-width: 105px; /* Reduced from 140px */
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  font-weight: 700;
+}
+
+.month-button:first-child.active {
+  background: linear-gradient(135deg, var(--Secondary-color), var(--Primary-color));
+}
+
+/* Enhanced hover effects */
+.month-button:not(.active):hover {
+  background: linear-gradient(135deg, var(--fill-color), rgba(79, 149, 157, 0.1));
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .month-selector {
+    gap: 7px;
+  }
+  
+  .month-button {
+    min-width: 88px;
+    height: 45px;
+    font-size: 0.85rem;
+    padding: 0 8px;
+  }
+  
+  .month-button:first-child {
+    min-width: 98px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .month-button {
+    min-width: 82px;
+    height: 42px;
+    font-size: 0.8rem;
+    padding: 0 7px;
+  }
+  
+  .month-button:first-child {
+    min-width: 92px;
+  }
+}
+
+@media (max-width: 768px) {
+  .month-selector-container {
+    padding: 20px 15px;
+  }
+  
+  .month-selector {
+    gap: 6px;
+    padding: 12px 0;
+  }
+  
+  .month-button {
+    min-width: 75px;
+    height: 40px;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    padding: 0 6px;
+  }
+  
+  .month-button:first-child {
+    min-width: 85px;
+  }
+  
+  .month-selector-container .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .month-selector-container .count {
+    font-size: 1rem;
+    padding: 3px 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .month-button {
+    min-width: 68px;
+    height: 38px;
+    font-size: 0.7rem;
+    padding: 0 5px;
+  }
+  
+  .month-button:first-child {
+    min-width: 78px;
+  }
+}
+
+@media (max-width: 480px) {
+  .month-selector-container {
+    padding: 15px 10px;
+  }
+  
+  .month-selector {
+    gap: 5px;
+    padding: 10px 0;
+  }
+  
+  .month-button {
+    min-width: 62px;
+    height: 36px;
+    font-size: 0.65rem;
+    border-radius: 6px;
+    padding: 0 4px;
+  }
+  
+  .month-button:first-child {
+    min-width: 72px;
+  }
+  
+  .month-selector-container .section-title {
+    font-size: 1.3rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .month-selector-container .count {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation for month selection */
+@keyframes monthSelect {
+  0% {
+    transform: translateY(-2px) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.01);
+  }
+  100% {
+    transform: translateY(-2px) scale(1);
+  }
+}
+
+.month-button.active {
+  animation: monthSelect 0.3s ease-out;
+}
+
+/* Focus states for accessibility */
+.month-button:focus {
+  outline: 2px solid var(--Primary-color);
+  outline-offset: 2px;
+}
+
+.month-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Loading state */
+.month-button.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.month-button.loading::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Smooth scroll behavior */
+.month-selector {
+  scroll-behavior: smooth;
+}
+
+/* Better text rendering */
+.month-button span {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure proper text fitting */
+@media (max-width: 1024px) {
+  .month-button span {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .month-button span {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .month-button span {
+    font-size: 0.65rem;
+  }
+}
+
 
 /* ---------- COMPETITION CONTAINER ---------- */
 .competition-container {
@@ -361,12 +646,23 @@ ul {
   width: 100%;
   height: 100%;
   position: relative;
+  background: var(--fill-color); /* Background fallback */
 }
 
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+  display: block; /* Pastikan img ditampilkan sebagai block */
+  background: var(--fill-color); /* Background saat loading */
+}
+
+/* Fallback untuk gambar yang tidak ada atau error */
+.card-image img[src=""],
+.card-image img:not([src]),
+.card-image img[src*="placeholder"] {
+  display: none;
 }
 
 .placeholder-image {
@@ -378,6 +674,29 @@ ul {
   justify-content: center;
   color: var(--Primary-color);
   font-size: 3rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Jika gambar tidak ada, tampilkan placeholder */
+.card-image:not(:has(img)),
+.card-image:has(img[src=""]),
+.card-image:has(img:not([src])) {
+  background: linear-gradient(135deg, var(--fill-color), #e9ecef);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-image:not(:has(img))::before,
+.card-image:has(img[src=""])::before,
+.card-image:has(img:not([src]))::before {
+  content: "\f091"; /* Font Awesome trophy icon */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 3rem;
+  color: var(--Primary-color);
 }
 
 .card-overlay {
@@ -386,6 +705,7 @@ ul {
   left: 15px;
   display: flex;
   gap: 8px;
+  z-index: 3;
 }
 
 .level-badge, .scope-badge {
@@ -421,7 +741,7 @@ ul {
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
   border: none;
-  z-index: 2;
+  z-index: 4;
 }
 
 .bookmark-btn:hover {
@@ -788,7 +1108,7 @@ ul {
 @media (max-width: 992px) {
   .content-wrapper {
     gap: 20px;
-    padding: 20px 15px;
+    padding: 15px;
   }
   
   .filter-sidebar {
@@ -802,9 +1122,26 @@ ul {
 }
 
 @media (max-width: 768px) {
+  .main-content {
+    margin-top: 50px; /* Lebih kecil untuk mobile */
+  }
+  
+  .page-title {
+    padding: 20px 15px; /* Lebih kecil untuk mobile */
+  }
+  
+  .page-title h1 {
+    font-size: 1.8rem;
+  }
+  
+  .page-title p {
+    font-size: 0.9rem;
+  }
+  
   .content-wrapper {
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
+    padding: 15px 10px;
   }
   
   .filter-sidebar {
@@ -851,14 +1188,6 @@ ul {
     font-size: 0.8rem;
   }
   
-  .page-title h1 {
-    font-size: 2rem;
-  }
-  
-  .page-title p {
-    font-size: 1rem;
-  }
-  
   .pagination {
     flex-wrap: wrap;
     justify-content: center;
@@ -884,19 +1213,19 @@ ul {
 
 @media (max-width: 576px) {
   .main-content {
-    margin-top: 70px;
+    margin-top: 45px; /* Lebih kecil lagi */
   }
   
   .page-title {
-    padding: 30px 15px;
+    padding: 15px 10px; /* Padding minimal */
   }
   
   .page-title h1 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
   
   .content-wrapper {
-    padding: 15px 10px;
+    padding: 10px 5px;
   }
   
   .filter-sidebar,
@@ -958,8 +1287,16 @@ ul {
 }
 
 @media (max-width: 480px) {
+  .main-content {
+    margin-top: 40px; /* Minimal untuk layar sangat kecil */
+  }
+  
+  .page-title {
+    padding: 12px 8px; /* Padding sangat minimal */
+  }
+  
   .page-title h1 {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
   
   .competition-header {
@@ -1024,6 +1361,47 @@ ul {
     height: 30px;
     font-size: 0.75rem;
   }
+}
+
+/* ---------- IMAGE ERROR HANDLING ---------- */
+/* Menangani gambar yang error atau tidak ditemukan */
+.card-image img {
+  transition: opacity 0.3s ease;
+}
+
+.card-image img:not([src]),
+.card-image img[src=""],
+.card-image img[src="#"] {
+  display: none;
+}
+
+/* Fallback ketika gambar error */
+.card-image img[onerror] {
+  display: none;
+}
+
+/* Style untuk placeholder ketika gambar tidak ada */
+.card-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--fill-color), #e9ecef);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 3rem;
+  color: var(--Primary-color);
+}
+
+/* Tampilkan placeholder jika gambar tidak ada */
+.card-image:not(:has(img[src]:not([src=""])):not([src="#"]))::after {
+  content: "\f091"; /* Trophy icon */
+  display: flex;
 }
 
 /* ---------- ACCESSIBILITY ---------- */
@@ -1294,9 +1672,24 @@ a:focus,
   transition: opacity 0.3s ease;
 }
 
-.card-image img[src=""],
-.card-image img:not([src]) {
-  opacity: 0;
+/* JavaScript akan menangani error gambar */
+.card-image img.error {
+  display: none;
+}
+
+.card-image.no-image {
+  background: linear-gradient(135deg, var(--fill-color), #e9ecef);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-image.no-image::before {
+  content: "\f091"; /* Trophy icon */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 3rem;
+  color: var(--Primary-color);
 }
 
 /* Tooltip styles */
@@ -1389,21 +1782,21 @@ html {
 /* Final responsive adjustments */
 @media (max-width: 360px) {
   .content-wrapper {
-    padding: 10px 5px;
+    padding: 8px 3px;
   }
   
   .filter-sidebar,
   .month-selector-container,
   .competition-container {
-    padding: 15px 10px;
+    padding: 15px 8px;
   }
   
   .page-title {
-    padding: 25px 10px;
+    padding: 10px 5px;
   }
   
   .page-title h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
   
   .section-title {
@@ -1449,12 +1842,16 @@ html {
 
 /* Landscape mobile */
 @media (max-width: 768px) and (orientation: landscape) {
+  .main-content {
+    margin-top: 35px;
+  }
+  
   .page-title {
-    padding: 20px 15px;
+    padding: 15px 10px;
   }
   
   .page-title h1 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
   
   .competition-grid {
@@ -1473,7 +1870,7 @@ html {
   }
   
   .content-wrapper {
-    padding: 25px 20px;
+    padding: 20px 15px;
   }
 }
 
@@ -1496,7 +1893,8 @@ html {
 .notification { z-index: 10000; }
 .skip-link { z-index: 10001; }
 .tooltip .tooltiptext { z-index: 1000; }
-.bookmark-btn { z-index: 2; }
+.bookmark-btn { z-index: 4; }
+.card-overlay { z-index: 3; }
 
 /* Final touch - ensure consistent font rendering */
 body {
@@ -1516,6 +1914,19 @@ body {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+}
+
+/* Specific fixes for header positioning */
+@media (min-width: 769px) {
+  .main-content {
+    margin-top: 70px; /* Sesuaikan dengan tinggi navbar */
+  }
+}
+
+/* Ensure no gap between navbar and page title */
+.page-title {
+  margin-top: 0;
+  padding-top: 25px;
 }
 
 /* End of CSS file */

@@ -5,7 +5,7 @@ require_once 'php/config.php';
 $lombaList = [];
 $totalLomba = 0;
 $currentPage = 1;
-$itemsPerPage = 12;
+$itemsPerPage = 15; // Changed to 15 items per page
 $totalPages = 1;
 
 // Get filter parameters
@@ -240,27 +240,33 @@ $currentMonthName = $months[$currentMonthNum];
     </nav>
     <!-- NAVBAR END -->
 
-    <!-- DAFTAR LOMBA START -->
+    <!-- MAIN CONTENT START -->
     <main class="main-content">
-      <div class="page-title">
-        <h1>Lomba</h1>
-        <p>Temukan berbagai lomba sesuai dengan minat dan bakatmu</p>
-      </div>
-
       <div class="content-wrapper">
+        <!-- FILTER SIDEBAR -->
         <aside class="filter-sidebar">
           <div class="filter-header">
-            <i class="fas fa-filter filter-icon"></i>
-            <h2>Filter</h2>
-            <button class="filter-toggle" aria-label="Toggle filter">
+            <h2><i class="fas fa-filter filter-icon"></i>Filter Lomba</h2>
+            <button class="filter-toggle">
               <i class="fas fa-chevron-down"></i>
             </button>
           </div>
-
+          
           <div class="filter-content">
+            <!-- Search Filter -->
+            <div class="filter-section">
+              <div class="section-header">
+                <h3>Cari Lomba</h3>
+              </div>
+              <div class="search-box">
+                <input type="text" placeholder="Nama lomba..." id="categorySearch" value="<?php echo htmlspecialchars($searchQuery); ?>">
+              </div>
+            </div>
+
+            <!-- Level Filter -->
             <div class="filter-section jenjang-section">
               <div class="section-header">
-                <h3>Jenjang</h3>
+                <h3>Tingkat Pendidikan</h3>
               </div>
               <div class="checkbox-group">
                 <div class="checkbox-item">
@@ -286,9 +292,10 @@ $currentMonthName = $months[$currentMonthNum];
               </div>
             </div>
 
+            <!-- Scope Filter -->
             <div class="filter-section skala-section">
               <div class="section-header">
-                <h3>Skala Lomba</h3>
+                <h3>Tingkat Lomba</h3>
               </div>
               <div class="checkbox-group">
                 <div class="checkbox-item">
@@ -310,12 +317,10 @@ $currentMonthName = $months[$currentMonthNum];
               </div>
             </div>
 
+            <!-- Popular Tags -->
             <div class="filter-section bidang-section">
               <div class="section-header">
-                <h3>Bidang Lomba</h3>
-              </div>
-              <div class="search-box bidang-search">
-                <input type="text" id="categorySearch" placeholder="Cari Bidang" value="<?php echo htmlspecialchars($categoryFilter); ?>" />
+                <h3>Kategori Populer</h3>
               </div>
               <div class="popular-tags">
                 <?php foreach (array_slice($categories, 0, 8) as $category): ?>
@@ -327,6 +332,7 @@ $currentMonthName = $months[$currentMonthNum];
               </div>
             </div>
 
+            <!-- Filter Actions -->
             <div class="filter-actions">
               <button class="btn-reset" onclick="resetFilters()">Reset Filter</button>
               <button class="btn-apply" onclick="applyFilters()">Terapkan</button>
@@ -334,228 +340,218 @@ $currentMonthName = $months[$currentMonthNum];
           </div>
         </aside>
 
+        <!-- CONTENT AREA -->
         <div class="content-area">
-          <div class="month-selector-container">
-            <h2 class="section-title">Pilih Bulan</h2>
+          <!-- Month Selector -->
+          <section class="month-selector-container">
+            <h2 class="section-title">
+              Pilih Bulan <span class="count">(<?php echo $totalLomba; ?> lomba tersedia)</span>
+            </h2>
             <div class="month-selector">
+              <div class="month-button <?php echo empty($monthFilter) ? 'active' : ''; ?>" 
+                   onclick="filterByMonth('')">
+                <span>Semua Bulan</span>
+              </div>
               <?php for ($i = 1; $i <= 12; $i++): ?>
-                <div class="month-button <?php echo $currentMonthNum == $i ? 'active' : ''; ?>" 
+                <div class="month-button <?php echo $monthFilter == $i ? 'active' : ''; ?>" 
                      onclick="filterByMonth(<?php echo $i; ?>)">
-                  <span><?php echo substr($months[$i], 0, 3); ?></span>
+                  <span><?php echo $months[$i]; ?></span>
                 </div>
               <?php endfor; ?>
             </div>
-          </div>
+          </section>
 
-          <div class="competition-container">
+          <!-- Competition Container -->
+          <section class="competition-container">
             <div class="competition-header">
-              <h2 class="section-title">
-                Lomba Bulan <?php echo $currentMonthName; ?>
-                <span class="count">(<?php echo $totalLomba; ?> lomba)</span>
-              </h2>
+              <h2 class="section-title">Daftar Lomba</h2>
               <div class="sort-dropdown">
-                <select id="sortSelect" onchange="applySorting()">
+                <select id="sort-select" onchange="sortLomba(this.value)">
                   <option value="deadline_asc" <?php echo $sortBy === 'deadline_asc' ? 'selected' : ''; ?>>Deadline Terdekat</option>
-                  <option value="deadline_desc" <?php echo $sortBy === 'deadline_desc' ? 'selected' : ''; ?>>Deadline Terjauh</option>
                   <option value="newest" <?php echo $sortBy === 'newest' ? 'selected' : ''; ?>>Terbaru</option>
-                  <option value="oldest" <?php echo $sortBy === 'oldest' ? 'selected' : ''; ?>>Terlama</option>
-                  <option value="title_asc" <?php echo $sortBy === 'title_asc' ? 'selected' : ''; ?>>Nama A-Z</option>
-                  <option value="title_desc" <?php echo $sortBy === 'title_desc' ? 'selected' : ''; ?>>Nama Z-A</option>
+                  <option value="title_asc" <?php echo $sortBy === 'title_asc' ? 'selected' : ''; ?>>A-Z</option>
+                  <option value="title_desc" <?php echo $sortBy === 'title_desc' ? 'selected' : ''; ?>>Z-A</option>
                 </select>
               </div>
             </div>
 
-            <?php if (empty($lombaList)): ?>
-              <div class="empty-state">
-                <div class="empty-icon">
-                  <i class="fas fa-trophy"></i>
+            <!-- Competition Grid -->
+            <div class="competition-grid" id="competition-grid">
+              <?php if (empty($lombaList)): ?>
+                <div class="empty-state">
+                  <div class="empty-icon">
+                    <i class="fas fa-trophy"></i>
+                  </div>
+                  <h3>Tidak Ada Lomba Ditemukan</h3>
+                  <p>Coba ubah filter atau kata kunci pencarian Anda</p>
+                  <button class="btn-reset" onclick="resetFilters()">Reset Filter</button>
                 </div>
-                <h3>Tidak Ada Lomba Ditemukan</h3>
-                <p>Coba ubah filter atau kata kunci pencarian Anda</p>
-                <button class="btn-reset" onclick="resetFilters()">Reset Filter</button>
-              </div>
-            <?php else: ?>
-              <div class="competition-grid" id="competitionGrid">
+              <?php else: ?>
                 <?php foreach ($lombaList as $lomba): ?>
                   <?php
-                  $deadline = new DateTime($lomba['deadline']);
-                  $startDate = new DateTime($lomba['start_date']);
-                  $now = new DateTime();
-                  $isExpired = $deadline < $now;
-                  $daysLeft = $isExpired ? 0 : $now->diff($deadline)->days;
+                    $deadline = new DateTime($lomba['deadline']);
+                    $startDate = new DateTime($lomba['start_date']);
+                    $today = new DateTime();
+                    
+                    $isExpired = $deadline < $today;
+                    $isUrgent = $deadline->diff($today)->days <= 7 && !$isExpired;
+                    
+                    $statusClass = $isExpired ? 'expired' : ($isUrgent ? 'urgent' : 'active');
+                    $statusText = $isExpired ? 'Pendaftaran Ditutup' : ($isUrgent ? 'Segera Berakhir' : 'Pendaftaran Dibuka');
+                    $statusIcon = $isExpired ? 'fas fa-times-circle' : ($isUrgent ? 'fas fa-exclamation-triangle' : 'fas fa-circle');
                   ?>
-                  <div class="competition-card" data-id="<?php echo $lomba['id']; ?>">
+                  
+                  <article class="competition-card">
                     <div class="card-header">
-                      <div class="card-image">
+                      <div class="card-image <?php echo empty($lomba['image_url']) ? 'no-image' : ''; ?>">
                         <?php if (!empty($lomba['image_url'])): ?>
                           <img src="<?php echo htmlspecialchars($lomba['image_url']); ?>" 
-                               alt="<?php echo htmlspecialchars($lomba['title']); ?>" />
-                        <?php else: ?>
-                          <div class="placeholder-image">
-                            <i class="fas fa-trophy"></i>
-                          </div>
+                               alt="<?php echo htmlspecialchars($lomba['title']); ?>" 
+                               onerror="this.style.display='none'; this.parentElement.classList.add('no-image');">
                         <?php endif; ?>
-                        <div class="card-overlay">
-                          <div class="level-badge">
-                            <span><?php echo htmlspecialchars($lomba['level']); ?></span>
-                          </div>
-                          <div class="scope-badge">
-                            <span><?php echo htmlspecialchars($lomba['scope']); ?></span>
-                          </div>
-                        </div>
                       </div>
-                      <div class="bookmark-btn" onclick="toggleBookmark(<?php echo $lomba['id']; ?>, 'lomba')" 
-                           data-id="<?php echo $lomba['id']; ?>" data-type="lomba">
+                      <div class="card-overlay">
+                        <span class="level-badge"><?php echo htmlspecialchars($lomba['level']); ?></span>
+                        <span class="scope-badge"><?php echo htmlspecialchars($lomba['scope']); ?></span>
+                      </div>
+                      <button class="bookmark-btn" aria-label="Bookmark lomba" 
+                              onclick="toggleBookmark(<?php echo $lomba['id']; ?>, 'lomba')">
                         <i class="far fa-bookmark"></i>
-                      </div>
+                      </button>
                     </div>
-
                     <div class="card-content">
                       <h3 class="competition-title">
                         <a href="detailLomba.php?id=<?php echo $lomba['id']; ?>">
                           <?php echo htmlspecialchars($lomba['title']); ?>
                         </a>
                       </h3>
-                      
                       <div class="competition-info">
                         <div class="info-item">
                           <i class="fas fa-building"></i>
                           <span><?php echo htmlspecialchars($lomba['organizer']); ?></span>
                         </div>
-                        
-                        <?php if (!empty($lomba['category'])): ?>
-                          <div class="info-item">
-                            <i class="fas fa-tag"></i>
-                            <span><?php echo htmlspecialchars($lomba['category']); ?></span>
-                          </div>
-                        <?php endif; ?>
+                        <div class="info-item">
+                          <i class="fas fa-globe"></i>
+                          <span>Tingkat <?php echo htmlspecialchars($lomba['scope']); ?></span>
+                        </div>
+                        <div class="info-item">
+                          <i class="fas fa-graduation-cap"></i>
+                          <span>untuk <?php echo htmlspecialchars($lomba['level']); ?></span>
+                        </div>
                       </div>
-
                       <div class="competition-dates">
-                        <div class="date-item start-date">
+                        <div class="date-item">
                           <i class="far fa-calendar-alt"></i>
                           <span>Mulai: <?php echo $startDate->format('d M Y'); ?></span>
                         </div>
-                        <div class="date-item deadline <?php echo $isExpired ? 'expired' : ''; ?>">
+                        <div class="date-item deadline <?php echo $isExpired ? 'expired' : ($isUrgent ? 'urgent' : ''); ?>">
                           <i class="fas fa-clock"></i>
-                          <span>
-                            Deadline: <?php echo $deadline->format('d M Y'); ?>
-                            <?php if (!$isExpired && $daysLeft <= 7): ?>
-                              <span class="urgent">(<?php echo $daysLeft; ?> hari lagi)</span>
-                            <?php endif; ?>
-                          </span>
+                          <span>Deadline: <?php echo $deadline->format('d M Y'); ?></span>
                         </div>
                       </div>
-
-                      <?php if ($isExpired): ?>
-                        <div class="status-badge expired">
-                          <i class="fas fa-times-circle"></i>
-                          <span>Berakhir</span>
-                        </div>
-                      <?php elseif ($daysLeft <= 3): ?>
-                        <div class="status-badge urgent">
-                          <i class="fas fa-exclamation-triangle"></i>
-                          <span>Segera Berakhir</span>
-                        </div>
-                      <?php else: ?>
-                        <div class="status-badge active">
-                          <i class="fas fa-check-circle"></i>
-                          <span>Aktif</span>
-                        </div>
-                      <?php endif; ?>
+                      <div class="status-badge <?php echo $statusClass; ?>">
+                        <i class="<?php echo $statusIcon; ?>"></i>
+                        <span><?php echo $statusText; ?></span>
+                      </div>
                     </div>
-
                     <div class="card-footer">
-                      <a href="detailLomba.php?id=<?php echo $lomba['id']; ?>" class="btn-detail">
-                        Lihat Detail
-                      </a>
-                      <?php if (!empty($lomba['external_url'])): ?>
-                        <a href="<?php echo htmlspecialchars($lomba['external_url']); ?>" 
-                           target="_blank" class="btn-register">
-                          Daftar Sekarang
-                        </a>
+                      <a href="detailLomba.php?id=<?php echo $lomba['id']; ?>" class="btn-detail">Detail</a>
+                      <?php if (!$isExpired): ?>
+                        <a href="<?php echo htmlspecialchars($lomba['external_url'] ?? '#'); ?>" 
+                           class="btn-register" target="_blank" rel="noopener">Daftar</a>
+                      <?php else: ?>
+                        <button class="btn-register" disabled>Ditutup</button>
                       <?php endif; ?>
                     </div>
-                  </div>
+                  </article>
                 <?php endforeach; ?>
-              </div>
-
-              <!-- Pagination -->
-              <?php if ($totalPages > 1): ?>
-                <div class="pagination-container">
-                  <div class="pagination">
-                    <?php if ($currentPage > 1): ?>
-                      <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $currentPage - 1])); ?>" 
-                         class="pagination-btn prev">
-                        <i class="fas fa-chevron-left"></i>
-                        Sebelumnya
-                      </a>
-                    <?php endif; ?>
-
-                    <div class="pagination-numbers">
-                      <?php
-                      $startPage = max(1, $currentPage - 2);
-                      $endPage = min($totalPages, $currentPage + 2);
-                      
-                      if ($startPage > 1): ?>
-                        <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => 1])); ?>" 
-                           class="pagination-number">1</a>
-                        <?php if ($startPage > 2): ?>
-                          <span class="pagination-dots">...</span>
-                        <?php endif; ?>
-                      <?php endif; ?>
-
-                      <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-                        <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>" 
-                           class="pagination-number <?php echo $i === $currentPage ? 'active' : ''; ?>">
-                          <?php echo $i; ?>
-                        </a>
-                      <?php endfor; ?>
-
-                      <?php if ($endPage < $totalPages): ?>
-                        <?php if ($endPage < $totalPages - 1): ?>
-                          <span class="pagination-dots">...</span>
-                        <?php endif; ?>
-                        <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $totalPages])); ?>" 
-                           class="pagination-number"><?php echo $totalPages; ?></a>
-                      <?php endif; ?>
-                    </div>
-
-                    <?php if ($currentPage < $totalPages): ?>
-                      <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $currentPage + 1])); ?>" 
-                         class="pagination-btn next">
-                        Selanjutnya
-                        <i class="fas fa-chevron-right"></i>
-                      </a>
-                    <?php endif; ?>
-                  </div>
-                  
-                  <div class="pagination-info">
-                    Menampilkan <?php echo (($currentPage - 1) * $itemsPerPage) + 1; ?> - 
-                    <?php echo min($currentPage * $itemsPerPage, $totalLomba); ?> 
-                    dari <?php echo $totalLomba; ?> lomba
-                  </div>
-                </div>
               <?php endif; ?>
+            </div>
+
+            <!-- Pagination -->
+            <?php if ($totalPages > 1): ?>
+              <div class="pagination-container">
+                <div class="pagination">
+                  <!-- Previous Button -->
+                  <?php if ($currentPage > 1): ?>
+                    <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $currentPage - 1])); ?>" 
+                       class="pagination-btn">
+                      <i class="fas fa-chevron-left"></i>
+                      <span>Sebelumnya</span>
+                    </a>
+                  <?php endif; ?>
+
+                  <!-- Page Numbers -->
+                  <div class="pagination-numbers">
+                    <?php
+                    $startPage = max(1, $currentPage - 2);
+                    $endPage = min($totalPages, $currentPage + 2);
+                    
+                    // Show first page if not in range
+                    if ($startPage > 1): ?>
+                      <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => 1])); ?>" 
+                         class="pagination-number">1</a>
+                      <?php if ($startPage > 2): ?>
+                        <span class="pagination-dots">...</span>
+                      <?php endif; ?>
+                    <?php endif; ?>
+
+                    <!-- Page range -->
+                    <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                      <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>" 
+                         class="pagination-number <?php echo $i === $currentPage ? 'active' : ''; ?>">
+                        <?php echo $i; ?>
+                      </a>
+                    <?php endfor; ?>
+
+                    <!-- Show last page if not in range -->
+                    <?php if ($endPage < $totalPages): ?>
+                      <?php if ($endPage < $totalPages - 1): ?>
+                        <span class="pagination-dots">...</span>
+                      <?php endif; ?>
+                      <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $totalPages])); ?>" 
+                         class="pagination-number"><?php echo $totalPages; ?></a>
+                    <?php endif; ?>
+                  </div>
+
+                  <!-- Next Button -->
+                  <?php if ($currentPage < $totalPages): ?>
+                    <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $currentPage + 1])); ?>" 
+                       class="pagination-btn">
+                      <span>Selanjutnya</span>
+                      <i class="fas fa-chevron-right"></i>
+                    </a>
+                  <?php endif; ?>
+                </div>
+                
+                <!-- Pagination Info -->
+                <div class="pagination-info">
+                  <span>Menampilkan <?php echo (($currentPage - 1) * $itemsPerPage) + 1; ?> - 
+                        <?php echo min($currentPage * $itemsPerPage, $totalLomba); ?> 
+                        dari <?php echo $totalLomba; ?> lomba</span>
+                </div>
+              </div>
             <?php endif; ?>
-          </div>
+          </section>
         </div>
       </div>
     </main>
-    <!-- DAFTAR LOMBA END -->
-
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-      <div class="loading-spinner">
-        <i class="fas fa-spinner fa-spin"></i>
-        <p>Memuat data...</p>
-      </div>
-    </div>
+    <!-- MAIN CONTENT END -->
 
     <!-- FOOTER START -->
     <?php include 'php/footer.php'; ?>
     <!-- FOOTER END -->
 
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+      <div class="loading-spinner">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Memuat lomba...</p>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/js/main.js"></script>
     <script>
       // Global variables
       let currentFilters = {
@@ -564,8 +560,7 @@ $currentMonthName = $months[$currentMonthNum];
         category: '<?php echo $categoryFilter; ?>',
         month: '<?php echo $monthFilter; ?>',
         search: '<?php echo $searchQuery; ?>',
-        sort: '<?php echo $sortBy; ?>',
-        page: <?php echo $currentPage; ?>
+        sort: '<?php echo $sortBy; ?>'
       };
 
       // Initialize page
@@ -573,36 +568,46 @@ $currentMonthName = $months[$currentMonthNum];
         initializeFilters();
         initializeSearch();
         initializeBookmarks();
-        initializeResponsive();
+        handleImageErrors();
       });
 
       // Initialize filters
       function initializeFilters() {
-        // Level filters
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        // Set checkbox states
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
           checkbox.addEventListener('change', function() {
             if (this.checked) {
               // Uncheck other checkboxes in the same group
               const group = this.closest('.checkbox-group');
-              group.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                if (cb !== this) cb.checked = false;
-              });
+              if (group) {
+                group.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                  if (cb !== this) cb.checked = false;
+                });
+              }
             }
           });
         });
 
-        // Category search
-        const categorySearch = document.getElementById('categorySearch');
-        if (categorySearch) {
-          categorySearch.addEventListener('input', debounce(function() {
-            filterCategories(this.value);
-          }, 300));
+        // Filter toggle for mobile
+        const filterToggle = document.querySelector('.filter-toggle');
+        const filterContent = document.querySelector('.filter-content');
+        
+        if (filterToggle && filterContent) {
+          filterToggle.addEventListener('click', function() {
+            filterContent.classList.toggle('show');
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
+          });
         }
       }
 
       // Initialize search
       function initializeSearch() {
         const searchInput = document.getElementById('searchInput');
+        const categorySearch = document.getElementById('categorySearch');
+        
         if (searchInput) {
           searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -610,34 +615,36 @@ $currentMonthName = $months[$currentMonthNum];
             }
           });
         }
+        
+        if (categorySearch) {
+          categorySearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              currentFilters.search = this.value;
+              applyFilters();
+            }
+          });
+        }
       }
 
       // Initialize bookmarks
       function initializeBookmarks() {
-        // Load bookmark status for current user
-        loadBookmarkStatus();
+        // Check if user is logged in and load bookmark states
+        // This would typically involve an AJAX call to check bookmark status
       }
 
-      // Initialize responsive features
-      function initializeResponsive() {
-        const filterToggle = document.querySelector('.filter-toggle');
-        const filterContent = document.querySelector('.filter-content');
-        
-        if (filterToggle && filterContent) {
-          filterToggle.addEventListener('click', function() {
-            filterContent.classList.toggle('show');
-            this.querySelector('i').classList.toggle('fa-chevron-up');
-            this.querySelector('i').classList.toggle('fa-chevron-down');
+      // Handle image loading errors
+      function handleImageErrors() {
+        const images = document.querySelectorAll('.card-image img');
+        images.forEach(img => {
+          img.addEventListener('error', function() {
+            this.style.display = 'none';
+            this.parentElement.classList.add('no-image');
           });
-        }
-
-        // Close filter on mobile when clicking outside
-        document.addEventListener('click', function(e) {
-          if (window.innerWidth <= 768) {
-            const sidebar = document.querySelector('.filter-sidebar');
-            if (sidebar && !sidebar.contains(e.target)) {
-              filterContent.classList.remove('show');
-            }
+          
+          // Check if already loaded but broken
+          if (img.complete && img.naturalHeight === 0) {
+            img.style.display = 'none';
+            img.parentElement.classList.add('no-image');
           }
         });
       }
@@ -645,82 +652,71 @@ $currentMonthName = $months[$currentMonthNum];
       // Search functions
       function performSearch() {
         const searchInput = document.getElementById('searchInput');
-        currentFilters.search = searchInput.value;
-        currentFilters.page = 1;
-        applyFiltersAndRedirect();
+        if (searchInput) {
+          currentFilters.search = searchInput.value;
+          applyFilters();
+        }
       }
 
       function toggleSearch() {
         const searchContainer = document.querySelector('.search-container');
-        searchContainer.classList.toggle('active');
-        
-        if (searchContainer.classList.contains('active')) {
-          document.getElementById('searchInput').focus();
+        if (searchContainer) {
+          searchContainer.classList.toggle('active');
         }
       }
 
       // Filter functions
       function filterByMonth(month) {
         currentFilters.month = month;
-        currentFilters.page = 1;
-        applyFiltersAndRedirect();
+        applyFilters();
       }
 
       function filterByCategory(category) {
-        currentFilters.category = category;
-        currentFilters.page = 1;
-        applyFiltersAndRedirect();
+        currentFilters.category = currentFilters.category === category ? '' : category;
+        applyFilters();
       }
 
-      function applySorting() {
-        const sortSelect = document.getElementById('sortSelect');
-        currentFilters.sort = sortSelect.value;
-        currentFilters.page = 1;
-        applyFiltersAndRedirect();
-      }
-
-      function applyFilters() {
-        showLoading();
-        
-        // Get level filter
-        const levelCheckbox = document.querySelector('input[name="level"]:checked') || 
-                             document.querySelector('.checkbox-group input:checked');
-        currentFilters.level = levelCheckbox ? levelCheckbox.value : '';
-        
-        // Get scope filter
-        const scopeCheckbox = document.querySelector('.skala-section input:checked');
-        currentFilters.scope = scopeCheckbox ? scopeCheckbox.value : '';
-        
-        // Get category filter
-        const categorySearch = document.getElementById('categorySearch');
-        currentFilters.category = categorySearch ? categorySearch.value : '';
-        
-        currentFilters.page = 1;
-        applyFiltersAndRedirect();
+      function sortLomba(sortBy) {
+        currentFilters.sort = sortBy;
+        applyFilters();
       }
 
       function resetFilters() {
         // Clear all filters
-        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-        document.getElementById('categorySearch').value = '';
-        document.getElementById('searchInput').value = '';
-        document.getElementById('sortSelect').value = 'deadline_asc';
-        
-        // Reset filter object
         currentFilters = {
           level: '',
           scope: '',
           category: '',
           month: '',
           search: '',
-          sort: 'deadline_asc',
-          page: 1
+          sort: 'deadline_asc'
         };
         
-        applyFiltersAndRedirect();
+        // Clear form inputs
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
+        document.getElementById('sort-select').value = 'deadline_asc';
+        
+        // Remove active states
+        document.querySelectorAll('.month-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tag').forEach(tag => tag.classList.remove('active'));
+        
+        applyFilters();
       }
-      function applyFiltersAndRedirect() {
-        // Build query parameters
+
+      function applyFilters() {
+        showLoading();
+        
+        // Get current filter values
+        const levelCheckboxes = document.querySelectorAll('.jenjang-section input[type="checkbox"]:checked');
+        const scopeCheckboxes = document.querySelectorAll('.skala-section input[type="checkbox"]:checked');
+        const categorySearch = document.getElementById('categorySearch');
+        
+        currentFilters.level = levelCheckboxes.length > 0 ? levelCheckboxes[0].value : '';
+        currentFilters.scope = scopeCheckboxes.length > 0 ? scopeCheckboxes[0].value : '';
+        currentFilters.search = categorySearch ? categorySearch.value : '';
+        
+        // Build URL with filters
         const params = new URLSearchParams();
         
         Object.keys(currentFilters).forEach(key => {
@@ -729,98 +725,221 @@ $currentMonthName = $months[$currentMonthNum];
           }
         });
         
-        // Redirect with new parameters
+        // Reset to page 1 when applying filters
+        params.append('page', '1');
+        
+        // Redirect with new filters
         window.location.href = 'lomba.php?' + params.toString();
       }
 
       // Bookmark functions
-      function toggleBookmark(itemId, itemType) {
+      function toggleBookmark(lombaId, type) {
         // Check if user is logged in
-        if (!isUserLoggedIn()) {
-          showLoginPrompt();
-          return;
-        }
-
-        const bookmarkBtn = document.querySelector(`[data-id="${itemId}"][data-type="${itemType}"]`);
-        const icon = bookmarkBtn.querySelector('i');
-        const isBookmarked = icon.classList.contains('fas');
-
-        // Show loading state
-        icon.className = 'fas fa-spinner fa-spin';
-
-        // Send request to server
-        fetch('php/bookmark_handler.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: isBookmarked ? 'remove' : 'add',
-            item_id: itemId,
-            item_type: itemType
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            // Update icon
-            icon.className = isBookmarked ? 'far fa-bookmark' : 'fas fa-bookmark';
+        fetch('php/auth_check.php')
+          .then(response => response.json())
+          .then(data => {
+            if (!data.logged_in) {
+              alert('Silakan login terlebih dahulu untuk menyimpan lomba');
+              window.location.href = 'login.php';
+              return;
+            }
             
-            // Show feedback
-            showNotification(
-              isBookmarked ? 'Bookmark dihapus' : 'Ditambahkan ke bookmark',
-              'success'
-            );
-          } else {
-            // Revert icon
-            icon.className = isBookmarked ? 'fas fa-bookmark' : 'far fa-bookmark';
-            showNotification('Gagal mengubah bookmark', 'error');
-          }
-        })
-        .catch(error => {
-          // Revert icon
-          icon.className = isBookmarked ? 'fas fa-bookmark' : 'far fa-bookmark';
-          showNotification('Terjadi kesalahan jaringan', 'error');
-        });
-      }
-
-      function loadBookmarkStatus() {
-        if (!isUserLoggedIn()) return;
-
-        const lombaIds = Array.from(document.querySelectorAll('.competition-card')).map(card => 
-          card.getAttribute('data-id')
-        );
-
-        if (lombaIds.length === 0) return;
-
-        fetch('php/bookmark_handler.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'get_status',
-            item_ids: lombaIds,
-            item_type: 'lomba'
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success && data.bookmarks) {
-            data.bookmarks.forEach(bookmark => {
-              const btn = document.querySelector(`[data-id="${bookmark.item_id}"][data-type="lomba"]`);
-              if (btn) {
-                btn.querySelector('i').className = 'fas fa-bookmark';
-              }
+            // Toggle bookmark
+            return fetch('php/bookmark_handler.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                action: 'toggle',
+                item_id: lombaId,
+                item_type: type
+              })
             });
-          }
-        })
-        .catch(error => {
-          console.error('Error loading bookmark status:', error);
-        });
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              const bookmarkBtn = document.querySelector(`[onclick="toggleBookmark(${lombaId}, '${type}')"] i`);
+              if (bookmarkBtn) {
+                if (data.bookmarked) {
+                  bookmarkBtn.classList.remove('far');
+                  bookmarkBtn.classList.add('fas');
+                  showNotification('Lomba berhasil disimpan!', 'success');
+                } else {
+                  bookmarkBtn.classList.remove('fas');
+                  bookmarkBtn.classList.add('far');
+                  showNotification('Lomba dihapus dari simpanan', 'info');
+                }
+              }
+            } else {
+              showNotification(data.message || 'Terjadi kesalahan', 'error');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            showNotification('Terjadi kesalahan jaringan', 'error');
+          });
       }
 
       // Utility functions
+      function showLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+          overlay.style.display = 'flex';
+        }
+      }
+
+      function hideLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+          overlay.style.display = 'none';
+        }
+      }
+
+      function showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+          <div class="notification-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+            <span>${message}</span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        `;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.remove();
+          }
+        }, 5000);
+      }
+
+      // Handle page load completion
+      window.addEventListener('load', function() {
+        hideLoading();
+      });
+
+      // Handle back button
+      window.addEventListener('popstate', function(event) {
+        location.reload();
+      });
+
+      // Mobile responsive functions
+      function toggleMobileFilter() {
+        const sidebar = document.querySelector('.filter-sidebar');
+        if (sidebar) {
+          sidebar.classList.toggle('mobile-active');
+        }
+      }
+
+      // Smooth scroll for pagination
+      function scrollToTop() {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+
+      // Add click handlers for pagination
+      document.addEventListener('DOMContentLoaded', function() {
+        const paginationLinks = document.querySelectorAll('.pagination-number, .pagination-btn');
+        paginationLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            showLoading();
+            // Scroll to top after a short delay
+            setTimeout(scrollToTop, 100);
+          });
+        });
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', function(e) {
+        // ESC key to close mobile filter
+        if (e.key === 'Escape') {
+          const sidebar = document.querySelector('.filter-sidebar');
+          if (sidebar && sidebar.classList.contains('mobile-active')) {
+            sidebar.classList.remove('mobile-active');
+          }
+        }
+        
+        // Enter key for search
+        if (e.key === 'Enter' && e.target.matches('#searchInput, #categorySearch')) {
+          e.preventDefault();
+          if (e.target.id === 'searchInput') {
+            performSearch();
+          } else {
+            currentFilters.search = e.target.value;
+            applyFilters();
+          }
+        }
+      });
+
+      // Touch/swipe support for mobile
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+
+      document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        const swipeThreshold = 100;
+        const sidebar = document.querySelector('.filter-sidebar');
+        
+        if (touchEndX < touchStartX - swipeThreshold) {
+          // Swipe left - close sidebar
+          if (sidebar && sidebar.classList.contains('mobile-active')) {
+            sidebar.classList.remove('mobile-active');
+          }
+        }
+        
+        if (touchEndX > touchStartX + swipeThreshold) {
+          // Swipe right - open sidebar
+          if (sidebar && !sidebar.classList.contains('mobile-active')) {
+            sidebar.classList.add('mobile-active');
+          }
+        }
+      }
+
+      // Intersection Observer for lazy loading (if needed)
+      if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              if (img.dataset.src) {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+                observer.unobserve(img);
+              }
+            }
+          });
+        });
+
+        // Observe images with data-src attribute
+        document.querySelectorAll('img[data-src]').forEach(img => {
+          imageObserver.observe(img);
+        });
+      }
+
+      // Performance optimization - debounce search
       function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -833,140 +952,227 @@ $currentMonthName = $months[$currentMonthNum];
         };
       }
 
-      function showLoading() {
-        document.getElementById('loadingOverlay').style.display = 'flex';
-      }
+      // Debounced search function
+      const debouncedSearch = debounce(function(query) {
+        currentFilters.search = query;
+        applyFilters();
+      }, 500);
 
-      function hideLoading() {
-        document.getElementById('loadingOverlay').style.display = 'none';
-      }
-
-      function isUserLoggedIn() {
-        // Check if user is logged in (you can modify this based on your auth system)
-        return document.getElementById('profile-section').style.display !== 'none';
-      }
-
-      function showLoginPrompt() {
-        if (confirm('Anda harus login untuk menyimpan bookmark. Login sekarang?')) {
-          window.location.href = 'login.php?redirect=' + encodeURIComponent(window.location.href);
-        }
-      }
-
-      function showNotification(message, type = 'info') {
-        // Remove existing notifications
-        const existingNotifications = document.querySelectorAll('.notification');
-        existingNotifications.forEach(notification => notification.remove());
-
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-          <div class="notification-content">
-            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-            <span>${message}</span>
-            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        `;
-
-        document.body.appendChild(notification);
-
-        // Auto remove after 3 seconds
-        setTimeout(() => {
-          if (notification.parentElement) {
-            notification.remove();
-          }
-        }, 3000);
-      }
-
-      function filterCategories(searchTerm) {
-        const tags = document.querySelectorAll('.popular-tags .tag');
-        tags.forEach(tag => {
-          const text = tag.textContent.toLowerCase();
-          const matches = text.includes(searchTerm.toLowerCase());
-          tag.style.display = matches ? 'inline-block' : 'none';
-        });
-      }
-
-      // Keyboard shortcuts
-      document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + K = Focus search
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-          e.preventDefault();
-          document.getElementById('searchInput').focus();
-        }
-        
-        // Escape = Clear search
-        if (e.key === 'Escape') {
-          const searchInput = document.getElementById('searchInput');
-          if (searchInput === document.activeElement) {
-            searchInput.blur();
-          }
+      // Update search inputs to use debounced search
+      document.addEventListener('DOMContentLoaded', function() {
+        const categorySearch = document.getElementById('categorySearch');
+        if (categorySearch) {
+          categorySearch.addEventListener('input', function() {
+            debouncedSearch(this.value);
+          });
         }
       });
-
-      // Infinite scroll (optional)
-      let isLoadingMore = false;
-      
-      function initInfiniteScroll() {
-        window.addEventListener('scroll', debounce(function() {
-          if (isLoadingMore) return;
-          
-          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-          const windowHeight = window.innerHeight;
-          const documentHeight = document.documentElement.scrollHeight;
-          
-          if (scrollTop + windowHeight >= documentHeight - 1000) {
-            loadMoreLomba();
-          }
-        }, 100));
-      }
-
-      function loadMoreLomba() {
-        if (<?php echo $currentPage; ?> >= <?php echo $totalPages; ?>) return;
-        
-        isLoadingMore = true;
-        const nextPage = <?php echo $currentPage + 1; ?>;
-        
-        // Build URL for next page
-        const params = new URLSearchParams(window.location.search);
-        params.set('page', nextPage);
-        
-        fetch('lomba.php?' + params.toString())
-        .then(response => response.text())
-        .then(html => {
-          // Parse HTML and extract competition cards
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, 'text/html');
-          const newCards = doc.querySelectorAll('.competition-card');
-          
-          // Append new cards to grid
-          const grid = document.getElementById('competitionGrid');
-          newCards.forEach(card => {
-            grid.appendChild(card.cloneNode(true));
-          });
-          
-          // Update current page
-          currentFilters.page = nextPage;
-          
-          // Re-initialize bookmarks for new cards
-          loadBookmarkStatus();
-          
-          isLoadingMore = false;
-        })
-        .catch(error => {
-          console.error('Error loading more lomba:', error);
-          isLoadingMore = false;
-        });
-      }
-
-      // Uncomment to enable infinite scroll
-      // initInfiniteScroll();
     </script>
 
-    <!-- Include main JavaScript -->
-    <script src="../assets/js/main.js"></script>
+    <!-- Additional CSS for notifications and loading -->
+    <style>
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        max-width: 400px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: slideInRight 0.3s ease-out;
+      }
+
+      .notification.success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+
+      .notification.error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+
+      .notification.info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+      }
+
+      .notification-content {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        gap: 8px;
+      }
+
+      .notification-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-left: auto;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+
+      .notification-close:hover {
+        opacity: 1;
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .loading-spinner {
+        text-align: center;
+        color: var(--Primary-color);
+      }
+
+      .loading-spinner i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+
+      .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--second-font-color);
+      }
+
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+      }
+
+      .empty-state h3 {
+        margin-bottom: 10px;
+        color: var(--base-font-color);
+      }
+
+      .empty-state p {
+        margin-bottom: 20px;
+      }
+
+      /* Mobile filter overlay */
+      @media (max-width: 768px) {
+        .filter-sidebar.mobile-active {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1000;
+          background: white;
+          overflow-y: auto;
+        }
+
+        .filter-sidebar.mobile-active::before {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: -1;
+        }
+      }
+
+      /* Pagination styles */
+      .pagination-container {
+        margin-top: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .pagination-btn,
+      .pagination-number {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        text-decoration: none;
+        color: var(--base-font-color);
+        transition: all 0.2s;
+        min-width: 44px;
+        min-height: 44px;
+        justify-content: center;
+      }
+
+      .pagination-number.active {
+        background: var(--Primary-color);
+        color: white;
+        border-color: var(--Primary-color);
+      }
+
+      .pagination-btn:hover,
+      .pagination-number:hover {
+        background: var(--fill-color);
+        border-color: var(--Primary-color);
+      }
+
+      .pagination-dots {
+        padding: 8px 4px;
+        color: var(--second-font-color);
+      }
+
+      .pagination-info {
+        color: var(--second-font-color);
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      @media (max-width: 640px) {
+        .pagination {
+          gap: 5px;
+        }
+        
+        .pagination-btn,
+        .pagination-number {
+          padding: 6px 8px;
+          font-size: 0.9rem;
+        }
+        
+        .pagination-btn span {
+          display: none;
+        }
+      }
+    </style>
   </body>
 </html>
 
