@@ -6,11 +6,11 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", Verdana, sans-serif;
-  color: var(--base-font-color);
 }
 
 body {
   line-height: 1.6;
+  background-color: #f8f9fa;
 }
 
 a {
@@ -30,261 +30,1904 @@ ul {
   --second-font-color: #777776;
 }
 
-/* ---------- MAIN START ---------- */
-.main-container {
-  margin: 60px auto;
-  display: flex;
-  gap: 12px;
-  width: 100%;
+/* ---------- MAIN CONTENT ---------- */
+.main-content {
+  margin-top: 60px; /* Dikurangi dari 80px ke 60px */
+  min-height: calc(100vh - 60px);
 }
 
-/* ---------- MAIN CONTENT START ---------- */
-.main-content {
+.page-title {
+  text-align: center;
+  padding: 30px 20px; /* Dikurangi dari 40px ke 30px */
+  background: linear-gradient(135deg, var(--Primary-color), var(--Secondary-color));
+  color: white;
+  margin-bottom: 0; /* Pastikan tidak ada margin bawah */
+}
+
+.page-title h1 {
+  font-size: 2.2rem; /* Dikurangi sedikit dari 2.5rem */
+  font-weight: 700;
+  margin-bottom: 8px; /* Dikurangi dari 10px */
+}
+
+.page-title p {
+  font-size: 1rem; /* Dikurangi dari 1.1rem */
+  opacity: 0.9;
+  margin-bottom: 0; /* Pastikan tidak ada margin bawah */
+}
+
+.content-wrapper {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 30px;
+  padding: 20px; /* Dikurangi dari 30px 20px */
+}
+
+/* ---------- FILTER SIDEBAR ---------- */
+.filter-sidebar {
+  width: 300px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  height: fit-content;
+  position: sticky;
+  top: 80px; /* Disesuaikan dengan margin-top yang baru */
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--fill-color);
+}
+
+.filter-header h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--Primary-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-icon {
+  color: var(--Secondary-color);
+}
+
+.filter-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--Primary-color);
+  cursor: pointer;
+}
+
+.filter-content {
+  display: block;
+}
+
+.filter-section {
+  margin-bottom: 25px;
+}
+
+.section-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--base-font-color);
+  margin-bottom: 15px;
+}
+
+.checkbox-group {
   display: flex;
   flex-direction: column;
-  margin: 0 24px;
-  max-width: 100%;
-  overflow: hidden;
-}
-/* ---------- MAIN CONTENT END ---------- */
-
-/* ---------- YEAR SET START ---------- */
-.year-container {
-  display: flex;
-  gap: 24px;
-}
-
-.year-container h1 {
-  font-weight: 600;
-  font-size: 28px;
-  display: flex;
-  align-items: center;
-}
-
-.arrow-btn {
-  display: flex;
-}
-
-.arrow-btn .prev-btn,
-.arrow-btn .next-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  -ms-border-radius: 50%;
-  -o-border-radius: 50%;
-}
-
-.arrow-btn .prev-btn:hover,
-.arrow-btn .next-btn:hover {
-  background-color: #ddd;
-}
-/* ---------- YEAR SET END ---------- */
-
-/* ---------- MONTH SET START ---------- */
-.month-container {
-  width: 100%;
-  padding: 12px 0;
-}
-
-.month-container .month-list {
-  display: flex;
   gap: 12px;
 }
 
-.month-container .month-list li {
-  background-color: var(--fill-color);
-  padding: 8px 16px;
-  border-radius: 12px;
-  -webkit-border-radius: 12px;
-  -moz-border-radius: 12px;
-  -ms-border-radius: 12px;
-  -o-border-radius: 12px;
-  font-size: 16px;
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--Primary-color);
+  cursor: pointer;
+}
+
+.checkbox-item label {
+  font-size: 0.95rem;
+  color: var(--base-font-color);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-item:hover label {
   color: var(--Primary-color);
 }
 
-.month-container .month-list li:hover,
-.month-container .month-list li .active {
-  background-color: var(--Primary-color);
+/* Search box in filter */
+.search-box {
+  margin-bottom: 15px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--Primary-color);
+}
+
+/* Popular tags */
+.popular-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  padding: 6px 12px;
+  background: var(--fill-color);
+  color: var(--Primary-color);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.tag:hover {
+  background: var(--Primary-color);
   color: white;
 }
-/* ---------- MONTH SET END ---------- */
 
-/* ---------- LOMBA LIST START ---------- */
-
-.lomba-container {
-  padding: 12px 0;
+.tag.active {
+  background: var(--Primary-color);
+  color: white;
+  border-color: var(--Secondary-color);
 }
 
-.lomba-container h3 {
-  font-size: 20px;
-}
-
-.lomba-list {
+/* Filter actions */
+.filter-actions {
   display: flex;
-  margin: 12px 0 0;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 10px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
 }
 
-.lomba-card .card-info {
+.btn-reset, .btn-apply {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-reset {
+  background: #f8f9fa;
+  color: var(--second-font-color);
+  border: 1px solid #dee2e6;
+}
+
+.btn-reset:hover {
+  background: #e9ecef;
+}
+
+.btn-apply {
+  background: var(--Primary-color);
+  color: white;
+}
+
+.btn-apply:hover {
+  background: #1a4a6b;
+}
+
+/* ---------- CONTENT AREA ---------- */
+.content-area {
+  flex: 1;
+}
+
+/* Month Selector Styles */
+.month-selector-container {
+  background: linear-gradient(135deg, rgba(213, 230, 231, 0.1), rgba(79, 149, 157, 0.05));
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 40px;
+}
+
+.month-selector-container .section-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--Primary-color);
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.month-selector-container .count {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--second-font-color);
+  background: var(--fill-color);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.month-selector {
+  display: flex;
+  gap: 8px; /* Reduced gap */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 15px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--Primary-color) transparent;
+  justify-content: flex-start;
+}
+
+.month-selector::-webkit-scrollbar {
+  height: 6px; /* Thinner scrollbar */
+}
+
+.month-selector::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 3px;
+}
+
+.month-selector::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--Primary-color), var(--Secondary-color));
+  border-radius: 3px;
+}
+
+.month-selector::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, var(--Secondary-color), var(--Primary-color));
+}
+
+.month-button {
+  flex: 0 0 auto;
+  min-width: 95px; /* Reduced from 120px */
+  height: 48px; /* Reduced from 55px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 2px solid #e8ecef;
+  border-radius: 10px; /* Slightly smaller radius */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  font-size: 0.9rem; /* Reduced font size */
+  color: var(--base-font-color);
+  user-select: none;
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 0 10px; /* Reduced padding */
+}
+
+.month-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s;
+}
+
+.month-button:hover::before {
+  left: 100%;
+}
+
+.month-button:hover {
+  border-color: var(--Primary-color);
+  background: var(--fill-color);
+  transform: translateY(-2px); /* Reduced transform */
+  box-shadow: 0 6px 20px rgba(32, 87, 129, 0.15);
+  color: var(--Primary-color);
+}
+
+.month-button.active {
+  background: linear-gradient(135deg, var(--Primary-color), var(--Secondary-color));
+  border-color: var(--Primary-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(32, 87, 129, 0.3);
+}
+
+.month-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25px; /* Reduced indicator width */
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+}
+
+.month-button span {
+  white-space: nowrap;
+  font-weight: inherit;
+  letter-spacing: 0.2px; /* Reduced letter spacing */
+  text-align: center;
+  font-size: inherit;
+}
+
+/* Special styling for "Semua Bulan" button */
+.month-button:first-child {
+  min-width: 105px; /* Reduced from 140px */
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  font-weight: 700;
+}
+
+.month-button:first-child.active {
+  background: linear-gradient(135deg, var(--Secondary-color), var(--Primary-color));
+}
+
+/* Enhanced hover effects */
+.month-button:not(.active):hover {
+  background: linear-gradient(135deg, var(--fill-color), rgba(79, 149, 157, 0.1));
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .month-selector {
+    gap: 7px;
+  }
+  
+  .month-button {
+    min-width: 88px;
+    height: 45px;
+    font-size: 0.85rem;
+    padding: 0 8px;
+  }
+  
+  .month-button:first-child {
+    min-width: 98px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .month-button {
+    min-width: 82px;
+    height: 42px;
+    font-size: 0.8rem;
+    padding: 0 7px;
+  }
+  
+  .month-button:first-child {
+    min-width: 92px;
+  }
+}
+
+@media (max-width: 768px) {
+  .month-selector-container {
+    padding: 20px 15px;
+  }
+  
+  .month-selector {
+    gap: 6px;
+    padding: 12px 0;
+  }
+  
+  .month-button {
+    min-width: 75px;
+    height: 40px;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    padding: 0 6px;
+  }
+  
+  .month-button:first-child {
+    min-width: 85px;
+  }
+  
+  .month-selector-container .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .month-selector-container .count {
+    font-size: 1rem;
+    padding: 3px 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .month-button {
+    min-width: 68px;
+    height: 38px;
+    font-size: 0.7rem;
+    padding: 0 5px;
+  }
+  
+  .month-button:first-child {
+    min-width: 78px;
+  }
+}
+
+@media (max-width: 480px) {
+  .month-selector-container {
+    padding: 15px 10px;
+  }
+  
+  .month-selector {
+    gap: 5px;
+    padding: 10px 0;
+  }
+  
+  .month-button {
+    min-width: 62px;
+    height: 36px;
+    font-size: 0.65rem;
+    border-radius: 6px;
+    padding: 0 4px;
+  }
+  
+  .month-button:first-child {
+    min-width: 72px;
+  }
+  
+  .month-selector-container .section-title {
+    font-size: 1.3rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .month-selector-container .count {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation for month selection */
+@keyframes monthSelect {
+  0% {
+    transform: translateY(-2px) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.01);
+  }
+  100% {
+    transform: translateY(-2px) scale(1);
+  }
+}
+
+.month-button.active {
+  animation: monthSelect 0.3s ease-out;
+}
+
+/* Focus states for accessibility */
+.month-button:focus {
+  outline: 2px solid var(--Primary-color);
+  outline-offset: 2px;
+}
+
+.month-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Loading state */
+.month-button.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.month-button.loading::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Smooth scroll behavior */
+.month-selector {
+  scroll-behavior: smooth;
+}
+
+/* Better text rendering */
+.month-button span {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure proper text fitting */
+@media (max-width: 1024px) {
+  .month-button span {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .month-button span {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .month-button span {
+    font-size: 0.65rem;
+  }
+}
+
+
+/* ---------- COMPETITION CONTAINER ---------- */
+.competition-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+}
+
+.competition-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--fill-color);
+}
+
+.sort-dropdown select {
+  padding: 8px 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--base-font-color);
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.sort-dropdown select:focus {
+  outline: none;
+  border-color: var(--Primary-color);
+}
+
+/* ---------- COMPETITION GRID ---------- */
+.competition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+.competition-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
+  position: relative;
+}
+
+.competition-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: var(--fill-color); /* Background fallback */
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block; /* Pastikan img ditampilkan sebagai block */
+  background: var(--fill-color); /* Background saat loading */
+}
+
+/* Fallback untuk gambar yang tidak ada atau error */
+.card-image img[src=""],
+.card-image img:not([src]),
+.card-image img[src*="placeholder"] {
+  display: none;
+}
+
+.placeholder-image {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--fill-color), #e9ecef);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--Primary-color);
+  font-size: 3rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Jika gambar tidak ada, tampilkan placeholder */
+.card-image:not(:has(img)),
+.card-image:has(img[src=""]),
+.card-image:has(img:not([src])) {
+  background: linear-gradient(135deg, var(--fill-color), #e9ecef);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-image:not(:has(img))::before,
+.card-image:has(img[src=""])::before,
+.card-image:has(img:not([src]))::before {
+  content: "\f091"; /* Font Awesome trophy icon */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 3rem;
+  color: var(--Primary-color);
+}
+
+.card-overlay {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+
+.level-badge, .scope-badge {
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.level-badge {
+  background: var(--Primary-color);
+  color: white;
+}
+
+.scope-badge {
+  background: var(--Secondary-color);
+  color: white;
+}
+
+.bookmark-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: none;
+  z-index: 4;
+}
+
+.bookmark-btn:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+.bookmark-btn i {
+  font-size: 1.1rem;
+  color: var(--Primary-color);
+}
+
+.bookmark-btn i.fas {
+  color: #ffc107;
+}
+
+/* ---------- CARD CONTENT ---------- */
+.card-content {
+  padding: 20px;
+}
+
+.competition-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--base-font-color);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.competition-title a {
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+.competition-title a:hover {
+  color: var(--Primary-color);
+}
+
+.competition-info {
+  margin-bottom: 15px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: var(--second-font-color);
+}
+
+.info-item i {
+  width: 16px;
+  color: var(--Secondary-color);
+}
+
+.competition-dates {
+  margin-bottom: 15px;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  color: var(--second-font-color);
+}
+
+.date-item i {
+  width: 14px;
+  color: var(--Secondary-color);
+}
+
+.date-item.deadline {
+  font-weight: 500;
+}
+
+.date-item.deadline.expired {
+  color: #dc3545;
+}
+
+.urgent {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.status-badge.active {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.status-badge.urgent {
+  background: rgba(255, 193, 7, 0.1);
+  color: #856404;
+}
+
+.status-badge.expired {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+/* ---------- CARD FOOTER ---------- */
+.card-footer {
+  padding: 0 20px 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-detail, .btn-register {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  text-decoration: none;
   display: inline-block;
 }
 
-.lomba-list .lomba-card {
-  display: flex;
+.btn-detail {
   background: var(--fill-color);
-  width: calc(50% - 10px);
-  overflow: hidden;
-  flex-direction: column;
-  margin-bottom: 24px;
+  color: var(--Primary-color);
+  border: 1px solid var(--Primary-color);
 }
 
-.degrees {
+.btn-detail:hover {
+  background: var(--Primary-color);
+  color: white;
+}
+
+.btn-register {
+  background: var(--Primary-color);
+  color: white;
+}
+
+.btn-register:hover {
+  background: #1a4a6b;
+  transform: translateY(-1px);
+}
+
+/* ---------- EMPTY STATE ---------- */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--second-font-color);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  color: var(--fill-color);
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  color: var(--base-font-color);
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  margin-bottom: 25px;
+}
+
+/* ---------- PAGINATION ---------- */
+.pagination-container {
+  margin-top: 40px;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
   gap: 8px;
-  z-index: 2;
-  position: absolute;
-  top: 10px;
-  left: 10px;
+  padding: 10px 15px;
+  background: white;
+  color: var(--Primary-color);
+  border: 2px solid var(--Primary-color);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
-.card-info img {
+.pagination-btn:hover {
+  background: var(--Primary-color);
+  color: white;
+}
+
+.pagination-numbers {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination-number {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  color: var(--Primary-color);
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.pagination-number:hover {
+  background: var(--fill-color);
+  border-color: var(--Primary-color);
+}
+
+.pagination-number.active {
+  background: var(--Primary-color);
+  color: white;
+  border-color: var(--Primary-color);
+}
+
+.pagination-dots {
+  padding: 0 5px;
+  color: var(--second-font-color);
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: var(--second-font-color);
+}
+
+/* ---------- LOADING OVERLAY ---------- */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 250px;
-  object-fit: cover;
-  object-position: center -30px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
 }
 
-.card-info::after {
-  content: "";
+.loading-spinner {
+  text-align: center;
+  color: var(--Primary-color);
+}
+
+.loading-spinner i {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner p {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ---------- NOTIFICATIONS ---------- */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  max-width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideInRight 0.3s ease;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  color: white;
+}
+
+.notification-success {
+  background: #28a745;
+}
+
+.notification-error {
+  background: #dc3545;
+}
+
+.notification-info {
+  background: #17a2b8;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: auto;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.notification-close:hover {
+  opacity: 1;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ---------- RESPONSIVE DESIGN ---------- */
+@media (max-width: 1200px) {
+  .content-wrapper {
+    max-width: 1200px;
+  }
+  
+  .competition-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+@media (max-width: 992px) {
+  .content-wrapper {
+    gap: 20px;
+    padding: 15px;
+  }
+  
+  .filter-sidebar {
+    width: 280px;
+  }
+  
+  .competition-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-top: 50px; /* Lebih kecil untuk mobile */
+  }
+  
+  .page-title {
+    padding: 20px 15px; /* Lebih kecil untuk mobile */
+  }
+  
+  .page-title h1 {
+    font-size: 1.8rem;
+  }
+  
+  .page-title p {
+    font-size: 0.9rem;
+  }
+  
+  .content-wrapper {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 10px;
+  }
+  
+  .filter-sidebar {
+    width: 100%;
+    position: static;
+    order: 2;
+  }
+  
+  .filter-toggle {
+    display: block;
+  }
+  
+  .filter-content {
+    display: none;
+    margin-top: 15px;
+  }
+  
+  .filter-content.show {
+    display: block;
+  }
+  
+  .content-area {
+    order: 1;
+  }
+  
+  .competition-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .competition-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .month-selector {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 8px;
+  }
+  
+  .month-button {
+    padding: 10px 6px;
+    font-size: 0.8rem;
+  }
+  
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .pagination-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .pagination-number {
+    width: 35px;
+    height: 35px;
+    font-size: 0.8rem;
+  }
+  
+  .notification {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .main-content {
+    margin-top: 45px; /* Lebih kecil lagi */
+  }
+  
+  .page-title {
+    padding: 15px 10px; /* Padding minimal */
+  }
+  
+  .page-title h1 {
+    font-size: 1.6rem;
+  }
+  
+  .content-wrapper {
+    padding: 10px 5px;
+  }
+  
+  .filter-sidebar,
+  .month-selector-container,
+  .competition-container {
+    padding: 20px 15px;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .competition-card {
+    margin: 0 5px;
+  }
+  
+  .card-header {
+    height: 180px;
+  }
+  
+  .card-content {
+    padding: 15px;
+  }
+  
+  .competition-title {
+    font-size: 1rem;
+  }
+  
+  .card-footer {
+    padding: 0 15px 15px;
+    flex-direction: column;
+  }
+  
+  .btn-detail,
+  .btn-register {
+    width: 100%;
+  }
+  
+  .month-selector {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .filter-actions {
+    flex-direction: column;
+  }
+  
+  .checkbox-group {
+    gap: 10px;
+  }
+  
+  .popular-tags {
+    gap: 6px;
+  }
+  
+  .tag {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    margin-top: 40px; /* Minimal untuk layar sangat kecil */
+  }
+  
+  .page-title {
+    padding: 12px 8px; /* Padding sangat minimal */
+  }
+  
+  .page-title h1 {
+    font-size: 1.4rem;
+  }
+  
+  .competition-header {
+    text-align: center;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  
+  .month-selector {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .month-button {
+    padding: 8px 4px;
+    font-size: 0.75rem;
+  }
+  
+  .card-overlay {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .level-badge,
+  .scope-badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+  
+  .bookmark-btn {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .bookmark-btn i {
+    font-size: 1rem;
+  }
+  
+  .info-item,
+  .date-item {
+    font-size: 0.85rem;
+  }
+  
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+  }
+  
+  .pagination-container {
+    margin-top: 30px;
+  }
+  
+  .pagination-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+  
+  .pagination-number {
+    width: 30px;
+    height: 30px;
+    font-size: 0.75rem;
+  }
+}
+
+/* ---------- IMAGE ERROR HANDLING ---------- */
+/* Menangani gambar yang error atau tidak ditemukan */
+.card-image img {
+  transition: opacity 0.3s ease;
+}
+
+.card-image img:not([src]),
+.card-image img[src=""],
+.card-image img[src="#"] {
+  display: none;
+}
+
+/* Fallback ketika gambar error */
+.card-image img[onerror] {
+  display: none;
+}
+
+/* Style untuk placeholder ketika gambar tidak ada */
+.card-image::after {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 90%;
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.degree {
-  display: flex;
+  height: 100%;
+  background: linear-gradient(135deg, var(--fill-color), #e9ecef);
+  display: none;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  background: #4f959d;
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 3rem;
+  color: var(--Primary-color);
+}
+
+/* Tampilkan placeholder jika gambar tidak ada */
+.card-image:not(:has(img[src]:not([src=""])):not([src="#"]))::after {
+  content: "\f091"; /* Trophy icon */
+  display: flex;
+}
+
+/* ---------- ACCESSIBILITY ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles */
+button:focus,
+input:focus,
+select:focus,
+a:focus,
+.bookmark-btn:focus,
+.month-button:focus,
+.tag:focus {
+  outline: 2px solid var(--Primary-color);
+  outline-offset: 2px;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--Primary-color);
   color: white;
-  font-weight: bold;
-  font-size: 12px;
-  border-radius: 50%;
-}
-
-.dates {
-  margin-top: 12px;
-  font-size: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.start-date {
-  font-weight: 600;
-}
-
-.deadline {
-  font-weight: 600;
-  color: #d0352a;
-}
-
-.card-content {
-  margin-left: 16px;
-  padding: 8px 4px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.lomba-card .card-content .head-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.lomba-card .title {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.detail-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.lomba-card .penyelenggara,
-.lomba-card .tingkat,
-.lomba-card .lokasi {
-  font-size: 12px;
-}
-
-.location {
-  font-size: 12px;
-  color: #666;
-}
-
-.foot-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.lomba-card .bookmark {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.bookmark-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
   padding: 8px;
-  border-radius: 50%;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 10001;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Ensure interactive elements are large enough */
+.bookmark-btn,
+.month-button,
+.tag,
+.pagination-number {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* High contrast focus indicators */
+@media (prefers-contrast: high) {
+  :root {
+    --Primary-color: #000080;
+    --Secondary-color: #006400;
+    --base-font-color: #000000;
+    --second-font-color: #333333;
+  }
+  
+  .competition-card {
+    border: 2px solid #000000;
+  }
+  
+  .tag,
+  .month-button,
+  .pagination-number {
+    border: 1px solid #000000;
+  }
+  
+  button:focus,
+  input:focus,
+  select:focus,
+  a:focus {
+    outline: 3px solid #000000;
+    outline-offset: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .competition-card:hover {
+    transform: none;
+  }
+  
+  .bookmark-btn:hover {
+    transform: none;
+  }
+  
+  .month-button:hover {
+    transform: none;
+  }
+  
+  .btn-register:hover {
+    transform: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .filter-sidebar,
+  .pagination-container,
+  .loading-overlay,
+  .notification {
+    display: none !important;
+  }
+  
+  .main-content {
+    margin-top: 0;
+  }
+  
+  .content-wrapper {
+    flex-direction: column;
+  }
+  
+  .competition-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .competition-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .bookmark-btn {
+    display: none;
+  }
+  
+  .card-footer {
+    display: none;
+  }
+}
+
+/* Utility classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+
+.d-none { display: none; }
+.d-block { display: block; }
+.d-flex { display: flex; }
+.d-inline-block { display: inline-block; }
+
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .d-sm-none { display: none; }
+  .d-sm-block { display: block; }
+  .text-sm-center { text-align: center; }
+}
+
+@media (max-width: 768px) {
+  .d-md-none { display: none; }
+  .d-md-block { display: block; }
+  .text-md-center { text-align: center; }
+}
+
+@media (max-width: 1024px) {
+  .d-lg-none { display: none; }
+  .d-lg-block { display: block; }
+  .text-lg-center { text-align: center; }
+}
+
+/* Animation for card loading */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.competition-card {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* Stagger animation for multiple cards */
+.competition-card:nth-child(1) { animation-delay: 0.1s; }
+.competition-card:nth-child(2) { animation-delay: 0.2s; }
+.competition-card:nth-child(3) { animation-delay: 0.3s; }
+.competition-card:nth-child(4) { animation-delay: 0.4s; }
+.competition-card:nth-child(5) { animation-delay: 0.5s; }
+.competition-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Disable animations on reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .competition-card {
+    animation: none;
+  }
+}
+
+/* Error and success states */
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #f5c6cb;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #c3e6cb;
+  margin: 20px 0;
+  text-align: center;
+}
+
+/* Hover effects for better UX */
+.competition-title a:hover {
+  text-decoration: underline;
+}
+
+.tag {
+  position: relative;
+  overflow: hidden;
+}
+
+.tag::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.tag:hover::before {
+  left: 100%;
+}
+
+/* Loading states for images */
+.card-image img {
+  background: var(--fill-color);
+  transition: opacity 0.3s ease;
+}
+
+/* JavaScript akan menangani error gambar */
+.card-image img.error {
+  display: none;
+}
+
+.card-image.no-image {
+  background: linear-gradient(135deg, var(--fill-color), #e9ecef);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.bookmark-btn:hover {
-  background: #ddd;
+.card-image.no-image::before {
+  content: "\f091"; /* Trophy icon */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 3rem;
+  color: var(--Primary-color);
 }
-/* ---------- LOMBA LIST END ---------- */
 
-/* ---------- MAIN END ---------- */
+/* Tooltip styles */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
 
-/* ---------- RESPONSIVE ---------- */
-@media (min-width: 640px) {
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
 }
-@media (min-width: 768px) {
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
 }
-@media (min-width: 1080px) {
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--Secondary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--Primary-color);
+}
+
+/* Selection styles */
+::selection {
+  background: var(--Primary-color);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--Primary-color);
+  color: white;
+}
+
+/* Placeholder styles */
+::placeholder {
+  color: var(--second-font-color);
+  opacity: 0.7;
+}
+
+/* Focus within styles */
+.competition-card:focus-within {
+  outline: 2px solid var(--Primary-color);
+  outline-offset: 2px;
+}
+
+/* Final responsive adjustments */
+@media (max-width: 360px) {
+  .content-wrapper {
+    padding: 8px 3px;
+  }
+  
+  .filter-sidebar,
+  .month-selector-container,
+  .competition-container {
+    padding: 15px 8px;
+  }
+  
+  .page-title {
+    padding: 10px 5px;
+  }
+  
+  .page-title h1 {
+    font-size: 1.3rem;
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+  }
+  
+  .competition-title {
+    font-size: 0.95rem;
+  }
+  
+  .card-content {
+    padding: 12px;
+  }
+  
+  .card-footer {
+    padding: 0 12px 12px;
+  }
+  
+  .month-selector {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .bookmark-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .bookmark-btn i {
+    font-size: 0.9rem;
+  }
+}
+
+/* Very large screens */
+@media (min-width: 1600px) {
+  .content-wrapper {
+    max-width: 1600px;
+  }
+  
+  .competition-grid {
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
   .main-content {
-    width: 100%;
+    margin-top: 35px;
   }
-  .lomba-list .lomba-card {
-    width: calc(33.33% - 10px);
+  
+  .page-title {
+    padding: 15px 10px;
+  }
+  
+  .page-title h1 {
+    font-size: 1.6rem;
+  }
+  
+  .competition-grid {
+    gap: 12px;
+  }
+  
+  .card-header {
+    height: 160px;
   }
 }
-@media (min-width: 1280px) {
+
+/* iPad specific */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .competition-grid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+  
+  .content-wrapper {
+    padding: 20px 15px;
+  }
+}
+
+/* Ensure all interactive elements have proper cursor */
+.bookmark-btn,
+.month-button,
+.tag,
+.btn-detail,
+.btn-register,
+.pagination-btn,
+.pagination-number,
+.filter-toggle,
+.btn-reset,
+.btn-apply {
+  cursor: pointer;
+}
+
+/* Ensure proper z-index stacking */
+.loading-overlay { z-index: 9999; }
+.notification { z-index: 10000; }
+.skip-link { z-index: 10001; }
+.tooltip .tooltiptext { z-index: 1000; }
+.bookmark-btn { z-index: 4; }
+.card-overlay { z-index: 3; }
+
+/* Final touch - ensure consistent font rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent text selection on interactive elements */
+.bookmark-btn,
+.month-button,
+.tag,
+.btn-detail,
+.btn-register,
+.pagination-btn,
+.pagination-number {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Specific fixes for header positioning */
+@media (min-width: 769px) {
   .main-content {
-    width: 70%;
+    margin-top: 70px; /* Sesuaikan dengan tinggi navbar */
   }
 }
+
+/* Ensure no gap between navbar and page title */
+.page-title {
+  margin-top: 0;
+  padding-top: 25px;
+}
+
+/* End of CSS file */
+
