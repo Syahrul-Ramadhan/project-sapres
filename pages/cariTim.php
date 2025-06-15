@@ -42,7 +42,7 @@
       $totalStmt->execute();
 
       // Mengambil total data
-      $totalData = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
+      $totalData = $totalStmt->fetch()['total'];
       $totalPages = ceil($totalData / $limit); // Menghitung total halaman
     ?>
 

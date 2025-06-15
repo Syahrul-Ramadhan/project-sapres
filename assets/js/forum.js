@@ -1,68 +1,137 @@
-document.querySelectorAll(".category-content a").forEach((element) => {
-  element.addEventListener("click", function () {
-    const category = this.getAttribute("data-category"); // Ambil kategori dari tombol
-    localStorage.setItem("selectedCategory", category); // Simpan di localStorage
-    window.location.href = "detailForum.html"; // Ganti dengan halaman forum
-  });
-});
-
 document.addEventListener("DOMContentLoaded", function () {
-  // Ambil kategori yang tersimpan di localStorage
-  const selectedCategory = localStorage.getItem("selectedCategory");
-
-  if (selectedCategory) {
-    // Sembunyikan semua section
-    document.querySelectorAll(".section-content").forEach((section) => {
-      section.style.display = "none";
+  // --- KATEGORI KLIK DI HALAMAN forum.php ---
+  document.querySelectorAll(".category-content a").forEach((element) => {
+    element.addEventListener("click", function (event) {
+      event.preventDefault();
+      const category = this.getAttribute("data-category");
+      if (category) {
+        localStorage.setItem("selectedCategory", category);
+        window.location.href = "detailForum.php";
+      }
     });
+  });
 
-    // Tampilkan section yang sesuai dengan kategori
-    const activeSection = document.querySelector(
-      `[data-category="${selectedCategory}"]`
-    );
-    if (activeSection) {
-      activeSection.style.display = "block";
+  // --- TAMPILKAN SECTION SESUAI KATEGORI DI detailForum.php ---
+  if (window.location.pathname.includes("detailForum.php")) {
+    const selectedCategory = localStorage.getItem("selectedCategory");
+    if (selectedCategory) {
+      document.querySelectorAll(".section-content").forEach((section) => {
+        section.style.display = "none";
+      });
+      const activeSection = document.querySelector(
+        `.section-content[data-category="${selectedCategory}"]`
+      );
+      if (activeSection) {
+        activeSection.style.display = "block";
+      }
     }
   }
-});
 
-// Menangani klik tombol dan link forum
-document.querySelectorAll(".btn-chat-forum").forEach((element) => {
-  element.addEventListener("click", function (event) {
-    const type = this.getAttribute("data-category"); // Ambil kategori dari tombol
-    if (type) {
-      localStorage.setItem("selectedType", type); // Simpan kategori di localStorage
-
-      // Jika elemen adalah <a>, navigasikan tanpa preventDefault
-      if (this.tagName.toLowerCase() === "a") {
-        return; // Biarkan <a> berjalan normal tanpa mengubah window.location
-      }
-
-      // Jika bukan <a>, navigasikan ke forum-chat.html secara manual
-      window.location.href = "forum-chat.html";
-    }
-  });
-});
-
-// Menampilkan section yang sesuai saat halaman dimuat
-document.addEventListener("DOMContentLoaded", function () {
-  const selectedType = localStorage.getItem("selectedType"); // Ambil kategori tersimpan
-
-  if (selectedType) {
-    // Sembunyikan semua section
-    document.querySelectorAll(".post-section").forEach((section) => {
-      section.style.display = "none";
+  // --- HANDLE KLIK TOPIK & TOMBOL \"CARA MENGGUNAKAN FORUM\" ---
+  document
+    .querySelectorAll(".question-items, .question-content, .how-to-btn")
+    .forEach((row) => {
+      row.style.cursor = "pointer";
+      row.addEventListener("click", function () {
+        const topicIdentifier = this.getAttribute("data-topic-id");
+        if (topicIdentifier) {
+          localStorage.setItem("selectedTopic", topicIdentifier);
+          window.location.href = "forum-chat.php";
+        }
+      });
+      row.addEventListener(
+        "mouseenter",
+        () => (row.style.backgroundColor = "#205781")
+      );
+      row.addEventListener(
+        "mouseleave",
+        () => (row.style.backgroundColor = "")
+      );
     });
 
-    // Tampilkan section yang sesuai dengan data-type
-    const activeSection = document.querySelector(
-      `[data-type="${selectedType}"]`
-    );
-    if (activeSection) {
-      activeSection.style.display = "block";
-    }
+  // --- MODAL AJUKAN PERTANYAAN ---
+  document.querySelectorAll(".openModalBtn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const kategori = this.getAttribute("data-kategori");
+      const selectKategori = document.getElementById("kategori");
+      if (kategori && selectKategori) {
+        selectKategori.value = kategori;
+      }
+      document.getElementById("ajukanModal").style.display = "flex";
+    });
+  });
 
-    // Bersihkan localStorage setelah digunakan (opsional)
-    localStorage.removeItem("selectedType");
+  const closeBtn = document.getElementById("closeModalBtn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function () {
+      document.getElementById("ajukanModal").style.display = "none";
+    });
+  }
+
+  window.addEventListener("click", function (e) {
+    const modal = document.getElementById("ajukanModal");
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+
+  const formAjukan = document.getElementById("formAjukan");
+  if (formAjukan) {
+    formAjukan.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const kategori = document.getElementById("kategori").value;
+      const pesan = document.getElementById("pesan").value;
+      fetch("ajukan_pertanyaan.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `kategori=${encodeURIComponent(
+          kategori
+        )}&pesan=${encodeURIComponent(pesan)}`,
+      })
+        .then(async (response) => {
+          const text = await response.text();
+          if (!response.ok) throw new Error(text);
+          alert("✅ " + text);
+          formAjukan.reset();
+          document.getElementById("ajukanModal").style.display = "none";
+          location.reload();
+        })
+        .catch((error) => {
+          alert("❌ " + error.message);
+        });
+    });
+  }
+
+  // --- REDIRECT KE forum-chat.php?topic=... ---
+  if (window.location.pathname.includes("forum-chat.php")) {
+    const topicId = localStorage.getItem("selectedTopic");
+    if (topicId && !window.location.search.includes("topic=")) {
+      window.location.href = `forum-chat.php?topic=${topicId}`;
+    }
+  }
+
+  // --- KIRIM KOMENTAR DI forum-chat.php TANPA RELOAD HISTORY ---
+  const formKomentar = document.getElementById("formKomentar");
+  if (formKomentar) {
+    formKomentar.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(formKomentar);
+      const data = new URLSearchParams(formData);
+
+      fetch("kirim_komentar.php", {
+        method: "POST",
+        body: data,
+      })
+        .then((res) => res.text())
+        .then((response) => {
+          // Setelah sukses, refresh halaman agar komentar baru muncul
+          formKomentar.reset();
+          location.reload();
+        })
+        .catch((err) => {
+          alert("❌ Gagal mengirim komentar: " + err.message);
+        });
+    });
   }
 });

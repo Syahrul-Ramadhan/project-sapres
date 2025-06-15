@@ -39,7 +39,7 @@
         // Query untuk hitung total data
         $totalStmt = $koneksi->prepare("SELECT COUNT(*) as total FROM beasiswa");
         $totalStmt->execute();
-        $totalData = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
+        $totalData = $totalStmt->fetch()['total'];
         $totalPages = ceil($totalData / $limit); // Menghitung total halaman
     ?>
 
