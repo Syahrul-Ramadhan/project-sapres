@@ -1,5 +1,5 @@
 <?php
-require_once 'php/config.php';
+require_once 'koneksi.php';
 
 echo "<h2>Database Connection Test</h2>";
 

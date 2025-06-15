@@ -19,11 +19,19 @@
       
       $id_beasiswa = $_GET['id'];
 
-      $sql = "SELECT * FROM beasiswa WHERE beasiswa_id = '$id_beasiswa'";
-      $hasil_query = mysqli_query($koneksi, $sql);
+      $sql = "SELECT * FROM beasiswa WHERE beasiswa_id = :beasiswa_id";
+      // $hasil_query = mysqli_query($koneksi, $sql);
+      $stmt = $koneksi->prepare($sql);  // Menyiapkan statement
+
+      // Bind parameter
+      $stmt->bindParam(':beasiswa_id', $id_beasiswa, PDO::PARAM_INT);
+      // Menjalankan query
+      $stmt->execute();
+      // Mengambil hasil
+      $data = $stmt->fetch();  // Mendapatkan satu hasil baris pertama
 
 
-      if ($data = mysqli_fetch_array($hasil_query)) {
+      if ($data) {
       
     ?>
 

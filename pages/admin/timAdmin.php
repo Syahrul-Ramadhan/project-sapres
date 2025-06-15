@@ -16,12 +16,13 @@
     <?php
       include "../php/koneksi.php";
 
-      $sql = "SELECT * FROM tim";
-      $hasil_query = mysqli_query($koneksi, $sql);
+    // Menggunakan prepared statement untuk mengambil data
+    $sql = "SELECT * FROM tim";
+    $stmt = $koneksi->prepare($sql);
+    $stmt->execute();
+    $hasil_query = $stmt->fetchAll(PDO::FETCH_ASSOC); // Menggunakan fetchAll untuk mengambil semua data
 
-
-      if ($hasil_query && mysqli_num_rows($hasil_query) > 0) {
-      
+    if ($hasil_query && count($hasil_query) > 0) {
     ?>
 
 <!-- SIDE NAV START -->
@@ -83,7 +84,7 @@
                     <tbody>
                         <!-- Data beasiswa akan dimasukkan di sini -->
                         <?php
-                            while ($data = mysqli_fetch_array($hasil_query)): 
+                            foreach ($hasil_query as $data): 
                                     echo "<tr class='table-content' data-id='{$data['tim_id']}' 
                                             data-nama='{$data['nama_tim']}' 
                                             data-anggota='{$data['jumlah_anggota']}' 
@@ -105,7 +106,7 @@
                                             <td>{$data['asal_instansi']}</td>
                                             <td class = 'last-col'><a href=proses/deleteTim.php?id=".$data['tim_id']." class='deletebtn'>Delete</a></td>
                                           </tr>";
-                            endwhile;
+                            endforeach;
                         ?>
                     </tbody>
                 </table>

@@ -23,13 +23,27 @@
       if ($page < 1) $page = 1;
       $offset = ($page - 1) * $limit;
 
-      $sql = "SELECT * FROM tim LIMIT $limit OFFSET $offset";
-      $hasil_query = mysqli_query($koneksi, $sql);
+      // Query untuk mengambil data tim
+      $sql = "SELECT * FROM tim LIMIT :limit OFFSET :offset";
+      $stmt = $koneksi->prepare($sql); // Menyiapkan statement PDO
+
+      // Mengikat parameter untuk pagination
+      $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+      $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+      // Menjalankan query
+      $stmt->execute();
+
+      // Mengambil hasil
+      $timData = $stmt->fetchAll();
 
       // Query untuk hitung total data
-      $totalResult = $koneksi->query("SELECT COUNT(*) as total FROM tim");
-      $totalData = $totalResult->fetch_assoc()['total'];
-      $totalPages = ceil($totalData / $limit);
+      $totalStmt = $koneksi->prepare("SELECT COUNT(*) as total FROM tim");
+      $totalStmt->execute();
+
+      // Mengambil total data
+      $totalData = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
+      $totalPages = ceil($totalData / $limit); // Menghitung total halaman
     ?>
 
     <!-- NAVBAR START -->
@@ -488,7 +502,7 @@
 
           <div class="team-wrap">
             <div class="team-list">
-              <?php while ($data = $hasil_query->fetch_assoc()): ?>
+              <?php foreach ($timData as $data): ?>
               <div class="card-fteam" data-nama="<?= $data['nama_tim'] ?>" data-judul="<?= $data['judul_lomba'] ?>"
                 data-jenis="<?= $data['kategori_lomba'] ?>" data-instansi="<?= $data['asal_instansi'] ?>"
                 data-deskripsi="<?= $data['deskripsi'] ?>" data-syarat="<?= $data['syarat_ketentuan'] ?>"
@@ -537,7 +551,7 @@
                   <div class="card-btn" onclick="openPopUp(this)">Bergabung</div>
                 </div>
               </div>
-              <?php endwhile; ?>
+              <?php endforeach; ?>
             </div>
           </div>
         </div>

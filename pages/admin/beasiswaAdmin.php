@@ -16,12 +16,31 @@
     <?php
       include "../php/koneksi.php";
 
-      $sql = "SELECT * FROM beasiswa";
-      $hasil_query = mysqli_query($koneksi, $sql);
+        // Pagination setup
+        $limit = 9;
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($page < 1) $page = 1;
+        $offset = ($page - 1) * $limit;
 
+        // Menggunakan PDO untuk query
+        $sql = "SELECT * FROM beasiswa LIMIT :limit OFFSET :offset";
+        $stmt = $koneksi->prepare($sql);
+        
+        // Mengikat parameter untuk pagination
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        
+        // Menjalankan query
+        $stmt->execute();
+        
+        // Mengambil hasil
+        $hasil_query = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-      if ($hasil_query && mysqli_num_rows($hasil_query) > 0) {
-      
+        // Query untuk hitung total data
+        $totalStmt = $koneksi->prepare("SELECT COUNT(*) as total FROM beasiswa");
+        $totalStmt->execute();
+        $totalData = $totalStmt->fetch(PDO::FETCH_ASSOC)['total'];
+        $totalPages = ceil($totalData / $limit); // Menghitung total halaman
     ?>
 
     <!-- SIDE NAV START -->
@@ -84,7 +103,8 @@
                     <tbody>
                         <!-- Data beasiswa akan dimasukkan di sini -->
                         <?php
-                            while ($data = mysqli_fetch_array($hasil_query)): 
+                            if ($hasil_query) {
+                                foreach ($hasil_query as $data):
                                     echo "<tr class='table-content' data-id='{$data['beasiswa_id']}' 
                                             data-judul='{$data['judul_beasiswa']}' 
                                             data-jenjang='{$data['jenjang_beasiswa']}' 
@@ -106,7 +126,7 @@
                                             <td>{$data['pemberi_beasiswa']}</td>
                                             <td class = 'last-col'><a  class='editbtn'>Edit</a> | <a href=proses/deleteBeasiswa.php?id=".$data['beasiswa_id']." class='deletebtn'>Delete</a></td>
                                           </tr>";
-                            endwhile;
+                                endforeach;
                         ?>
                     </tbody>
                 </table>

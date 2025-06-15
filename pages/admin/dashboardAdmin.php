@@ -13,31 +13,35 @@
 </head>
 <body>
 
-        <?php
-      include "../php/koneksi.php";
-
-        // Fetch data for the dashboard
+    <?php
+        include "../php/koneksi.php";
+        
+        // Fetch data for the dashboard using PDO
         $sql = "SELECT COUNT(*) AS total_beasiswa FROM beasiswa";
-        $hasil_query = mysqli_query($koneksi, $sql);
-        $data_beasiswa = mysqli_fetch_assoc($hasil_query);
+        $stmt = $koneksi->prepare($sql);
+        $stmt->execute();
+        $data_beasiswa = $stmt->fetch(PDO::FETCH_ASSOC);
         $jumlah_beasiswa = $data_beasiswa['total_beasiswa'];
 
         // Fetch competition data
         $sql = "SELECT COUNT(*) AS total_lomba FROM lomba";
-        $hasil_query = mysqli_query($koneksi, $sql);
-        $data_lomba = mysqli_fetch_assoc($hasil_query);
+        $stmt = $koneksi->prepare($sql);
+        $stmt->execute();
+        $data_lomba = $stmt->fetch(PDO::FETCH_ASSOC);
         $jumlah_lomba = $data_lomba['total_lomba'];
 
         // Fetch team data
         $sql = "SELECT COUNT(*) AS total_tim FROM tim";
-        $hasil_query = mysqli_query($koneksi, $sql);
-        $data_tim = mysqli_fetch_assoc($hasil_query);
+        $stmt = $koneksi->prepare($sql);
+        $stmt->execute();
+        $data_tim = $stmt->fetch(PDO::FETCH_ASSOC);
         $jumlah_tim = $data_tim['total_tim'];
 
         // Fetch forum data
         $sql = "SELECT COUNT(*) AS total_forum FROM forum";
-        $hasil_query = mysqli_query($koneksi, $sql);
-        $data_forum = mysqli_fetch_assoc($hasil_query);
+        $stmt = $koneksi->prepare($sql);
+        $stmt->execute();
+        $data_forum = $stmt->fetch(PDO::FETCH_ASSOC);
         $jumlah_forum = $data_forum['total_forum'];
     ?>
 

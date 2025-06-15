@@ -49,7 +49,7 @@
     $totalResult = $koneksi->query("SELECT COUNT(*) as total FROM beasiswa
                                   WHERE MONTH(mulai_beasiswa) = $currentMonth 
                                   AND YEAR(mulai_beasiswa) = $currentYear");
-    $totalData = $totalResult->fetch_assoc()['total'];
+    $totalData = $totalResult->fetch(PDO::FETCH_ASSOC)['total'];
     $totalPages = ceil($totalData / $limit);
 
     ?>
@@ -624,7 +624,7 @@
         <div class="beasiswa-container">
           <h3>Daftar Beasiswa</h3>
           <div class="beasiswa-list">
-            <?php while ($row = $result->fetch_assoc()): ?>
+            <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
               <a
                 href="detailBeasiswa.php?id=<?= $row['beasiswa_id'] ?>"
                 class="beasiswa-card-md btn-detail-beasiswa" data-jenjang="<?= $row['jenjang_beasiswa'] ?>" data-tipe="<?= $row['tipe_pendanaan'] ?>" data-negara="<?= $row['lokasi_beasiswa'] ?>" data-univ="<?= $row['asal_instansi'] ?>">

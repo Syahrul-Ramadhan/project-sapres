@@ -1,11 +1,11 @@
 <?php
 
-    //Koneksi
+    // Koneksi
     include "../../php/koneksi.php";
 
     // Mengambil data dari form
     $judul = $_POST['edit-judul_beasiswa'];
-    $jenjang =$_POST['edit-jenjang_beasiswa'];
+    $jenjang = $_POST['edit-jenjang_beasiswa'];
     $pendaftaran = $_POST['edit-mulai_beasiswa'];  
     $penutupan = $_POST['edit-penutupan_beasiswa'];  
     $pemberi_beasiswa = $_POST['edit-pemberi_beasiswa'];
@@ -25,32 +25,50 @@
     // Gabungkan nilai jenjang yang dipilih menjadi satu string dengan koma
     $jenjang = implode(",", $jenjang);  // Menggabungkan nilai checkbox menjadi string
 
-    // Query untuk update data beasiswa
+    // Query untuk update data beasiswa menggunakan prepared statement
     $sql = "UPDATE beasiswa SET 
-                judul_beasiswa = '$judul', 
-                jenjang_beasiswa = '$jenjang', 
-                mulai_beasiswa = '$pendaftaranValid',
-                penutupan_beasiswa = '$penutupanValid', 
-                pemberi_beasiswa = '$pemberi_beasiswa', 
-                asal_instansi = '$asal_instansi', 
-                tipe_pendanaan = '$tipe_pendanaan', 
-                benefit_beasiswa = '$benefit', 
-                syarat_beasiswa = '$syarat', 
-                booklet_beasiswa = '$booklet', 
-                lokasi_beasiswa = '$lokasi', 
-                daftar_beasiswa = '$daftar' 
-            WHERE beasiswa_id = '$id'";
+                judul_beasiswa = ?, 
+                jenjang_beasiswa = ?, 
+                mulai_beasiswa = ?, 
+                penutupan_beasiswa = ?, 
+                pemberi_beasiswa = ?, 
+                asal_instansi = ?, 
+                tipe_pendanaan = ?, 
+                benefit_beasiswa = ?, 
+                syarat_beasiswa = ?, 
+                booklet_beasiswa = ?, 
+                lokasi_beasiswa = ?, 
+                daftar_beasiswa = ? 
+            WHERE beasiswa_id = ?";
 
-    //  Execute
-    $hasil_query = mysqli_query($koneksi, $sql);
+    // Menyiapkan statement PDO
+    $stmt = $koneksi->prepare($sql);
 
-    // Validasi
-    if ($hasil_query) {
-        // Kalau berhasil
-        // header('Location: ../beasiswaAdmin.php');
+    // Menjalankan query dengan parameter (PDO)
+    if ($stmt->execute([
+        $judul,
+        $jenjang,
+        $pendaftaranValid,
+        $penutupanValid,
+        $pemberi_beasiswa,
+        $asal_instansi,
+        $tipe_pendanaan,
+        $benefit,
+        $syarat,
+        $booklet,
+        $lokasi,
+        $daftar,
+        $id
+    ])) {
+        // Jika berhasil
         echo "<script>alert('Data Beasiswa Berhasil Diubah'); window.location.href='../beasiswaAdmin.php';</script>";
     } else {
-        // Kalau Gagal
-        echo "Data tidak tersimpan, Kembali";
+        // Jika gagal
+        $errorInfo = $stmt->errorInfo();
+        echo "Data tidak tersimpan. Error: " . $errorInfo[2];
     }
+
+    // Menutup statement
+    $stmt = null;
+
 ?>
