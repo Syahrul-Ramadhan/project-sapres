@@ -66,48 +66,48 @@ document.addEventListener("DOMContentLoaded", function () {
   const dropdownMenu = document.querySelector(".dropdown-profile");
   const profileBtn = document.querySelector(".profile-btn");
 
-  // Check login status using session (not localStorage)
-  // Note: This will be set by PHP in the actual page
-  let isLoggedIn = false;
-  
-  // Try to get login status from a global variable set by PHP
-  if (typeof window.userLoggedIn !== 'undefined') {
-    isLoggedIn = window.userLoggedIn;
-  }
+  // // Check login status using session (not localStorage)
+  // // Note: This will be set by PHP in the actual page
+  // let isLoggedIn = false;
 
-  // Show/hide elements based on login status
-  if (isLoggedIn) {
-    // Tampilkan profil jika sudah login
-    if (profileContainer) {
-      profileContainer.style.display = "block";
-    }
-    if (authBtn) {
-      authBtn.style.display = "none";
-    }
-    authResp.forEach((el) => {
-      el.style.display = "none";
-    });
-  } else {
-    // Tampilkan auth buttons jika belum login
-    if (profileContainer) {
-      profileContainer.style.display = "none";
-    }
-    if (authBtn) {
-      authBtn.style.display = "flex";
-    }
-    authResp.forEach((el) => {
-      el.style.display = "block";
-    });
-  }
+  // // Try to get login status from a global variable set by PHP
+  // if (typeof window.userLoggedIn !== 'undefined') {
+  //   isLoggedIn = window.userLoggedIn;
+  // }
+
+  // // Show/hide elements based on login status
+  // if (isLoggedIn) {
+  //   // Tampilkan profil jika sudah login
+  //   if (profileContainer) {
+  //     profileContainer.style.display = "block";
+  //   }
+  //   if (authBtn) {
+  //     authBtn.style.display = "none";
+  //   }
+  //   authResp.forEach((el) => {
+  //     el.style.display = "none";
+  //   });
+  // } else {
+  //   // Tampilkan auth buttons jika belum login
+  //   if (profileContainer) {
+  //     profileContainer.style.display = "none";
+  //   }
+  //   if (authBtn) {
+  //     authBtn.style.display = "flex";
+  //   }
+  //   authResp.forEach((el) => {
+  //     el.style.display = "block";
+  //   });
+  // }
 
   // Dropdown menu profile
   if (profileBtn && dropdownMenu) {
     profileBtn.addEventListener("click", function (e) {
       e.preventDefault();
       e.stopPropagation();
-      
+
       console.log("Profile button clicked"); // Debug log
-      
+
       // Toggle dropdown visibility
       dropdownMenu.classList.toggle("show");
     });
@@ -126,9 +126,9 @@ document.addEventListener("DOMContentLoaded", function () {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", function (e) {
       e.preventDefault();
-      
+
       console.log("Logout button clicked"); // Debug log
-      
+
       if (confirm("Apakah Anda yakin ingin keluar?")) {
         // Hapus status dari session dan logout di server
         fetch("php/auth_handler.php", {
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Logout error:", error);
             alert("Terjadi kesalahan saat logout. Silakan coba lagi.");
             // Fallback redirect
-            window.location.href = "login.php";
+            window.location.href = data.redirect || "login.php";
           });
       }
     });
@@ -169,7 +169,7 @@ function checkLoginStatus() {
   // This function can be called to dynamically check login status
   const profileContainer = document.getElementById("profile-section");
   const authButtons = document.querySelector(".auth-buttons");
-  
+
   if (profileContainer && profileContainer.style.display !== "none") {
     return true;
   }
@@ -197,5 +197,5 @@ function updateUIForLoginStatus(isLoggedIn) {
 window.SAPRES = {
   checkLoginStatus: checkLoginStatus,
   updateUIForLoginStatus: updateUIForLoginStatus,
-  toggleSearchBar: toggleSearchBar
+  toggleSearchBar: toggleSearchBar,
 };
