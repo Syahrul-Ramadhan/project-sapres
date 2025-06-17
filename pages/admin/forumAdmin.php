@@ -1,26 +1,22 @@
 <?php
 include "../php/koneksi.php";
-// Asumsikan user_id admin disimpan di session setelah login
 session_start();
 
-// Query untuk mengambil semua topik utama (parent) beserta jumlah balasan dan info user
 $sql = "SELECT 
             f.forum_id,
             f.pesan,
             f.kategori,
             f.waktu_postingan,
-            u.username,
+            u.fullname,
             (SELECT COUNT(*) FROM forum WHERE parent_id = f.forum_id) AS jumlah_balasan
         FROM forum AS f
-        JOIN user AS u ON f.user_id = u.user_id
+        JOIN users AS u ON f.user_id = u.user_id
         WHERE f.parent_id IS NULL
         ORDER BY f.waktu_postingan DESC";
 
-// Menyiapkan query menggunakan PDO
 $stmt = $koneksi->prepare($sql);
 $stmt->execute();
 
-// Mengambil hasil dengan fetchAll()
 $forumData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -33,7 +29,6 @@ $forumData = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../../assets/css/admin/sidenav.css">
     <link rel="stylesheet" href="../../assets/css/admin/beasiswaAdmin.css"> 
     <style>
-        /* CSS Tambahan Khusus untuk Forum Admin */
         .discussion-detail-content { max-height: 400px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 8px; }
         .main-post, .reply-post { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
         .post-header { font-weight: bold; }
@@ -42,14 +37,12 @@ $forumData = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .reply-form textarea { width: 100%; height: 80px; }
         .delete-message-btn { color: red; cursor: pointer; font-size: 14px; margin-left: 10px; }
 
-        /* CSS Override untuk mengecilkan modal pengumuman */
         #pengumuman-pop-up .pop-up-content {
             width: auto;
             height: auto;
             max-width: 600px;
         }
 
-        /* CSS untuk kotak pencarian forum */
         #searchForum {
             width: 400px;
             padding: 8px 12px;
@@ -125,7 +118,7 @@ $forumData = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo $data['forum_id']; ?></td>
                                     <td><?php echo htmlspecialchars(substr($data['pesan'], 0, 50)) . '...'; ?></td>
                                     <td><?php echo htmlspecialchars($data['kategori']); ?></td>
-                                    <td><?php echo htmlspecialchars($data['username']); ?></td>
+                                    <td><?php echo htmlspecialchars($data['fullname']); ?></td>
                                     <td><?php echo $data['jumlah_balasan']; ?></td>
                                     <td><?php echo date('d M Y H:i', strtotime($data['waktu_postingan'])); ?></td>
                                     <td>

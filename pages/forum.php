@@ -3,7 +3,7 @@
 <?php
     require_once 'php/check_login.php';
     // Get user info from session
-    $user_name = $_SESSION['user_name'];
+    // $user_name = $_SESSION['fullname'];
     $user_id = $_SESSION['user_id'];
 
     include 'php/koneksi.php'; 
@@ -240,17 +240,15 @@
             <h5>Terbaru</h5>
             <div class="recently-content">
               <?php
-                  // ...DENGAN BLOK YANG LEBIH SEDERHANA INI
-                  $sql = "SELECT f.forum_id, f.pesan, f.tanggal_pesan, f.kategori, u.username, f.waktu_postingan 
+                  $sql = "SELECT f.forum_id, f.pesan, f.tanggal_pesan, f.kategori, u.fullname, f.waktu_postingan 
                           FROM forum AS f 
-                          JOIN user AS u ON f.user_id = u.user_id 
+                          JOIN users AS u ON f.user_id = u.user_id
                           WHERE f.parent_id IS NULL
                           ORDER BY f.waktu_postingan DESC";
                   $stmt = $koneksi->prepare($sql);
                   $stmt->execute();
                   $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                  // 4. TAMPILKAN DATA (Looping)
                   if (count($result) > 0) {
                       foreach($result as $row) {
                           $tanggal_formatted = date('d M Y', strtotime($row['tanggal_pesan']));
@@ -260,13 +258,13 @@
                               <span class="date"><?php echo $tanggal_formatted; ?></span>
                           </div>
               <?php
-                      } // Akhir loop foreach
+                      } // Akhir loop
                   } else {
                       echo "<p style='text-align: center; color: #888;'>Belum ada pertanyaan terbaru di forum.</p>";
                   }
               ?>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </div>

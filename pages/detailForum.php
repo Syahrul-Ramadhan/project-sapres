@@ -19,10 +19,10 @@ foreach (array_keys($categories) as $kategori_key) {
 }
 
 $sql = "SELECT 
-            f.forum_id, f.pesan, f.kategori, f.waktu_postingan, u.username,
+            f.forum_id, f.pesan, f.kategori, f.waktu_postingan, u.fullname,
             (SELECT COUNT(*) FROM forum WHERE parent_id = f.forum_id) AS jumlah_jawaban
         FROM forum AS f 
-        JOIN user AS u ON f.user_id = u.user_id 
+        JOIN users AS u ON f.user_id = u.user_id
         WHERE f.parent_id IS NULL
         ORDER BY f.waktu_postingan DESC";
 

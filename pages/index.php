@@ -1,7 +1,7 @@
 <?php
 require_once 'php/check_login.php';
 // Get user info from session
-$user_name = $_SESSION['user_name'];
+$user_name = $_SESSION['fullname'];
 $user_id = $_SESSION['user_id'];
 
 // Koneksi ke database

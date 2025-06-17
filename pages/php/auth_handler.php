@@ -192,7 +192,7 @@ function handleLogout() {
     } catch (Exception $e) {
         error_log("Logout error: " . $e->getMessage());
         echo json_encode([
-            'success' => true, 
+            'success' => false, 
             'message' => 'Logout gagal', 
             'redirect' => 'login.php' // Redirect ke halaman login
         ]);
