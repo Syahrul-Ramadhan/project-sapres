@@ -1,6 +1,10 @@
 <?php
 require_once 'koneksi.php';
 
+// Gunakan koneksi yang benar
+global $koneksi;
+$pdo = $koneksi;
+
 header('Content-Type: application/json');
 
 if (session_status() === PHP_SESSION_NONE) {
