@@ -19,6 +19,12 @@
       include "php/koneksi.php";
       require_once 'php/check_login.php';
       $user_id = $_SESSION['user_id'];
+
+      // Ambil parameter GET untuk filter dan search
+      $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+      $jenjang = isset($_GET['jenjang']) ? explode(',', $_GET['jenjang']) : [];
+      $kategori = isset($_GET['kategori']) ? trim($_GET['kategori']) : '';
+      $univ = isset($_GET['univ']) ? trim($_GET['univ']) : '';
       
       // Pagination setup
       $limit = 9;
@@ -26,27 +32,32 @@
       if ($page < 1) $page = 1;
       $offset = ($page - 1) * $limit;
 
-      // Query untuk mengambil data tim
-      $sql = "SELECT * FROM tim LIMIT :limit OFFSET :offset";
-      $stmt = $koneksi->prepare($sql); // Menyiapkan statement PDO
+      $where = []; // Inisialisasi array kosong
 
-      // Mengikat parameter untuk pagination
-      $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-      $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+      if ($search !== '') $where[] = "nama_tim LIKE '%$search%'";
 
-      // Menjalankan query
-      $stmt->execute();
+      if (!empty($jenjang)) {
+        $jenjangLike = array_map(fn($j) => "jenjang_tim LIKE '%$j%'", $jenjang);
+        $where[] = '(' . implode(' OR ', $jenjangLike) . ')';
+      }
 
-      // Mengambil hasil
-      $timData = $stmt->fetchAll();
+      if ($kategori !== '') $where[] = "kategori_lomba LIKE '%$kategori%'";
+      if ($univ !== '') $where[] = "asal_instansi LIKE '%$univ%'";
 
-      // Query untuk hitung total data
-      $totalStmt = $koneksi->prepare("SELECT COUNT(*) as total FROM tim");
-      $totalStmt->execute();
+      $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
-      // Mengambil total data
-      $totalData = $totalStmt->fetch()['total'];
-      $totalPages = ceil($totalData / $limit); // Menghitung total halaman
+      // Query utama
+      $sql = "SELECT * FROM tim
+              $whereClause 
+              ORDER BY created_at DESC 
+              LIMIT $limit OFFSET $offset";
+      $result = $koneksi->query($sql);
+
+      // Hitung total data untuk pagination
+      $countQuery = "SELECT COUNT(*) as total FROM tim $whereClause";
+      $totalResult = $koneksi->query($countQuery);
+      $totalData = $totalResult->fetch(PDO::FETCH_ASSOC)['total'];
+      $totalPages = ceil($totalData / $limit);
     ?>
 
     <!-- NAVBAR START -->
@@ -91,7 +102,7 @@
         <div class="search-bar">
           <input
             type="text"
-            placeholder="Ketik nama beasiswa/lomba yang ingin kamu cari"
+            placeholder="Ketik nama beasiswa/lomba yang ingin kamu cari" id="searchTim"
           />
         </div>
         <div class="search-btn">Cari</div>
@@ -278,11 +289,15 @@
             </div>
             <div class="filter-kategori">
               <h4>Kategori</h4>
-              <input type="text" placeholder="Cari kategori" />
+              <input type="text" placeholder="Cari kategori" id="filter-kategori" />
             </div>
             <div class="filter-univ">
               <h4>Universitas</h4>
-              <input type="text" placeholder="Cari universitas" />
+              <input type="text" placeholder="Cari universitas" id="filter-univ" />
+            </div>
+            <div class="filter-footer">
+              <button id="applyFilter" class="btn btn-apply-filter">Terapkan</button>
+              <button class="btn btn-clear-filter">Bersihkan</button>
             </div>
           </div>
         </div>
@@ -412,11 +427,15 @@
             </div>
             <div class="filter-kategori">
               <h4>Kategori</h4>
-              <input type="text" placeholder="Cari kategori" />
+              <input type="text" placeholder="Cari kategori" id="filter-kategori"  />
             </div>
             <div class="filter-univ">
               <h4>Universitas</h4>
-              <input type="text" placeholder="Cari universitas" />
+              <input type="text" placeholder="Cari universitas"  id="filter-univ" />
+            </div>
+            <div class="filter-footer">
+              <button id="applyFilter" class="btn btn-apply-filter">Terapkan</button>
+              <button class="btn btn-clear-filter">Bersihkan</button>
             </div>
           </div>
         </div>

@@ -98,3 +98,57 @@ document
   .addEventListener("click", function () {
     document.querySelector(".create-team-container").style.display = "none";
   });
+
+document.getElementById("applyFilter").addEventListener("click", function () {
+  const jenjang = [
+    ...document.querySelectorAll(".filter-jenjang input:checked"),
+  ].map((cb) => cb.value);
+  const kategori = document.getElementById("filter-kategori").value;
+  const univ = document.getElementById("filter-univ").value;
+  const search = document.getElementById("searchTim").value;
+
+  const params = new URLSearchParams();
+  if (jenjang.length) params.append("jenjang", jenjang.join(","));
+  if (kategori) params.append("kategori", kategori);
+  if (univ) params.append("univ", univ);
+  if (search) params.append("search", search);
+
+  window.location.href = `cariTim.php?${params.toString()}`;
+});
+
+document
+  .querySelector(".btn-clear-filter")
+  .addEventListener("click", function () {
+    // Hapus semua checkbox yang diceklis
+    document
+      .querySelectorAll('.checkbox-filter input[type="checkbox"]')
+      .forEach((cb) => (cb.checked = false));
+
+    // Kosongkan input negara dan universitas
+    document.getElementById("filter-kategori").value = "";
+    document.getElementById("filter-univ").value = "";
+
+    // Kosongkan search bar jika ingin sekalian
+    const searchBar = document.getElementById("searchTim");
+    if (searchBar) searchBar.value = "";
+
+    // Redirect ke halaman tanpa filter (reset URL)
+    const baseUrl = window.location.pathname; // ex: beasiswa.php
+    window.location.href = baseUrl;
+  });
+
+document.querySelector(".search-btn").addEventListener("click", function () {
+  const keyword = document.getElementById("searchTim").value;
+  const params = new URLSearchParams(window.location.search);
+
+  params.set("search", keyword);
+  params.set("page", 1); // reset ke halaman pertama
+
+  window.location.href = window.location.pathname + "?" + params.toString();
+});
+
+document.getElementById("searchTim").addEventListener("keypress", function (e) {
+  if (e.key === "Enter") {
+    document.querySelector(".search-btn").click();
+  }
+});

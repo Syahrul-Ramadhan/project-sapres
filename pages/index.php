@@ -1,4 +1,5 @@
 <?php
+require_once 'php/session_manager.php';
 require_once 'php/check_login.php';
 // Get user info from session
 $user_name = $_SESSION['fullname'];
@@ -112,7 +113,8 @@ $tim = $stmt_tim->fetchAll(PDO::FETCH_ASSOC);
             />
           </svg>
         </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if (SapresSessionManager::isLoggedIn()): ?>
+          <?php $userData = SapresSessionManager::getUserData(); ?>
         <div
           class="profile-container"
           id="profile-section"

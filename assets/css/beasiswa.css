@@ -295,6 +295,14 @@ ul {
 }
 /* ---------- BEASISWA LIST END ---------- */
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 30px;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
