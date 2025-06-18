@@ -17,6 +17,8 @@
     <?php
       require_once 'php/session_manager.php';
       include "php/koneksi.php";
+      require_once 'php/check_login.php';
+      $user_id = $_SESSION['user_id'];
       
       // Pagination setup
       $limit = 9;
@@ -508,7 +510,7 @@
           <div class="team-wrap">
             <div class="team-list">
               <?php foreach ($timData as $data): ?>
-              <div class="card-fteam" data-nama="<?= $data['nama_tim'] ?>" data-judul="<?= $data['judul_lomba'] ?>"
+              <div class="card-fteam" data-id="<?= $data['tim_id'] ?> data-nama="<?= $data['nama_tim'] ?>" data-judul="<?= $data['judul_lomba'] ?>"
                 data-jenis="<?= $data['kategori_lomba'] ?>" data-instansi="<?= $data['asal_instansi'] ?>"
                 data-deskripsi="<?= $data['deskripsi'] ?>" data-syarat="<?= $data['syarat_ketentuan'] ?>"
                 data-created="<?= date('d M Y', strtotime($data['created_at'])) ?>"
@@ -583,7 +585,7 @@
 
     <!-- POP UP JOIN TEAM START -->
     <div class="pop-up-container">
-      <div class="pop-up-content">
+      <form class="pop-up-content" action="proses/prosesAjukanGabung.php" method="post" enctype="multipart/form-data">
         <div class="close-pop-up">
           <div class="close-pop-up-btn">
             <svg
@@ -608,6 +610,7 @@
           <span class="title" id="pop-up-title">UI/UX Designer</span>
           <span class="lomba" id="pop-up-lomba">Techcomfest 2026</span>
           <span class="univ" id="pop-up-univ">Universitas Pendidikan Indonesia</span>
+          <input type="hidden" name="tim_id" id="tim_id_input" />
         </div>
         <div class="req">
           <h4>Syarat dan Ketentuan:</h4>
@@ -627,8 +630,8 @@
             <span id="file-name">Tidak ada file dipilih</span>
           </div>
         </div>
-        <div class="confirm-btn">Ajukan Permintaan Bergabung</div>
-      </div>
+        <button type="submit" class="confirm-btn">Ajukan Permintaan Bergabung</button>
+      </form>
     </div>
     <div class="background-pop-up"></div>
     <div class="custom-notification">

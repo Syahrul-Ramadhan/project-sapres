@@ -16,6 +16,7 @@
 
     <?php
       include "php/koneksi.php";
+      require_once 'php/session_manager.php';
       
       $id_beasiswa = $_GET['id'];
 
@@ -108,7 +109,8 @@
             />
           </svg>
         </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
+          <?php if (SapresSessionManager::isLoggedIn()): ?>
+          <?php $userData = SapresSessionManager::getUserData(); ?>
         <div
           class="profile-container"
           id="profile-section"

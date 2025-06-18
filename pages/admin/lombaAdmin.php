@@ -12,6 +12,24 @@ require_once '../php/koneksi.php';
 // $adminInfo = $adminAuth->getAdminInfo();
 // $admin_name = $adminInfo ? $adminInfo['fullname'] : 'Admin';
 
+session_start();
+
+// Ambil user_id dari sesi
+$user_id = $_SESSION['user_id'] ?? 0; // Pastikan session sudah di-set sebelumnya
+
+// Cek apakah user_id ada
+if ($user_id > 0) {
+    // Ambil data pengguna dari database (misalnya 'users' tabel)
+    // Ganti dengan query yang sesuai dengan struktur database Anda
+    $stmt = $koneksi->prepare("SELECT fullname FROM users WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch();
+
+    $fullname = $user ? $user['fullname'] : 'User Not Found'; // Jika data ditemukan
+} else {
+    $fullname = 'Guest';  // Jika user_id tidak ada (belum login)
+}
+
 // Get lomba data
 $lombaList = [];
 $stats = ['total' => 0, 'active' => 0, 'expired' => 0];
@@ -757,7 +775,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="profile">
                     <img src="../../assets/img/user_profile/default_profile.png" alt="Profile Picture">
                     <div class="profile-info">
-                        <!-- <h4><?php echo htmlspecialchars($admin_name); ?></h4> -->
+                        <h4><?php echo htmlspecialchars($fullname); ?></h4>
                         <p>Admin</p>
                     </div>
                 </div>

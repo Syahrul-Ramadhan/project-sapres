@@ -15,6 +15,24 @@
 
     <?php
         include "../php/koneksi.php";
+
+        session_start();
+
+        // Ambil user_id dari sesi
+        $user_id = $_SESSION['user_id'] ?? 0; // Pastikan session sudah di-set sebelumnya
+
+        // Cek apakah user_id ada
+        if ($user_id > 0) {
+            // Ambil data pengguna dari database (misalnya 'users' tabel)
+            // Ganti dengan query yang sesuai dengan struktur database Anda
+            $stmt = $koneksi->prepare("SELECT fullname FROM users WHERE user_id = ?");
+            $stmt->execute([$user_id]);
+            $user = $stmt->fetch();
+
+            $fullname = $user ? $user['fullname'] : 'User Not Found'; // Jika data ditemukan
+        } else {
+            $fullname = 'Guest';  // Jika user_id tidak ada (belum login)
+        }
         
         // Fetch data for the dashboard using PDO
         $sql = "SELECT COUNT(*) AS total_beasiswa FROM beasiswa";
@@ -54,7 +72,7 @@
             </div>
             <div class="nav-list">
                 <ul>
-                    <li><img src="../../assets/img/icons/dashboard-admin/pie-chart.png" alt="chart-icon"><a href="dashboardAdmin.php">Dashboard</a></li>
+                    <li><img src="../../assets/img/icons/dashboard-admin/pie-chart.png" alt="chart-icon"><a href="dashboardAdmin.php" style="font-weight: 600; color: var(--Primary-color);">Dashboard</a></li>
                     <li><img src="../../assets/img/icons/dashboard-admin/dollar-currency-symbol.png" alt="beasiswa-icon"><a href="beasiswaAdmin.php">Beasiswa</a></li>
                     <li><img src="../../assets/img/icons/dashboard-admin/trophy.png" alt="lomba-icon"><a href="lombaAdmin.php">Lomba</a></li>
                     <li><img src="../../assets/img/icons/dashboard-admin/group-users.png" alt="team-icon"><a href="timAdmin.php">Tim</a></li>
@@ -66,11 +84,11 @@
             <div class="profile">
                 <img src="../../assets/img/user_profile/default_profile.png" alt="Profile Picture">
                 <div class="profile-info">
-                    <h4>Icibos</h4>
+                    <h4><?php echo htmlspecialchars($fullname); ?></h4>
                     <p>Admin</p>
                 </div>
             </div>
-            <a href="" class="log-out">
+            <a href="../php/auth_handler.php?action=logout"  class="log-out">
                 <i class="fa-solid fa-arrow-right-from-bracket fa-rotate-180"></i>
                 Log out
             </a>

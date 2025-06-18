@@ -1,6 +1,9 @@
 <?php
 require_once 'php/session_manager.php';
 require_once 'php/koneksi.php';
+require_once 'php/check_login.php';
+
+$user_id = $_SESSION['user_id'];
 
 // Initialize variables
 $lombaList = [];
@@ -184,7 +187,7 @@ $currentMonthName = $months[$currentMonthNum];
           <input
             type="text"
             id="searchInput"
-            placeholder="Ketik nama beasiswa/lomba yang ingin kamu cari"
+            placeholder="Ketik nama lomba yang ingin kamu cari"
             value="<?php echo htmlspecialchars($searchQuery); ?>"
           />
         </div>
@@ -215,6 +218,7 @@ $currentMonthName = $months[$currentMonthNum];
             />
           </svg>
         </div>
+        <?php if (isset($_SESSION['user_id'])): ?>
         <div
           class="profile-container"
           id="profile-section"
@@ -232,12 +236,14 @@ $currentMonthName = $months[$currentMonthNum];
           </div>
         </div>
       </div>
+      <?php else: ?>
       <div class="auth-buttons">
         <a href="login.php"><button class="btn btn-login">MASUK</button></a>
         <a href="register.php"
           ><button class="btn btn-register">DAFTAR</button></a
         >
       </div>
+      <?php endif; ?>
     </nav>
     <!-- NAVBAR END -->
 
@@ -402,7 +408,7 @@ $currentMonthName = $months[$currentMonthNum];
                     $statusIcon = $isExpired ? 'fas fa-times-circle' : ($isUrgent ? 'fas fa-exclamation-triangle' : 'fas fa-circle');
                   ?>
                   
-                  <article class="competition-card">
+                  <article class="competition-card" data-id="<?php echo $lomba['id']; ?>">
                     <div class="card-header">
                       <div class="card-image <?php echo empty($lomba['image_url']) ? 'no-image' : ''; ?>">
                         <?php if (!empty($lomba['image_url'])): ?>
@@ -629,9 +635,36 @@ $currentMonthName = $months[$currentMonthNum];
 
       // Initialize bookmarks
       function initializeBookmarks() {
-        // Check if user is logged in and load bookmark states
-        // This would typically involve an AJAX call to check bookmark status
-      }
+    const cards = document.querySelectorAll('.competition-card');
+    const ids = Array.from(cards).map(card => card.dataset.id).filter(Boolean);
+
+    if (ids.length === 0) return;
+
+    fetch('php/bookmark_handler.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'get_status',
+        item_type: 'lomba',
+        item_ids: ids
+      }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const bookmarkedIds = new Set(data.bookmarks.map(b => b.item_id.toString()));
+          cards.forEach(card => {
+            const id = card.dataset.id;
+            const icon = card.querySelector('.bookmark-icon');
+            if (bookmarkedIds.has(id)) {
+              icon.classList.remove('far');
+              icon.classList.add('fas');
+            }
+          });
+        }
+      });
+  }
+
 
       // Handle image loading errors
       function handleImageErrors() {
@@ -735,7 +768,6 @@ $currentMonthName = $months[$currentMonthNum];
 
       // Bookmark functions
       function toggleBookmark(lombaId, type) {
-        // Check if user is logged in
         fetch('php/auth_check.php')
           .then(response => response.json())
           .then(data => {
@@ -744,15 +776,16 @@ $currentMonthName = $months[$currentMonthNum];
               window.location.href = 'login.php';
               return;
             }
-            
-            // Toggle bookmark
+
+            const icon = document.querySelector(`[onclick="toggleBookmark(${lombaId}, '${type}')"] i`);
+            const isBookmarked = icon.classList.contains('fas'); // fas = aktif/bookmarked
+            const action = isBookmarked ? 'remove' : 'add';
+
             return fetch('php/bookmark_handler.php', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                action: 'toggle',
+                action,
                 item_id: lombaId,
                 item_type: type
               })
@@ -761,17 +794,15 @@ $currentMonthName = $months[$currentMonthNum];
           .then(response => response.json())
           .then(data => {
             if (data.success) {
-              const bookmarkBtn = document.querySelector(`[onclick="toggleBookmark(${lombaId}, '${type}')"] i`);
-              if (bookmarkBtn) {
-                if (data.bookmarked) {
-                  bookmarkBtn.classList.remove('far');
-                  bookmarkBtn.classList.add('fas');
-                  showNotification('Lomba berhasil disimpan!', 'success');
-                } else {
-                  bookmarkBtn.classList.remove('fas');
-                  bookmarkBtn.classList.add('far');
-                  showNotification('Lomba dihapus dari simpanan', 'info');
-                }
+              const icon = document.querySelector(`[onclick="toggleBookmark(${lombaId}, '${type}')"] i`);
+              if (icon) {
+                icon.classList.toggle('fas');
+                icon.classList.toggle('far');
+
+                showNotification(
+                  data.message || (icon.classList.contains('fas') ? 'Disimpan' : 'Dihapus dari bookmark'),
+                  icon.classList.contains('fas') ? 'success' : 'info'
+                );
               }
             } else {
               showNotification(data.message || 'Terjadi kesalahan', 'error');
@@ -782,6 +813,7 @@ $currentMonthName = $months[$currentMonthNum];
             showNotification('Terjadi kesalahan jaringan', 'error');
           });
       }
+
 
       // Utility functions
       function showLoading() {

@@ -186,7 +186,7 @@ function handleLogout() {
         echo json_encode([
             'success' => true, 
             'message' => 'Logout berhasil', 
-            'redirect' => 'login.php'
+            'redirect' => 'dashboard.php'
         ]);
         
     } catch (Exception $e) {
@@ -338,35 +338,5 @@ function checkRememberToken() {
     }
     
     return false;
-}
-
-// Rate limiting function (optional)
-function checkRateLimit($identifier, $maxAttempts = 5, $timeWindow = 300) {
-    global $koneksi;
-    
-    try {
-        // Clean old attempts
-        $stmt = $koneksi->prepare("DELETE FROM login_attempts WHERE attempted_at < DATE_SUB(NOW(), INTERVAL ? SECOND)");
-        $stmt->execute([$timeWindow]);
-        
-        // Count recent attempts
-        $stmt = $koneksi->prepare("SELECT COUNT(*) as attempts FROM login_attempts WHERE identifier = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL ? SECOND)");
-        $stmt->execute([$identifier, $timeWindow]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($result['attempts'] >= $maxAttempts) {
-            return false;
-        }
-        
-        // Record this attempt
-        $stmt = $koneksi->prepare("INSERT INTO login_attempts (identifier, attempted_at) VALUES (?, NOW())");
-        $stmt->execute([$identifier]);
-        
-        return true;
-    } catch (Exception $e) {
-        // If rate limiting fails, allow the request
-        error_log("Rate limiting error: " . $e->getMessage());
-        return true;
-    }
 }
 ?>
