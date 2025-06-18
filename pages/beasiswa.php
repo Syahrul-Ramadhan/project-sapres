@@ -101,6 +101,7 @@
         <div class="search-btn">Cari</div>
       </div>
       <div class="nav-item">
+        
         <div class="search-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -125,10 +126,11 @@
             />
           </svg>
         </div>
+        <?php if (isset($_SESSION['user_id'])): ?>
         <div
           class="profile-container"
           id="profile-section"
-          style="display: none"
+          
         >
           <div class="profile-btn">
             <img
@@ -137,17 +139,19 @@
             />
             <div class="dropdown-profile">
               <a href="dashboard.php">Dashboard</a>
-              <a id="logout">Keluar</a>
+              <a id="logout" href="php/logout.php">Keluar</a>
             </div>
           </div>
         </div>
       </div>
+       <?php else: ?>
       <div class="auth-buttons">
         <a href="login.php"><button class="btn btn-login">MASUK</button></a>
         <a href="register.php"
           ><button class="btn btn-register">DAFTAR</button></a
         >
       </div>
+      <?php endif; ?>
     </nav>
     <!-- NAVBAR END -->
 

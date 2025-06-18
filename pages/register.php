@@ -137,7 +137,7 @@ if (isset($_SESSION['user_id'])) {
             </p>
           </div>
 
-          <form id="register-form" class="register-form">
+          <form id="register-form" class="register-form" method="post">
             <div class="input-fields">
               <div class="input-field">
                 <label for="fullname">Nama Lengkap</label>
@@ -193,13 +193,6 @@ if (isset($_SESSION['user_id'])) {
 
             <div class="button-group">
               <button class="register-btn" type="submit">DAFTAR</button>
-              <div class="divider">
-                <span>atau</span>
-              </div>
-              <button type="button" class="google-btn">
-                <img src="../assets/images/google-icon.png" alt="Google" />
-                <span>DAFTAR DENGAN GOOGLE</span>
-              </button>
             </div>
           </form>
 

@@ -163,23 +163,8 @@ if (isset($_SESSION['user_id'])) {
               </div>
             </div>
 
-            <div class="remember-forgot">
-              <div class="terms-checkbox">
-                <input type="checkbox" id="remember" />
-                <label for="remember">Ingat saya</label>
-              </div>
-              <a href="#" class="forgot-password">Lupa password?</a>
-            </div>
-
             <div class="button-group">
               <button type="submit" class="register-btn">MASUK</button>
-              <div class="divider">
-                <span>atau</span>
-              </div>
-              <button type="button" class="google-btn">
-                <img src="../assets/images/google-icon.png" alt="Google" />
-                <span>MASUK DENGAN GOOGLE</span>
-              </button>
             </div>
           </form>
 
@@ -190,7 +175,7 @@ if (isset($_SESSION['user_id'])) {
         </div>
         <div class="image-section">
           <div class="image-content">
-            <h2>Akses Semua Fitur Luarkampus</h2>
+            <h2>Akses Semua Fitur Sapres</h2>
             <p>
               Dapatkan informasi terbaru tentang beasiswa, lomba, dan temukan
               kolaborator untuk proyekmu.
