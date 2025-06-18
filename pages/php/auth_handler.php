@@ -103,7 +103,7 @@ function handleLogin() {
         // Get user
         $stmt = $koneksi->prepare("SELECT id, fullname, email, password, role FROM users WHERE email = ?");
         $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch();
         
         if (!$user || !password_verify($password, $user['password'])) {
             echo json_encode(['success' => false, 'message' => 'Email atau password salah']);
