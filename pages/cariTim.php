@@ -95,7 +95,6 @@
         <div class="search-btn">Cari</div>
       </div>
       <div class="nav-item">
-        
         <div class="search-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -120,32 +119,58 @@
             />
           </svg>
         </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
-        <div
-          class="profile-container"
-          id="profile-section"
-          
-        >
-          <div class="profile-btn">
-            <img
-              src="../assets/img/user_profile/user_profile.png"
-              alt="User Profile"
-            />
-            <div class="dropdown-profile">
-              <a href="dashboard.php">Dashboard</a>
-              <a id="logout" href="php/logout.php">Keluar</a>
+        <?php if (SapresSessionManager::isLoggedIn()): ?>
+          <?php $userData = SapresSessionManager::getUserData(); ?>
+          <div
+            class="profile-container"
+            id="profile-section"
+          >
+            <div class="profile-btn">
+              <img
+                src="../assets/img/user_profile/user_profile.png"
+                alt="User Profile"
+              />
+              <div class="dropdown-profile">
+                <a href="dashboard.php">Dashboard</a>
+                <a id="logout">Keluar</a>
+              </div>
             </div>
           </div>
+        <?php else: ?>
+          <div
+            class="profile-container"
+            id="profile-section"
+            style="display: none"
+          >
+            <div class="profile-btn">
+              <img
+                src="../assets/img/user_profile/user_profile.png"
+                alt="User Profile"
+              />
+              <div class="dropdown-profile">
+                <a href="dashboard.php">Dashboard</a>
+                <a id="logout">Keluar</a>
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
+      <?php if (!SapresSessionManager::isLoggedIn()): ?>
+        <div class="auth-buttons">
+          <a href="login.php"><button class="btn btn-login">MASUK</button></a>
+          <a href="register.php"
+            ><button class="btn btn-register">DAFTAR</button></a
+          >
         </div>
-      </div>
-       <?php else: ?>
-      <div class="auth-buttons">
-        <a href="login.php"><button class="btn btn-login">MASUK</button></a>
-        <a href="register.php"
-          ><button class="btn btn-register">DAFTAR</button></a
-        >
-      </div>
+      <?php else: ?>
+        <div class="auth-buttons" style="display: none;">
+          <a href="login.php"><button class="btn btn-login">MASUK</button></a>
+          <a href="register.php"
+            ><button class="btn btn-register">DAFTAR</button></a
+          >
+        </div>
       <?php endif; ?>
+
     </nav>
     <!-- NAVBAR END -->
     <!-- MAIN START -->
@@ -723,12 +748,13 @@
     <!-- CREATE TEAM END -->
 
     <!-- FOOTER START -->
-    <?php 
-    include 'php/footer.php'; ?>
+    <?php include 'php/footer.php'; ?>
     <!-- FOOTER END -->
+    
     <!-- Java Script -->
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/cariTim.js"></script>
     <script src="../assets/js/filter.js"></script>
+    <script src="../assets/js/auth.js"></script>
   </body>
 </html>
