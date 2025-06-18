@@ -1,5 +1,3 @@
-
-
 <?php
     require_once 'php/check_login.php';
     // Get user info from session

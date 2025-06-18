@@ -1,12 +1,12 @@
 <?php
-// Simple session check - redirect if already logged in
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once 'php/session_manager.php';
 
-if (isset($_SESSION['user_id'])) {
-    header('Location: dashboard.php');
-    exit;
+// Redirect jika sudah login
+if (SapresSessionManager::isLoggedIn()) {
+    $userData = SapresSessionManager::getUserData();
+    $redirectUrl = ($userData['role'] === 'admin') ? 'admin/dashboardAdmin.php' : 'dashboard.php';
+    header("Location: $redirectUrl");
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -100,29 +100,57 @@ if (isset($_SESSION['user_id'])) {
             />
           </svg>
         </div>
-        <div
-          class="profile-container"
-          id="profile-section"
-          style="display: none"
-        >
-          <div class="profile-btn">
-            <img
-              src="../assets/img/user_profile/user_profile.png"
-              alt="User Profile"
-            />
-            <div class="dropdown-profile">
-              <a href="dashboard.php">Dashboard</a>
-              <a id="logout">Keluar</a>
+        <?php if (SapresSessionManager::isLoggedIn()): ?>
+          <?php $userData = SapresSessionManager::getUserData(); ?>
+          <div
+            class="profile-container"
+            id="profile-section"
+          >
+            <div class="profile-btn">
+              <img
+                src="../assets/img/user_profile/user_profile.png"
+                alt="User Profile"
+              />
+              <div class="dropdown-profile">
+                <a href="dashboard.php">Dashboard</a>
+                <a id="logout">Keluar</a>
+              </div>
             </div>
           </div>
+        <?php else: ?>
+          <div
+            class="profile-container"
+            id="profile-section"
+            style="display: none"
+          >
+            <div class="profile-btn">
+              <img
+                src="../assets/img/user_profile/user_profile.png"
+                alt="User Profile"
+              />
+              <div class="dropdown-profile">
+                <a href="dashboard.php">Dashboard</a>
+                <a id="logout">Keluar</a>
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
+      <?php if (!SapresSessionManager::isLoggedIn()): ?>
+        <div class="auth-buttons">
+          <a href="login.php"><button class="btn btn-login">MASUK</button></a>
+          <a href="register.php"
+            ><button class="btn btn-register">DAFTAR</button></a
+          >
         </div>
-      </div>
-      <div class="auth-buttons">
-        <a href="login.php"><button class="btn btn-login">MASUK</button></a>
-        <a href="register.php"
-          ><button class="btn btn-register">DAFTAR</button></a
-        >
-      </div>
+      <?php else: ?>
+        <div class="auth-buttons" style="display: none;">
+          <a href="login.php"><button class="btn btn-login">MASUK</button></a>
+          <a href="register.php"
+            ><button class="btn btn-register">DAFTAR</button></a
+          >
+        </div>
+      <?php endif; ?>
     </nav>
     <!-- NAVBAR END -->
 
@@ -144,6 +172,7 @@ if (isset($_SESSION['user_id'])) {
                 <input
                   type="text"
                   id="fullname"
+                  name="fullname"
                   placeholder="Masukkan nama lengkap"
                   required
                 />
@@ -153,6 +182,7 @@ if (isset($_SESSION['user_id'])) {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   placeholder="Masukkan email"
                   required
                 />
@@ -163,6 +193,7 @@ if (isset($_SESSION['user_id'])) {
                   <input
                     type="password"
                     id="password"
+                    name="password"
                     placeholder="Buat password"
                     required
                   />
@@ -175,6 +206,7 @@ if (isset($_SESSION['user_id'])) {
                   <input
                     type="password"
                     id="confirm-password"
+                    name="confirm_password"
                     placeholder="Ulangi password"
                     required
                   />

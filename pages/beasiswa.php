@@ -1,3 +1,40 @@
+<?php
+require_once 'php/session_manager.php';
+include "php/koneksi.php";
+
+// $sql = "SELECT * FROM beasiswa";
+// $result = $koneksi->query($sql);
+
+// Default bulan dan tahun saat ini
+$currentMonth = isset($_GET['month']) ? (int)$_GET['month'] : (int)date('m');
+$currentYear = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
+
+// Validasi nilai
+if ($currentMonth < 1 || $currentMonth > 12) $currentMonth = (int)date('m');
+if ($currentYear < 2000) $currentYear = (int)date('Y');
+
+// Pagination setup
+$limit = 6;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+$offset = ($page - 1) * $limit;
+
+// Ambil data beasiswa berdasarkan bulan & tahun
+$sql = "SELECT * FROM beasiswa 
+        WHERE MONTH(mulai_beasiswa) = $currentMonth 
+        AND YEAR(mulai_beasiswa) = $currentYear 
+        ORDER BY mulai_beasiswa DESC 
+        LIMIT $limit OFFSET $offset";
+$result = $koneksi->query($sql);
+
+// Query untuk hitung total data
+$totalResult = $koneksi->query("SELECT COUNT(*) as total FROM beasiswa
+                              WHERE MONTH(mulai_beasiswa) = $currentMonth 
+                              AND YEAR(mulai_beasiswa) = $currentYear");
+$totalData = $totalResult->fetch(PDO::FETCH_ASSOC)['total'];
+$totalPages = ceil($totalData / $limit);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -17,42 +54,6 @@
     />
   </head>
   <body>
-    <?php
-    include "php/koneksi.php";
-
-    // $sql = "SELECT * FROM beasiswa";
-    // $result = $koneksi->query($sql);
-
-    // Default bulan dan tahun saat ini
-    $currentMonth = isset($_GET['month']) ? (int)$_GET['month'] : (int)date('m');
-    $currentYear = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
-
-    // Validasi nilai
-    if ($currentMonth < 1 || $currentMonth > 12) $currentMonth = (int)date('m');
-    if ($currentYear < 2000) $currentYear = (int)date('Y');
-    
-    // Pagination setup
-    $limit = 6;
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    if ($page < 1) $page = 1;
-    $offset = ($page - 1) * $limit;
-
-    // Ambil data beasiswa berdasarkan bulan & tahun
-    $sql = "SELECT * FROM beasiswa 
-            WHERE MONTH(mulai_beasiswa) = $currentMonth 
-            AND YEAR(mulai_beasiswa) = $currentYear 
-            ORDER BY mulai_beasiswa DESC 
-            LIMIT $limit OFFSET $offset";
-    $result = $koneksi->query($sql);
-
-    // Query untuk hitung total data
-    $totalResult = $koneksi->query("SELECT COUNT(*) as total FROM beasiswa
-                                  WHERE MONTH(mulai_beasiswa) = $currentMonth 
-                                  AND YEAR(mulai_beasiswa) = $currentYear");
-    $totalData = $totalResult->fetch(PDO::FETCH_ASSOC)['total'];
-    $totalPages = ceil($totalData / $limit);
-
-    ?>
     <!-- NAVBAR START -->
     <nav class="navbar">
       <div class="nav-responsive">
@@ -126,31 +127,56 @@
             />
           </svg>
         </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
-        <div
-          class="profile-container"
-          id="profile-section"
-          
-        >
-          <div class="profile-btn">
-            <img
-              src="../assets/img/user_profile/user_profile.png"
-              alt="User Profile"
-            />
-            <div class="dropdown-profile">
-              <a href="dashboard.php">Dashboard</a>
-              <a id="logout" href="php/logout.php">Keluar</a>
+        <?php if (SapresSessionManager::isLoggedIn()): ?>
+          <?php $userData = SapresSessionManager::getUserData(); ?>
+          <div
+            class="profile-container"
+            id="profile-section"
+          >
+            <div class="profile-btn">
+              <img
+                src="../assets/img/user_profile/user_profile.png"
+                alt="User Profile"
+              />
+              <div class="dropdown-profile">
+                <a href="dashboard.php">Dashboard</a>
+                <a id="logout">Keluar</a>
+              </div>
             </div>
           </div>
+        <?php else: ?>
+          <div
+            class="profile-container"
+            id="profile-section"
+            style="display: none"
+          >
+            <div class="profile-btn">
+              <img
+                src="../assets/img/user_profile/user_profile.png"
+                alt="User Profile"
+              />
+              <div class="dropdown-profile">
+                <a href="dashboard.php">Dashboard</a>
+                <a id="logout">Keluar</a>
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
+      <?php if (!SapresSessionManager::isLoggedIn()): ?>
+        <div class="auth-buttons">
+          <a href="login.php"><button class="btn btn-login">MASUK</button></a>
+          <a href="register.php"
+            ><button class="btn btn-register">DAFTAR</button></a
+          >
         </div>
-      </div>
-       <?php else: ?>
-      <div class="auth-buttons">
-        <a href="login.php"><button class="btn btn-login">MASUK</button></a>
-        <a href="register.php"
-          ><button class="btn btn-register">DAFTAR</button></a
-        >
-      </div>
+      <?php else: ?>
+        <div class="auth-buttons" style="display: none;">
+          <a href="login.php"><button class="btn btn-login">MASUK</button></a>
+          <a href="register.php"
+            ><button class="btn btn-register">DAFTAR</button></a
+          >
+        </div>
       <?php endif; ?>
     </nav>
     <!-- NAVBAR END -->
@@ -600,151 +626,152 @@
             />
             <path
               d="M14.5 2C14.9659 2 15.1989 2 15.3827 2.07612C15.6277 2.17761 15.8224 2.37229 15.9239 2.61732C16 2.80109 16 3.03406 16 3.5L16 4.5C16 4.96594 16 5.19891 15.9239 5.38268C15.8224 5.62771 15.6277 5.82239 15.3827 5.92388C15.1989 6 14.9659 6 14.5 6C14.0341 6 13.8011 6 13.6173 5.92388C13.3723 5.82239 13.1776 5.62771 13.0761 5.38268C13 5.19891 13 4.96594 13 4.5L13 3.5C13 3.03406 13 2.80109 13.0761 2.61732C13.1776 2.37229 13.3723 2.17761 13.6173 2.07612C13.8011 2 14.0341 2 14.5 2Z"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M12.5 17C12.9659 17 13.1989 17 13.3827 17.0761C13.6277 17.1776 13.8224 17.3723 13.9239 17.6173C14 17.8011 14 18.0341 14 18.5L14 19.5C14 19.9659 14 20.1989 13.9239 20.3827C13.8224 20.6277 13.6277 20.8224 13.3827 20.9239C13.1989 21 12.9659 21 12.5 21C12.0341 21 11.8011 21 11.6173 20.9239C11.3723 20.8224 11.1776 20.6277 11.0761 20.3827C11 20.1989 11 19.9659 11 19.5L11 18.5C11 18.0341 11 17.8011 11.0761 17.6173C11.1776 17.3723 11.3723 17.1776 11.6173 17.0761C11.8011 17 12.0341 17 12.5 17Z"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M9.5 9.5C9.96594 9.5 10.1989 9.5 10.3827 9.57612C10.6277 9.67761 10.8224 9.87229 10.9239 10.1173C11 10.3011 11 10.5341 11 11L11 12C11 12.4659 11 12.6989 10.9239 12.8827C10.8224 13.1277 10.6277 13.3224 10.3827 13.4239C10.1989 13.5 9.96594 13.5 9.5 13.5C9.03406 13.5 8.80109 13.5 8.61732 13.4239C8.37229 13.3224 8.17761 13.1277 8.07612 12.8827C8 12.6989 8 12.4659 8 12L8 11C8 10.5341 8 10.3011 8.07612 10.1173C8.17761 9.87229 8.37229 9.67761 8.61732 9.57612C8.80109 9.5 9.03406 9.5 9.5 9.5Z"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <span>FILTER</span>
-        </div>
-        <!-- FILTER BTN END -->
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M12.5 17C12.9659 17 13.1989 17 13.3827 17.0761C13.6277 17.1776 13.8224 17.3723 13.9239 17.6173C14 17.8011 14 18.0341 14 18.5L14 19.5C14 19.9659 14 20.1989 13.9239 20.3827C13.8224 20.6277 13.6277 20.8224 13.3827 20.9239C13.1989 21 12.9659 21 12.5 21C12.0341 21 11.8011 21 11.6173 20.9239C11.3723 20.8224 11.1776 20.6277 11.0761 20.3827C11 20.1989 11 19.9659 11 19.5L11 18.5C11 18.0341 11 17.8011 11.0761 17.6173C11.1776 17.3723 11.3723 17.1776 11.6173 17.0761C11.8011 17 12.0341 17 12.5 17Z"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9.5 9.5C9.96594 9.5 10.1989 9.5 10.3827 9.57612C10.6277 9.67761 10.8224 9.87229 10.9239 10.1173C11 10.3011 11 10.5341 11 11L11 12C11 12.4659 11 12.6989 10.9239 12.8827C10.8224 13.1277 10.6277 13.3224 10.3827 13.4239C10.1989 13.5 9.96594 13.5 9.5 13.5C9.03406 13.5 8.80109 13.5 8.61732 13.4239C8.37229 13.3224 8.17761 13.1277 8.07612 12.8827C8 12.6989 8 12.4659 8 12L8 11C8 10.5341 8 10.3011 8.07612 10.1173C8.17761 9.87229 8.37229 9.67761 8.61732 9.57612C8.80109 9.5 9.03406 9.5 9.5 9.5Z"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>FILTER</span>
+          </div>
+          <!-- FILTER BTN END -->
 
-        <!-- DAFTAR BEASISWA START -->
-        <div class="beasiswa-container">
-          <h3>Daftar Beasiswa</h3>
-          <div class="beasiswa-list">
-            <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
-              <a
-                href="detailBeasiswa.php?id=<?= $row['beasiswa_id'] ?>"
-                class="beasiswa-card-md btn-detail-beasiswa" data-jenjang="<?= $row['jenjang_beasiswa'] ?>" data-tipe="<?= $row['tipe_pendanaan'] ?>" data-negara="<?= $row['lokasi_beasiswa'] ?>" data-univ="<?= $row['asal_instansi'] ?>">
-              >
-                <div class="card-content">
-                  <div class="head-card">
-                        <div class="degrees">
-                      <?php 
-                      $jenjang = explode(',', $row['jenjang_beasiswa']); 
-                      foreach ($jenjang as $j): ?>
-                          <span class="degree"><?= htmlspecialchars(trim($j)) ?></span>
-                          <?php endforeach; ?>
+          <!-- DAFTAR BEASISWA START -->
+          <div class="beasiswa-container">
+            <h3>Daftar Beasiswa</h3>
+            <div class="beasiswa-list">
+              <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
+                <a
+                  href="detailBeasiswa.php?id=<?= $row['beasiswa_id'] ?>"
+                  class="beasiswa-card-md btn-detail-beasiswa" data-jenjang="<?= $row['jenjang_beasiswa'] ?>" data-tipe="<?= $row['tipe_pendanaan'] ?>" data-negara="<?= $row['lokasi_beasiswa'] ?>" data-univ="<?= $row['asal_instansi'] ?>">
+                >
+                  <div class="card-content">
+                    <div class="head-card">
+                          <div class="degrees">
+                        <?php 
+                        $jenjang = explode(',', $row['jenjang_beasiswa']); 
+                        foreach ($jenjang as $j): ?>
+                            <span class="degree"><?= htmlspecialchars(trim($j)) ?></span>
+                            <?php endforeach; ?>
+                          </div>
+                      <div class="bookmark">
+                        <div class="bookmark-btn">
+                          <!-- SVG bookmark icon -->
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#333332" fill="none">
+                            <path
+                              d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
                         </div>
-                    <div class="bookmark">
-                      <div class="bookmark-btn">
-                        <!-- SVG bookmark icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#333332" fill="none">
-                          <path
-                            d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="body-card">
-                    <h2 class="title"><?= htmlspecialchars($row['judul_beasiswa']) ?></h2>
-                    <p class="location"><?= htmlspecialchars($row['lokasi_beasiswa']) ?></p>
-                  </div>
+                    <div class="body-card">
+                      <h2 class="title"><?= htmlspecialchars($row['judul_beasiswa']) ?></h2>
+                      <p class="location"><?= htmlspecialchars($row['lokasi_beasiswa']) ?></p>
+                    </div>
 
-                  <div class="dates">
-                    <p class="start-date">Mulai: <?= date("d M Y", strtotime($row['mulai_beasiswa'])) ?></p>
-                    <p class="deadline">Deadline: <?= date("d M Y", strtotime($row['penutupan_beasiswa'])) ?></p>
-                  </div>
-                </div>
-              </a>
-          </div>
-          <div class="beasiswa-list">
-            <a
-                  href="detailBeasiswa.php?id=<?= $row['beasiswa_id'] ?>"
-                  class="beasiswa-card btn-detail-beasiswa" data-jenjang="<?= $row['jenjang_beasiswa'] ?>" data-tipe="<?= $row['tipe_pendanaan'] ?>" data-negara="<?= $row['lokasi_beasiswa'] ?>" data-univ="<?= $row['asal_instansi'] ?>"
-                >
-                  <div class="card-info">
-                        <div class="degrees">
-                      <?php 
-                      $jenjang = explode(',', $row['jenjang_beasiswa']); 
-                      foreach ($jenjang as $j): ?>
-                          <span class="degree"><?= htmlspecialchars(trim($j)) ?></span>
-                          <?php endforeach; ?>
-                        </div>
                     <div class="dates">
                       <p class="start-date">Mulai: <?= date("d M Y", strtotime($row['mulai_beasiswa'])) ?></p>
                       <p class="deadline">Deadline: <?= date("d M Y", strtotime($row['penutupan_beasiswa'])) ?></p>
                     </div>
                   </div>
-                  <div class="card-content">
-                    <div class="head-card">
-                      <h2 class="title"><?= htmlspecialchars($row['judul_beasiswa']) ?></h2>
-                      <p class="location"><?= htmlspecialchars($row['lokasi_beasiswa']) ?></p>
-                    </div>
-                    <div class="bookmark">
-                      <div class="bookmark-btn">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          height="24"
-                          color="#333332"
-                          fill="none"
-                        >
-                          <path
-                            d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
+                </a>
+            </div>
+            <div class="beasiswa-list">
+              <a
+                    href="detailBeasiswa.php?id=<?= $row['beasiswa_id'] ?>"
+                    class="beasiswa-card btn-detail-beasiswa" data-jenjang="<?= $row['jenjang_beasiswa'] ?>" data-tipe="<?= $row['tipe_pendanaan'] ?>" data-negara="<?= $row['lokasi_beasiswa'] ?>" data-univ="<?= $row['asal_instansi'] ?>"
+                  >
+                    <div class="card-info">
+                          <div class="degrees">
+                        <?php 
+                        $jenjang = explode(',', $row['jenjang_beasiswa']); 
+                        foreach ($jenjang as $j): ?>
+                            <span class="degree"><?= htmlspecialchars(trim($j)) ?></span>
+                            <?php endforeach; ?>
+                          </div>
+                      <div class="dates">
+                        <p class="start-date">Mulai: <?= date("d M Y", strtotime($row['mulai_beasiswa'])) ?></p>
+                        <p class="deadline">Deadline: <?= date("d M Y", strtotime($row['penutupan_beasiswa'])) ?></p>
                       </div>
                     </div>
-                  </div>
-                </a>
-            <?php endwhile; ?>
+                    <div class="card-content">
+                      <div class="head-card">
+                        <h2 class="title"><?= htmlspecialchars($row['judul_beasiswa']) ?></h2>
+                        <p class="location"><?= htmlspecialchars($row['lokasi_beasiswa']) ?></p>
+                      </div>
+                      <div class="bookmark">
+                        <div class="bookmark-btn">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            width="24"
+                            height="24"
+                            color="#333332"
+                            fill="none"
+                          >
+                            <path
+                              d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+              <?php endwhile; ?>
+            </div>
+
+            <div class="pagination">
+            <?php if ($page > 1): ?>
+              <a href="?page=<?= $page - 1 ?>" class="pagination-btn">&laquo;</a>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+              <a href="?page=<?= $i ?>" <?= $i === $page ? 'style="font-weight: bold; background-color: #205781; color: white;"' : '' ?> class="pagination-btn"><?= $i ?></a>
+            <?php endfor; ?>
+
+            <?php if ($page < $totalPages): ?>
+              <a href="?page=<?= $page + 1 ?>" class="pagination-btn">&raquo;</a>
+            <?php endif; ?>
           </div>
-
-          <div class="pagination">
-          <?php if ($page > 1): ?>
-            <a href="?page=<?= $page - 1 ?>" class="pagination-btn">&laquo;</a>
-          <?php endif; ?>
-
-          <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a href="?page=<?= $i ?>" <?= $i === $page ? 'style="font-weight: bold; background-color: #205781; color: white;"' : '' ?> class="pagination-btn"><?= $i ?></a>
-          <?php endfor; ?>
-
-          <?php if ($page < $totalPages): ?>
-            <a href="?page=<?= $page + 1 ?>" class="pagination-btn">&raquo;</a>
-          <?php endif; ?>
+          </div>
+          <!-- DAFTAR BEASISWA END -->
         </div>
-        </div>
-        <!-- DAFTAR BEASISWA END -->
+        <!-- MAIN CONTENT END -->
       </div>
-      <!-- MAIN CONTENT END -->
-    </div>
-    <!-- MAIN END -->
+      <!-- MAIN END -->
 
-    <!-- FOOTER START -->
-    <?php include 'php/footer.php'; ?>
-    <!-- FOOTER END -->
+      <!-- FOOTER START -->
+      <?php include 'php/footer.php'; ?>
+      <!-- FOOTER END -->
 
-    <!-- Java Script -->
-    <script src="../assets/js/main.js"></script>
-    <script src="../assets/js/filter.js"></script>
-    <script src="../assets/js/beasiswa.js"></script>
-  </body>
-</html>
+      <!-- Java Script -->
+      <script src="../assets/js/main.js"></script>
+      <script src="../assets/js/filter.js"></script>
+      <script src="../assets/js/beasiswa.js"></script>
+      <script src="../assets/js/auth.js"></script>
+    </body>
+  </html>
