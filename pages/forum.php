@@ -1,11 +1,11 @@
 <?php
     require_once 'php/check_login.php';
+    require_once 'php/session_manager.php';
     // Get user info from session
     // $user_name = $_SESSION['fullname'];
     $user_id = $_SESSION['user_id'];
 
     include 'php/koneksi.php'; 
-
     $jumlahKategori = [
         'beasiswa' => 0,
         'lomba' => 0,
@@ -114,7 +114,8 @@
             />
           </svg>
         </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if (SapresSessionManager::isLoggedIn()): ?>
+        <?php $userData = SapresSessionManager::getUserData(); ?>
         <div
           class="profile-container"
           id="profile-section"

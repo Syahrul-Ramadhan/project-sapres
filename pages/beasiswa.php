@@ -151,7 +151,6 @@ $totalPages = ceil($totalData / $limit);
           </svg>
         </div>
         <?php if (SapresSessionManager::isLoggedIn()): ?>
-          <?php $userData = SapresSessionManager::getUserData(); ?>
           <div
             class="profile-container"
             id="profile-section"

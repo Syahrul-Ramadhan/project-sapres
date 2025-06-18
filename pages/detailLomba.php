@@ -1,5 +1,6 @@
 <?php
 require_once 'php/koneksi.php'; // Pastikan koneksi database sudah benar
+require_once 'php/session_manager.php';
 
 // Ambil ID lomba dari URL
 $lombaId = $_GET['id'] ?? 0;
@@ -112,7 +113,8 @@ if ($lombaId > 0) {
             />
           </svg>
         </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if (SapresSessionManager::isLoggedIn()): ?>
+        <?php $userData = SapresSessionManager::getUserData(); ?>
         <div
           class="profile-container"
           id="profile-section"

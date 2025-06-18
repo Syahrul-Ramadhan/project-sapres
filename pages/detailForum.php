@@ -4,6 +4,7 @@
 // =================================================================
 session_start();
 include 'php/koneksi.php'; // Sesuaikan path jika perlu
+require_once 'php/session_manager.php';
 
 // Definisikan kategori dengan pemetaan ke nilai database
 $categories = [
@@ -124,7 +125,7 @@ if ($stmt && $stmt->rowCount() > 0) {
             />
           </svg>
         </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if (SapresSessionManager::isLoggedIn()): ?>
         <div
           class="profile-container"
           id="profile-section"

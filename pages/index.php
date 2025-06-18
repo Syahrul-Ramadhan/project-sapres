@@ -113,8 +113,8 @@ $tim = $stmt_tim->fetchAll(PDO::FETCH_ASSOC);
             />
           </svg>
         </div>
-                <?php if (SapresSessionManager::isLoggedIn()): ?>
-          <?php $userData = SapresSessionManager::getUserData(); ?>
+        <?php if (SapresSessionManager::isLoggedIn()): ?>
+        <?php $userData = SapresSessionManager::getUserData(); ?>
         <div
           class="profile-container"
           id="profile-section"

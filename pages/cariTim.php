@@ -19,12 +19,7 @@
       include "php/koneksi.php";
       require_once 'php/check_login.php';
       $user_id = $_SESSION['user_id'];
-
-      // Ambil parameter GET untuk filter dan search
-      $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-      $jenjang = isset($_GET['jenjang']) ? explode(',', $_GET['jenjang']) : [];
-      $kategori = isset($_GET['kategori']) ? trim($_GET['kategori']) : '';
-      $univ = isset($_GET['univ']) ? trim($_GET['univ']) : '';
+      
       
       // Pagination setup
       $limit = 9;
@@ -32,32 +27,27 @@
       if ($page < 1) $page = 1;
       $offset = ($page - 1) * $limit;
 
-      $where = []; // Inisialisasi array kosong
+      // Query untuk mengambil data tim
+      $sql = "SELECT * FROM tim LIMIT :limit OFFSET :offset";
+      $stmt = $koneksi->prepare($sql); // Menyiapkan statement PDO
 
-      if ($search !== '') $where[] = "nama_tim LIKE '%$search%'";
+      // Mengikat parameter untuk pagination
+      $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+      $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 
-      if (!empty($jenjang)) {
-        $jenjangLike = array_map(fn($j) => "jenjang_tim LIKE '%$j%'", $jenjang);
-        $where[] = '(' . implode(' OR ', $jenjangLike) . ')';
-      }
+      // Menjalankan query
+      $stmt->execute();
 
-      if ($kategori !== '') $where[] = "kategori_lomba LIKE '%$kategori%'";
-      if ($univ !== '') $where[] = "asal_instansi LIKE '%$univ%'";
+      // Mengambil hasil
+      $timData = $stmt->fetchAll();
 
-      $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+      // Query untuk hitung total data
+      $totalStmt = $koneksi->prepare("SELECT COUNT(*) as total FROM tim");
+      $totalStmt->execute();
 
-      // Query utama
-      $sql = "SELECT * FROM tim
-              $whereClause 
-              ORDER BY created_at DESC 
-              LIMIT $limit OFFSET $offset";
-      $result = $koneksi->query($sql);
-
-      // Hitung total data untuk pagination
-      $countQuery = "SELECT COUNT(*) as total FROM tim $whereClause";
-      $totalResult = $koneksi->query($countQuery);
-      $totalData = $totalResult->fetch(PDO::FETCH_ASSOC)['total'];
-      $totalPages = ceil($totalData / $limit);
+      // Mengambil total data
+      $totalData = $totalStmt->fetch()['total'];
+      $totalPages = ceil($totalData / $limit); // Menghitung total halaman
     ?>
 
     <!-- NAVBAR START -->
@@ -133,7 +123,8 @@
             />
           </svg>
         </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
+        <?php if (SapresSessionManager::isLoggedIn()): ?>
+        <?php $userData = SapresSessionManager::getUserData(); ?>
         <div
           class="profile-container"
           id="profile-section"
