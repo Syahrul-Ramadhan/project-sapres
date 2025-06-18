@@ -15,6 +15,7 @@
   <body>
 
     <?php
+      require_once 'php/session_manager.php';
       include "php/koneksi.php";
       
       // Pagination setup
