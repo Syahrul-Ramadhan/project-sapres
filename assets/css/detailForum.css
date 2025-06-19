@@ -62,7 +62,7 @@ button {
 .header-container.tim {
   background-color: #32fa67;
 }
-.header-container.faq {
+.header-container.umum {
   background-color: salmon;
 }
 
@@ -96,7 +96,7 @@ button {
   align-items: center;
 }
 
-.how-to {
+.how-to-btn {
   padding: 12px 18px;
   background-color: var(--fill-color);
   border-radius: 12px;
@@ -107,7 +107,8 @@ button {
   font-size: 12px;
   cursor: pointer;
 }
-.how-to:hover {
+
+.how-to-btn:hover {
   background-color: var(--Primary-color);
   color: white;
 }
@@ -136,6 +137,18 @@ button {
 .question-table .question,
 .question-table .topic {
   text-align: start;
+  width: 100%;
+}
+
+.question-table td:nth-child(2) {
+  width: 120px;
+  text-align: center;
+}
+
+.question-table td:nth-child(3) {
+  width: 180px;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .question-table td a {
@@ -247,8 +260,107 @@ main {
   color: inherit;
 }
 
+/* modal  */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.form-container {
+  background: #f5f5f5;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.form-container h2 {
+  margin-bottom: 20px;
+}
+
+.form-container select,
+.form-container textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.form-container button {
+  padding: 12px 24px;
+  background-color: #205781;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.form-container .close-modal {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+}
+
+/* komentar */
+#formKomentar {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#formKomentar textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#formKomentar textarea:focus {
+  border-color: #0077cc;
+  box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.15);
+  outline: none;
+}
+
+#formKomentar button[type="submit"] {
+  align-self: flex-end;
+  background-color: #205781;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#formKomentar button[type="submit"]:hover {
+  background-color: #174567;
+}
+
 @media (min-width: 640px) {
-  .how-to {
+  .how-to-btn {
     font-size: 14px;
   }
 }

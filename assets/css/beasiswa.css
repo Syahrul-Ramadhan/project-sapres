@@ -140,7 +140,7 @@ ul {
 /* ------- BEASISWA MD START ------- */
 
 .beasiswa-list .beasiswa-card-md {
-  display: flex;
+  display: flex !important;
   background: var(--fill-color);
   border-radius: 8px;
   width: 100%;
@@ -197,7 +197,7 @@ ul {
 /* ------- BEASISWA LG START ------- */
 
 .beasiswa-list .beasiswa-card {
-  display: none;
+  display: none !important;
   background: var(--fill-color);
   border-radius: 8px;
   width: 100%;
@@ -295,6 +295,14 @@ ul {
 }
 /* ---------- BEASISWA LIST END ---------- */
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 30px;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -352,10 +360,10 @@ ul {
   }
 
   .beasiswa-list .beasiswa-card-md {
-    display: none;
+    display: none !important;
   }
   .beasiswa-list .beasiswa-card {
-    display: flex;
+    display: flex !important;
   }
 }
 @media (min-width: 1280px) {

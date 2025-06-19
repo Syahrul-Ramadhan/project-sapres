@@ -1,3 +1,30 @@
+<?php
+require_once 'php/session_manager.php';
+require_once 'php/check_login.php';
+// Get user info from session
+$user_name = $_SESSION['fullname'];
+$user_id = $_SESSION['user_id'];
+
+// Koneksi ke database
+require_once 'php/koneksi.php';
+
+// Mengambil data beasiswa
+$stmt_beasiswa = $koneksi->prepare("SELECT * FROM beasiswa  LIMIT 5");
+$stmt_beasiswa->execute();
+$beasiswa = $stmt_beasiswa->fetchAll(PDO::FETCH_ASSOC);
+
+// Mengambil data lomba
+$stmt_lomba = $koneksi->prepare("SELECT * FROM lomba LIMIT 5");
+$stmt_lomba->execute();
+$lomba = $stmt_lomba->fetchAll(PDO::FETCH_ASSOC);
+
+// Mengambil data tim
+$stmt_tim = $koneksi->prepare("SELECT * FROM tim LIMIT 5");
+$stmt_tim->execute();
+$tim = $stmt_tim->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,44 +78,13 @@
           </ul>
         </div>
       </div>
-      <div class="search-container">
-        <div class="search-bar">
-          <input
-            type="text"
-            placeholder="Ketik nama beasiswa/lomba yang ingin kamu cari"
-          />
-        </div>
-        <div class="search-btn">Cari</div>
-      </div>
       <div class="nav-item">
-        <div class="search-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-            color="#333332"
-            fill="none"
-          >
-            <path
-              d="M17.5 17.5L22 22"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M20 11C20 6.02944 15.9706 2 11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C15.9706 20 20 15.9706 20 11Z"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
+        <?php if (SapresSessionManager::isLoggedIn()): ?>
+        <?php $userData = SapresSessionManager::getUserData(); ?>
         <div
           class="profile-container"
           id="profile-section"
-          style="display: none"
+          
         >
           <div class="profile-btn">
             <img
@@ -97,17 +93,19 @@
             />
             <div class="dropdown-profile">
               <a href="dashboard.php">Dashboard</a>
-              <a id="logout">Keluar</a>
+              <a id="logout" href="php/logout.php">Keluar</a>
             </div>
           </div>
         </div>
       </div>
+       <?php else: ?>
       <div class="auth-buttons">
         <a href="login.php"><button class="btn btn-login">MASUK</button></a>
         <a href="register.php"
           ><button class="btn btn-register">DAFTAR</button></a
         >
       </div>
+      <?php endif; ?>
     </nav>
     <!-- NAVBAR END -->
         <!-- CAROUSEL START -->
@@ -239,8 +237,9 @@
           </svg>
         </div>
       </div>
-      <div class="beasiswa-content">
-        <div class="beasiswa-info">
+
+        <div class="beasiswa-content">
+                        <div class="beasiswa-info">
           <h2>Akses Ribuan Program Beasiswa</h2>
           <p>
             Raih beasiswa impianmu! Temukan informasi lengkap dan daftar
@@ -248,212 +247,25 @@
           </p>
         </div>
         <div class="carousel-beasiswa">
-          <a
-            href="detailBeasiswa.html"
-            class="card btn-detail-beasiswa"
-            data-category="sweden"
-          >
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">S3</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />17 Mar 2025</p>
-                <p class="deadline">Deadline: <br />02 Jun 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Swedish Collegium Advanced Study Fellowship Pro...
-              </h2>
-              <p class="location">Swedia</p>
-              <div class="bookmark">
-                <div class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
+          <?php foreach ($beasiswa as $b): ?>
+              <a href="detailBeasiswa.php?id=<?= $b['beasiswa_id'] ?>" class="card btn-detail-beasiswa">
+                <div class="card-info">
+                    <div class="degrees">
+                      <span class="degree"><?= $b['jenjang_beasiswa'] ?></span>
+                    </div>
+                    <div class="dates">
+                      <p class="start-date">Mulai: <br /><?= date('d M Y', strtotime($b['mulai_beasiswa'])) ?></p>
+                      <p class="deadline">Deadline: <br /><?= date('d M Y', strtotime($b['penutupan_beasiswa'])) ?></p>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </a>
-          <a
-            href="detailBeasiswa.html"
-            class="card btn-detail-beasiswa"
-            data-category="NTU"
-          >
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">S1</span>
-                <span class="degree">S2</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />21 Jan 2025</p>
-                <p class="deadline">Deadline: <br />11 Feb 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">NTU Singapore Global Connect Fellowship</h2>
-              <p class="location">Singapura</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
-          <a
-            href="detailBeasiswa.html"
-            class="card btn-detail-beasiswa"
-            data-category="gyeongsang"
-          >
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">S2</span>
-                <span class="degree">S3</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />01 Mar 2025</p>
-                <p class="deadline">Deadline: <br />28 Mar 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">Gyeongsang National University Scholarship</h2>
-              <p class="location">Korea Selatan</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
-          <a
-            href="detailBeasiswa.html"
-            class="card btn-detail-beasiswa"
-            data-category="fulbright"
-          >
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">S1</span>
-                <span class="degree">S2</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />10 Mar 2025</p>
-                <p class="deadline">Deadline: <br />15 Apr 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Fulbright Foreign Language Teaching Assistant (FLTA)
-              </h2>
-              <p class="location">Amerika Serikat</p>
-              <div class="bookmark">
-                <div class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
+                <div class="card-content">
+                    <h2 class="title"><?= $b['judul_beasiswa'] ?></h2>
+                    <p class="location"><?= $b['lokasi_beasiswa'] ?></p>
                 </div>
-              </div>
-            </div>
-          </a>
-          <a
-            href="detailBeasiswa.html"
-            class="card btn-detail-beasiswa"
-            data-category="matsumae"
-          >
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">S3</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />01 Mar 2025</p>
-                <p class="deadline">Deadline: <br />30 Jun 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Matsumae International Foundation Research S3 Fellowship 2026
-              </h2>
-              <p class="location">Jepang</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
+              </a>
+          <?php endforeach; ?>
         </div>
-      </div>
+        </div>
     </div>
     <!-- BEASISWA END -->
 
@@ -526,7 +338,7 @@
         </div>
       </div>
       <div class="lomba-content">
-        <div class="lomba-info">
+          <div class="lomba-info">
           <h2>Raih Peluang Peningkatan Prestasi Kamu Sekarang!</h2>
           <p>
             Temukan berbagai lomba sesuai minatmu, ikuti tantangan, dan raih
@@ -534,312 +346,26 @@
           </p>
         </div>
         <div class="carousel-lomba">
-          <a href="detailLomba.html" class="card">
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">D3</span>
-                <span class="degree">2+</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />06 Mar 2025</p>
-                <p class="deadline">Deadline: <br />23 Mar 2025</p>
-              </div>
+   <?php foreach ($lomba as $l): ?>
+      <a href="detailLomba.php?id=<?= $l['id'] ?>" class="card btn-detail-lomba">
+         <div class="card-info">
+            <div class="degrees">
+               <span class="degree"><?= $l['level'] ?></span>
             </div>
-            <div class="card-content">
-              <h2 class="title">
-                Business Case Competition IYREF 2025 by SRE ITB
-              </h2>
-              <p class="location">Indonesia</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32"
-                    width="32"
-                    height="32"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
+            <div class="dates">
+               <p class="start-date">Mulai: <br /><?= date('d M Y', strtotime($l['start_date'])) ?></p>
+               <p class="deadline">Deadline: <br /><?= date('d M Y', strtotime($l['deadline'])) ?></p>
             </div>
-          </a>
-          <a href="detailLomba.html" class="card">
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">D3</span>
-                <span class="degree">2+</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />06 Mar 2025</p>
-                <p class="deadline">Deadline: <br />23 Mar 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Business Case Competition IYREF 2025 by SRE ITB
-              </h2>
-              <p class="location">Indonesia</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32"
-                    width="32"
-                    height="32"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
-          <a href="detailLomba.html" class="card">
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">D3</span>
-                <span class="degree">2+</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />06 Mar 2025</p>
-                <p class="deadline">Deadline: <br />23 Mar 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Business Case Competition IYREF 2025 by SRE ITB
-              </h2>
-              <p class="location">Indonesia</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32"
-                    width="32"
-                    height="32"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
-          <a href="detailLomba.html" class="card">
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">D3</span>
-                <span class="degree">2+</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />06 Mar 2025</p>
-                <p class="deadline">Deadline: <br />23 Mar 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Business Case Competition IYREF 2025 by SRE ITB
-              </h2>
-              <p class="location">Indonesia</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32"
-                    width="32"
-                    height="32"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
-          <a href="detailLomba.html" class="card">
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">D3</span>
-                <span class="degree">2+</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />06 Mar 2025</p>
-                <p class="deadline">Deadline: <br />23 Mar 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Business Case Competition IYREF 2025 by SRE ITB
-              </h2>
-              <p class="location">Indonesia</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32"
-                    width="32"
-                    height="32"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
-          <a href="detailLomba.html" class="card">
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">D3</span>
-                <span class="degree">2+</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />06 Mar 2025</p>
-                <p class="deadline">Deadline: <br />23 Mar 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Business Case Competition IYREF 2025 by SRE ITB
-              </h2>
-              <p class="location">Indonesia</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32"
-                    width="32"
-                    height="32"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
-          <a href="detailLomba.html" class="card">
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">D3</span>
-                <span class="degree">2+</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />06 Mar 2025</p>
-                <p class="deadline">Deadline: <br />23 Mar 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Business Case Competition IYREF 2025 by SRE ITB
-              </h2>
-              <p class="location">Indonesia</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32"
-                    width="32"
-                    height="32"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
-          <a href="detailLomba.html" class="card">
-            <div class="card-info">
-              <div class="degrees">
-                <span class="degree">D3</span>
-                <span class="degree">2+</span>
-              </div>
-              <div class="dates">
-                <p class="start-date">Mulai: <br />06 Mar 2025</p>
-                <p class="deadline">Deadline: <br />23 Mar 2025</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <h2 class="title">
-                Business Case Competition IYREF 2025 by SRE ITB
-              </h2>
-              <p class="location">Indonesia</p>
-              <div class="bookmark">
-                <button class="bookmark-btn">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 32 32"
-                    width="32"
-                    height="32"
-                    color="#333332"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </a>
-        </div>
-      </div>
+         </div>
+         <div class="card-content">
+            <h2 class="title"><?= $l['title'] ?></h2>
+            <p class="location"><?= $l['scope'] ?></p>
+         </div>
+      </a>
+   <?php endforeach; ?>
+   </div>
+</div>
+
     </div>
     <!-- LOMBA END -->
 
@@ -853,362 +379,39 @@
         </p>
       </div>
 
-      <div class="find-team-content">
-        <div class="card-fteam">
-          <div class="head-card">
-            <h3>UI/UX Designer</h3>
-            <p>Techcomfest Competition 2026</p>
-            <div class="info-uni">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                color="#333332"
-                fill="none"
-              >
-                <path
-                  d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-              </svg>
-              <span>Universitas Pendidikan Indonesia</span>
+<div class="find-team-content">
+   <?php foreach ($tim as $t): ?>
+<div class="card-fteam"
+     data-nama="<?= $t['nama_tim'] ?>"
+     data-judul="<?= $t['judul_lomba'] ?>"
+     data-instansi="<?= $t['asal_instansi'] ?>"
+     data-syarat="<?= $t['syarat_ketentuan'] ?>"
+     data-cekktm="<?= $t['cek_ktm'] ?>">
+    <div class="head-card">
+        <h3><?= $t['nama_tim'] ?></h3>
+        <p><?= $t['judul_lomba'] ?></p>
+    </div>
+    <div class="body-card">
+        <p><?= $t['deskripsi'] ?></p>
+    </div>
+    <div class="foot-card">
+        <div class="profile-team">
+            <div class="detail-info">
+                <span class="team-name"><?= $t['nama_tim'] ?></span>
+                <span class="date-team"><?= date('d M Y', strtotime($t['created_at'])) ?></span>
             </div>
-          </div>
-          <div class="body-card">
-            <p>
-              Saya membutuhkan seseorang yang mahir dalam merancang desain
-              antarmuka, untuk bergabung dalam mengikuti lomba Techomfest di
-              Semarang
-            </p>
-          </div>
-          <div class="foot-card">
-            <div class="profile-team">
-              <img
-                src="../assets/img/Foto profile tim/hexa.png"
-                alt="tim the hexa"
-              />
-              <div class="detail-info">
-                <span class="team-name">The Hexa</span>
-                <span class="date-team">20 Okt 2025</span>
-              </div>
-            </div>
-            <div class="card-btn">Bergabung</div>
-          </div>
         </div>
-        <div class="card-fteam">
-          <div class="head-card">
-            <h3>UI/UX Designer</h3>
-            <p>Techcomfest Competition 2026</p>
-            <div class="info-uni">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                color="#333332"
-                fill="none"
-              >
-                <path
-                  d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-              </svg>
-              <span>Universitas Pendidikan Indonesia</span>
-            </div>
-          </div>
-          <div class="body-card">
-            <p>
-              Saya membutuhkan seseorang yang mahir dalam merancang desain
-              antarmuka, untuk bergabung dalam mengikuti lomba Techomfest di
-              Semarang
-            </p>
-          </div>
-          <div class="foot-card">
-            <div class="profile-team">
-              <img
-                src="../assets/img/Foto profile tim/hexa.png"
-                alt="tim the hexa"
-              />
-              <div class="detail-info">
-                <span class="team-name">The Hexa</span>
-                <span class="date-team">20 Okt 2025</span>
-              </div>
-            </div>
-            <div class="card-btn">Bergabung</div>
-          </div>
-        </div>
-        <div class="card-fteam">
-          <div class="head-card">
-            <h3>UI/UX Designer</h3>
-            <p>Techcomfest Competition 2026</p>
-            <div class="info-uni">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                color="#333332"
-                fill="none"
-              >
-                <path
-                  d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-              </svg>
-              <span>Universitas Pendidikan Indonesia</span>
-            </div>
-          </div>
-          <div class="body-card">
-            <p>
-              Saya membutuhkan seseorang yang mahir dalam merancang desain
-              antarmuka, untuk bergabung dalam mengikuti lomba Techomfest di
-              Semarang
-            </p>
-          </div>
-          <div class="foot-card">
-            <div class="profile-team">
-              <img
-                src="../assets/img/Foto profile tim/hexa.png"
-                alt="tim the hexa"
-              />
-              <div class="detail-info">
-                <span class="team-name">The Hexa</span>
-                <span class="date-team">20 Okt 2025</span>
-              </div>
-            </div>
-            <div class="card-btn">Bergabung</div>
-          </div>
-        </div>
-        <div class="card-fteam">
-          <div class="head-card">
-            <h3>UI/UX Designer</h3>
-            <p>Techcomfest Competition 2026</p>
-            <div class="info-uni">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                color="#333332"
-                fill="none"
-              >
-                <path
-                  d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-              </svg>
-              <span>Universitas Pendidikan Indonesia</span>
-            </div>
-          </div>
-          <div class="body-card">
-            <p>
-              Saya membutuhkan seseorang yang mahir dalam merancang desain
-              antarmuka, untuk bergabung dalam mengikuti lomba Techomfest di
-              Semarang
-            </p>
-          </div>
-          <div class="foot-card">
-            <div class="profile-team">
-              <img
-                src="../assets/img/Foto profile tim/hexa.png"
-                alt="tim the hexa"
-              />
-              <div class="detail-info">
-                <span class="team-name">The Hexa</span>
-                <span class="date-team">20 Okt 2025</span>
-              </div>
-            </div>
-            <div class="card-btn">Bergabung</div>
-          </div>
-        </div>
-        <div class="card-fteam">
-          <div class="head-card">
-            <h3>UI/UX Designer</h3>
-            <p>Techcomfest Competition 2026</p>
-            <div class="info-uni">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                color="#333332"
-                fill="none"
-              >
-                <path
-                  d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-              </svg>
-              <span>Universitas Pendidikan Indonesia</span>
-            </div>
-          </div>
-          <div class="body-card">
-            <p>
-              Saya membutuhkan seseorang yang mahir dalam merancang desain
-              antarmuka, untuk bergabung dalam mengikuti lomba Techomfest di
-              Semarang
-            </p>
-          </div>
-          <div class="foot-card">
-            <div class="profile-team">
-              <img
-                src="../assets/img/Foto profile tim/hexa.png"
-                alt="tim the hexa"
-              />
-              <div class="detail-info">
-                <span class="team-name">The Hexa</span>
-                <span class="date-team">20 Okt 2025</span>
-              </div>
-            </div>
-            <div class="card-btn">Bergabung</div>
-          </div>
-        </div>
-        <div class="card-fteam">
-          <div class="head-card">
-            <h3>UI/UX Designer</h3>
-            <p>Techcomfest Competition 2026</p>
-            <div class="info-uni">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                color="#333332"
-                fill="none"
-              >
-                <path
-                  d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-              </svg>
-              <span>Universitas Pendidikan Indonesia</span>
-            </div>
-          </div>
-          <div class="body-card">
-            <p>
-              Saya membutuhkan seseorang yang mahir dalam merancang desain
-              antarmuka, untuk bergabung dalam mengikuti lomba Techomfest di
-              Semarang
-            </p>
-          </div>
-          <div class="foot-card">
-            <div class="profile-team">
-              <img
-                src="../assets/img/Foto profile tim/hexa.png"
-                alt="tim the hexa"
-              />
-              <div class="detail-info">
-                <span class="team-name">The Hexa</span>
-                <span class="date-team">20 Okt 2025</span>
-              </div>
-            </div>
-            <div class="card-btn">Bergabung</div>
-          </div>
-        </div>
-        <div class="card-fteam">
-          <div class="head-card">
-            <h3>UI/UX Designer</h3>
-            <p>Techcomfest Competition 2026</p>
-            <div class="info-uni">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                color="#333332"
-                fill="none"
-              >
-                <path
-                  d="M6.57757 15.4816C5.1628 16.324 1.45336 18.0441 3.71266 20.1966C4.81631 21.248 6.04549 22 7.59087 22H16.4091C17.9545 22 19.1837 21.248 20.2873 20.1966C22.5466 18.0441 18.8372 16.324 17.4224 15.4816C14.1048 13.5061 9.89519 13.5061 6.57757 15.4816Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-              </svg>
-              <span>Universitas Pendidikan Indonesia</span>
-            </div>
-          </div>
-          <div class="body-card">
-            <p>
-              Saya membutuhkan seseorang yang mahir dalam merancang desain
-              antarmuka, untuk bergabung dalam mengikuti lomba Techomfest di
-              Semarang
-            </p>
-          </div>
-          <div class="foot-card">
-            <div class="profile-team">
-              <img
-                src="../assets/img/Foto profile tim/hexa.png"
-                alt="tim the hexa"
-              />
-              <div class="detail-info">
-                <span class="team-name">The Hexa</span>
-                <span class="date-team">20 Okt 2025</span>
-              </div>
-            </div>
-            <div class="card-btn">Bergabung</div>
-          </div>
-        </div>
-      </div>
+        <div class="card-btn">Bergabung</div>
+    </div>
+</div>
+
+   <?php endforeach; ?>
+</div>
+
     </div>
     <!-- CARI TIM END -->
 
-    <!-- POP UP TEAM START -->
+    <!-- POP UP JOIN TEAM START -->
     <div class="pop-up-container">
       <div class="pop-up-content">
         <div class="close-pop-up">
@@ -1231,15 +434,14 @@
             </svg>
           </div>
         </div>
-        <img src="../assets/img/Foto profile tim/hexa.png" alt="Hexa" />
         <div class="detail-info-team">
-          <span class="title">UI/UX Designer</span>
-          <span class="lomba">Techcomfest 2026</span>
-          <span class="univ">Universitas Pendidikan Indonesia</span>
+          <span class="title" id="pop-up-title">UI/UX Designer</span>
+          <span class="lomba" id="pop-up-lomba">Techcomfest 2026</span>
+          <span class="univ" id="pop-up-univ">Universitas Pendidikan Indonesia</span>
         </div>
         <div class="req">
           <h4>Syarat dan Ketentuan:</h4>
-          <ul>
+          <ul id="pop-up-syarat">
             <li>Mahasiswa Universitas Pendidikan Indonesia</li>
             <li>Semester 1-5</li>
           </ul>
@@ -1262,11 +464,14 @@
     <div class="custom-notification">
       Permintaan bergabung berhasil dikirim!
     </div>
-    <!-- POP UP TEAM END -->
+    <!-- POP UP JOIN TEAM END -->
     <?php include 'php/footer.php'; ?>
 
+    <script></script>
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/home.js"></script>
+    <script src="../assets/js/cariTim.js"></script>
+    <script src="../assets/js/auth.js"></script>
     <script src="../assets/js/cariTim.js"></script>
 </body>
 </html>

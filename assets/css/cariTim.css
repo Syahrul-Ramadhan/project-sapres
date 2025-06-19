@@ -49,6 +49,11 @@ ul {
 /* ---------- FILTER END ---------- */
 
 /* ---------- MAIN CONTENT START ---------- */
+.main-container {
+  display: flex;
+  justify-content: center;
+}
+
 .main-content {
   display: flex;
   flex-direction: column;
@@ -89,11 +94,15 @@ ul {
   -ms-border-radius: 12px;
   -o-border-radius: 12px;
   flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-fteam .head-card {
   padding: 12px;
   border-bottom: 2px solid #999998;
+  width: 100%;
 }
 
 .head-card h3 {
@@ -126,22 +135,13 @@ ul {
   justify-content: space-between;
   gap: 12px;
   margin: 16px 0;
+  width: 100%;
 }
 
 .foot-card .profile-team {
   display: flex;
   align-items: center;
   padding: 0 12px;
-  gap: 12px;
-}
-
-.foot-card .profile-team img {
-  width: 35px;
-  border-radius: 50%;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  -ms-border-radius: 50%;
-  -o-border-radius: 50%;
 }
 
 .profile-team .detail-info {
@@ -172,6 +172,144 @@ ul {
 .foot-card .card-btn:hover {
   background-color: #1a4667;
 }
+
+.buat-tim {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background-color: var(--Primary-color);
+  color: white;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+}
+
+.buat-tim:hover {
+  background-color: #1a4667;
+  cursor: pointer;
+}
+
+.create-team-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.create-team-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 50%;
+  height: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+  overflow: auto;
+  overflow: auto;
+}
+
+.create-team-content .close-create-team-btn {
+  cursor: pointer;
+}
+
+.create-team-content h3 {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+#createTeamForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.create-team-container td {
+  padding: 10px;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  height: 100px;
+}
+
+.create-team-container button[type="submit"] {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.create-team-container button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background-color: white;
+  border: 1px solid #777776;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--base-font-color);
+  transition: all 0.3s ease;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.pagination-btn:hover {
+  background-color: #d5e6e7;
+  color: var(--Primary-color);
+  border-color: var(--Primary-color);
+}
+
+.pagination-btn.active {
+  background-color: var(--Primary-color);
+  color: white;
+  border-color: var(--Primary-color);
+}
+
+.pagination-btn.next {
+  width: auto;
+  padding: 0 12px;
+}
+
 /* ---------- TEAM LIST END ---------- */
 
 /* ---------- MAIN END ---------- */
