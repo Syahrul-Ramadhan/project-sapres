@@ -519,5 +519,6 @@
     <!-- Java Script -->
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/beasiswa.js"></script>
+    <script src="../assets/js/detailBeasiswa.js"></script>
   </body>
 </html>

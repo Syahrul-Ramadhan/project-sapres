@@ -222,8 +222,6 @@ $bookmarkedLomba = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="dashboard-sidebar">
             <ul>
               <li class="active">Semua</li>
-              <li>Lomba Nasional</li>
-              <li>Lomba Internasional</li>
             </ul>
           </div>
           <div class="beasiswa-list">
@@ -266,12 +264,12 @@ $bookmarkedLomba = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   <p class="location"><?= htmlspecialchars($lomba['scope']) ?></p>
                 </div>
                 <div class="dates">
-                  <p class="start-date">Mulai: <?= htmlspecialchars($lomba['start_date']) ?></p>
-                  <p class="deadline">Deadline: <?= htmlspecialchars($lomba['deadline']) ?></p>
+                  <p class="start-date">Mulai: <?= date('d M Y', strtotime($lomba['start_date'])) ?></p>
+                  <p class="deadline">Deadline: <?= date('d M Y', strtotime($lomba['deadline'])) ?></p>
                 </div>
               </div>
             </a>
-            <a href="detailLomba.html" class="beasiswa-card">
+            <a href="detailLomba.php?id=<?= $lomba['id'] ?>" class="beasiswa-card">
               <div class="card-info">
                 <div class="degrees">
                     <?php 
@@ -281,8 +279,8 @@ $bookmarkedLomba = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </div>
                 <div class="dates">
-                  <p class="start-date">Mulai: <?= htmlspecialchars($lomba['start_date']) ?></p>
-                  <p class="deadline">Deadline: <?= htmlspecialchars($lomba['deadline']) ?></p>
+                  <p class="start-date">Mulai: <?= date('d M Y', strtotime($lomba['start_date'])) ?></p>
+                  <p class="deadline">Deadline: <?= date('d M Y', strtotime($lomba['deadline'])) ?></p>
                 </div>
               </div>
               <div class="card-content">
