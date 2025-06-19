@@ -31,7 +31,7 @@ switch ($action) {
 }
 
 function handleRegister() {
-    global $pdo;
+    global $koneksi;
     
     $fullname = $_POST['fullname'] ?? '';
     $email = $_POST['email'] ?? '';
@@ -61,7 +61,7 @@ function handleRegister() {
     
     try {
         // Check if email exists
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt = $koneksi->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->execute([$email]);
         
         if ($stmt->fetch()) {
@@ -71,7 +71,7 @@ function handleRegister() {
         
         // Hash password and insert user
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("INSERT INTO users (fullname, email, password, role) VALUES (?, ?, ?, 'user')");
+        $stmt = $koneksi->prepare("INSERT INTO users (fullname, email, password, role) VALUES (?, ?, ?, 'user')");
         $result = $stmt->execute([$fullname, $email, $hashedPassword]);
         
         if ($result) {
@@ -87,7 +87,7 @@ function handleRegister() {
 }
 
 function handleLogin() {
-    global $pdo;
+    global $koneksi;
     
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -105,9 +105,9 @@ function handleLogin() {
     
     try {
         // Get user
-        $stmt = $pdo->prepare("SELECT id, fullname, email, password, role FROM users WHERE email = ?");
+        $stmt = $koneksi->prepare("SELECT id, fullname, email, password, role FROM users WHERE email = ?");
         $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch();
         
         if (!$user || !password_verify($password, $user['password'])) {
             echo json_encode(['success' => false, 'message' => 'Email atau password salah']);
@@ -127,7 +127,7 @@ function handleLogin() {
             
             // Store token in database (optional - you can create a remember_tokens table)
             try {
-                $stmt = $pdo->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
+                $stmt = $koneksi->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
                 $stmt->execute([hash('sha256', $token), $user['id']]);
             } catch (Exception $e) {
                 // Log but don't fail login
@@ -160,7 +160,7 @@ function handleLogin() {
 }
 
 function handleLogout() {
-    global $pdo;
+    global $koneksi;
     
     try {
         // Deactivate session in database
@@ -174,7 +174,7 @@ function handleLogout() {
             
             // Clear token from database
             if (isset($_SESSION['user_id'])) {
-                $stmt = $pdo->prepare("UPDATE users SET remember_token = NULL WHERE id = ?");
+                $stmt = $koneksi->prepare("UPDATE users SET remember_token = NULL WHERE id = ?");
                 $stmt->execute([$_SESSION['user_id']]);
             }
         }
@@ -190,7 +190,7 @@ function handleLogout() {
         echo json_encode([
             'success' => true, 
             'message' => 'Logout berhasil', 
-            'redirect' => 'login.php'
+            'redirect' => 'dashboard.php'
         ]);
         
     } catch (Exception $e) {
@@ -239,7 +239,7 @@ function determineRedirect($role) {
 }
 
 function createSessionRecord($userId) {
-    global $pdo;
+    global $koneksi;
     
     try {
         $sessionId = session_id();
@@ -247,11 +247,11 @@ function createSessionRecord($userId) {
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
         
         // Deactivate old sessions for this user
-        $stmt = $pdo->prepare("UPDATE user_sessions SET is_active = 0 WHERE user_id = ?");
+        $stmt = $koneksi->prepare("UPDATE user_sessions SET is_active = 0 WHERE user_id = ?");
         $stmt->execute([$userId]);
         
         // Create new session record
-        $stmt = $pdo->prepare("
+        $stmt = $koneksi->prepare("
             INSERT INTO user_sessions (user_id, session_id, ip_address, user_agent, is_active) 
             VALUES (?, ?, ?, ?, 1)
         ");
@@ -264,11 +264,11 @@ function createSessionRecord($userId) {
 }
 
 function deactivateSession($userId) {
-    global $pdo;
+    global $koneksi;
     
     try {
         $sessionId = session_id();
-        $stmt = $pdo->prepare("
+        $stmt = $koneksi->prepare("
             UPDATE user_sessions 
             SET is_active = 0, last_activity = CURRENT_TIMESTAMP 
             WHERE user_id = ? AND session_id = ?
@@ -306,14 +306,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 
 // Auto-login with remember token (call this function on protected pages)
 function checkRememberToken() {
-    global $pdo;
+    global $koneksi;
     
     if (isset($_COOKIE['remember_token']) && !isset($_SESSION['user_id'])) {
         try {
             $token = $_COOKIE['remember_token'];
             $hashedToken = hash('sha256', $token);
             
-            $stmt = $pdo->prepare("SELECT id, fullname, email, role FROM users WHERE remember_token = ?");
+            $stmt = $koneksi->prepare("SELECT id, fullname, email, role FROM users WHERE remember_token = ?");
             $stmt->execute([$hashedToken]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -342,35 +342,5 @@ function checkRememberToken() {
     }
     
     return false;
-}
-
-// Rate limiting function (optional)
-function checkRateLimit($identifier, $maxAttempts = 5, $timeWindow = 300) {
-    global $pdo;
-    
-    try {
-        // Clean old attempts
-        $stmt = $pdo->prepare("DELETE FROM login_attempts WHERE attempted_at < DATE_SUB(NOW(), INTERVAL ? SECOND)");
-        $stmt->execute([$timeWindow]);
-        
-        // Count recent attempts
-        $stmt = $pdo->prepare("SELECT COUNT(*) as attempts FROM login_attempts WHERE identifier = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL ? SECOND)");
-        $stmt->execute([$identifier, $timeWindow]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($result['attempts'] >= $maxAttempts) {
-            return false;
-        }
-        
-        // Record this attempt
-        $stmt = $pdo->prepare("INSERT INTO login_attempts (identifier, attempted_at) VALUES (?, NOW())");
-        $stmt->execute([$identifier]);
-        
-        return true;
-    } catch (Exception $e) {
-        // If rate limiting fails, allow the request
-        error_log("Rate limiting error: " . $e->getMessage());
-        return true;
-    }
 }
 ?>

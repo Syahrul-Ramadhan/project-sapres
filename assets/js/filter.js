@@ -67,22 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Bookmark functionality
-  const bookmarkButtons = document.querySelectorAll(".bookmark-btn");
-  if (bookmarkButtons.length > 0) {
-    bookmarkButtons.forEach((btn) => {
-      btn.addEventListener("click", function (e) {
-        e.preventDefault();
-        this.classList.toggle("bookmarked");
-        if (this.classList.contains("bookmarked")) {
-          this.querySelector("i").classList.replace("far", "fas");
-        } else {
-          this.querySelector("i").classList.replace("fas", "far");
-        }
-      });
-    });
-  }
-
   // Month selector
   const monthButtons = document.querySelectorAll(".month-button");
   if (monthButtons.length > 0) {

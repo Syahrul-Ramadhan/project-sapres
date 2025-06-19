@@ -71,7 +71,7 @@ function handleLogin() {
         // Cek user di database
         $stmt = $koneksi->prepare("SELECT user_id, fullname, email, password, role FROM users WHERE email = ?");
         $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch();
         
         error_log("User query executed");
         error_log("User found: " . ($user ? 'Yes' : 'No'));

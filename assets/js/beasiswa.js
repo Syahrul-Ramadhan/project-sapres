@@ -37,6 +37,23 @@ document.addEventListener("DOMContentLoaded", function () {
     // Bersihkan localStorage setelah digunakan (opsional)
     localStorage.removeItem("selectedType");
   }
+
+  // // Share (Salin Link) button functionality
+  // const shareBtn = document.getElementById("shareBtn");
+  // shareBtn.addEventListener("click", function () {
+  //   // Salin link halaman saat ini ke clipboard
+  //   const currentUrl = window.location.href;
+
+  //   // Gunakan Clipboard API untuk menyalin
+  //   navigator.clipboard
+  //     .writeText(currentUrl)
+  //     .then(function () {
+  //       alert("Link berhasil disalin!");
+  //     })
+  //     .catch(function (err) {
+  //       console.error("Gagal menyalin: ", err);
+  // //     });
+  // });
 });
 
 // Ambil elemen tahun dari teks h1
@@ -78,5 +95,149 @@ document
 document.querySelectorAll(".month-item").forEach((item) => {
   item.addEventListener("click", () => {
     changeMonth(parseInt(item.getAttribute("data-month")));
+  });
+});
+
+document.getElementById("applyFilter").addEventListener("click", function () {
+  const jenjang = [
+    ...document.querySelectorAll(".filter-jenjang input:checked"),
+  ].map((cb) => cb.value);
+  const tipe = [...document.querySelectorAll(".filter-tipe input:checked")].map(
+    (cb) => cb.value
+  );
+  const negara = document.getElementById("filter-negara").value;
+  const univ = document.getElementById("filter-univ").value;
+  const search = document.getElementById("searchBeasiswa").value;
+
+  const params = new URLSearchParams();
+  if (jenjang.length) params.append("jenjang", jenjang.join(","));
+  if (tipe.length) params.append("tipe", tipe.join(","));
+  if (negara) params.append("negara", negara);
+  if (univ) params.append("univ", univ);
+  if (search) params.append("search", search);
+
+  // Tambahkan bulan dan tahun agar tetap terbaca
+  const currentUrl = new URL(window.location.href);
+  if (currentUrl.searchParams.get("month"))
+    params.append("month", currentUrl.searchParams.get("month"));
+  if (currentUrl.searchParams.get("year"))
+    params.append("year", currentUrl.searchParams.get("year"));
+
+  window.location.href = `beasiswa.php?${params.toString()}`;
+});
+
+document
+  .querySelector(".btn-clear-filter")
+  .addEventListener("click", function () {
+    // Hapus semua checkbox yang diceklis
+    document
+      .querySelectorAll('.checkbox-filter input[type="checkbox"]')
+      .forEach((cb) => (cb.checked = false));
+
+    // Kosongkan input negara dan universitas
+    document.getElementById("filter-negara").value = "";
+    document.getElementById("filter-univ").value = "";
+
+    // Kosongkan search bar jika ingin sekalian
+    const searchBar = document.getElementById("searchBeasiswa");
+    if (searchBar) searchBar.value = "";
+
+    // Redirect ke halaman tanpa filter (reset URL)
+    const baseUrl = window.location.pathname; // ex: beasiswa.php
+    window.location.href = baseUrl;
+  });
+
+document.querySelector(".search-btn").addEventListener("click", function () {
+  const keyword = document.getElementById("searchBeasiswa").value;
+  const params = new URLSearchParams(window.location.search);
+
+  params.set("search", keyword);
+  params.set("page", 1); // reset ke halaman pertama
+
+  window.location.href = window.location.pathname + "?" + params.toString();
+});
+
+document
+  .getElementById("searchBeasiswa")
+  .addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      document.querySelector(".search-btn").click();
+    }
+  });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const cards = document.querySelectorAll(".btn-detail-beasiswa");
+
+  // Ambil semua ID beasiswa dari href
+  const ids = Array.from(cards)
+    .map((el) => el.getAttribute("href")?.split("id=")[1])
+    .filter(Boolean);
+
+  // Ambil status bookmark dari server
+  fetch("php/bookmark_handler.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "get_status",
+      item_type: "beasiswa",
+      item_ids: ids,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        const bookmarkedIds = new Set(
+          data.bookmarks.map((b) => b.item_id.toString())
+        );
+        cards.forEach((card) => {
+          const id = card.getAttribute("href").split("id=")[1];
+          const btn = card.querySelector(".bookmark-btn");
+          if (bookmarkedIds.has(id) && btn) {
+            btn.classList.add("bookmarked");
+          }
+        });
+      }
+    });
+
+  // Toggle bookmark saat diklik
+  document.querySelectorAll(".bookmark-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const card = e.target.closest(".btn-detail-beasiswa");
+      const btnTarget = e.currentTarget;
+      const id = card?.getAttribute("href")?.split("id=")[1];
+      if (!id) return;
+
+      const isBookmarked = btnTarget.classList.contains("bookmarked");
+      const action = isBookmarked ? "remove" : "add";
+
+      btnTarget.classList.toggle("bookmarked");
+
+      fetch("php/bookmark_handler.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action,
+          item_type: "beasiswa",
+          item_id: id,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            btn.classList.toggle("bookmarked");
+            alert(
+              action === "add"
+                ? "Beasiswa ditambahkan ke bookmark!"
+                : "Bookmark dihapus!"
+            );
+            location.reload();
+          } else {
+            alert(data.message || "Gagal memproses bookmark.");
+          }
+        });
+    });
   });
 });

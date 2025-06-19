@@ -1,11 +1,16 @@
 <?php
 require_once 'php/session_manager.php';
+require_once 'php/check_login.php';
 include "php/koneksi.php";
 
-// $sql = "SELECT * FROM beasiswa";
-// $result = $koneksi->query($sql);
+// Ambil parameter GET untuk filter dan search
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$jenjang = isset($_GET['jenjang']) ? explode(',', $_GET['jenjang']) : [];
+$tipe = isset($_GET['tipe']) ? explode(',', $_GET['tipe']) : [];
+$negara = isset($_GET['negara']) ? trim($_GET['negara']) : '';
+$univ = isset($_GET['univ']) ? trim($_GET['univ']) : '';
 
-// Default bulan dan tahun saat ini
+// Bulan dan Tahun default
 $currentMonth = isset($_GET['month']) ? (int)$_GET['month'] : (int)date('m');
 $currentYear = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
 
@@ -13,28 +18,47 @@ $currentYear = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
 if ($currentMonth < 1 || $currentMonth > 12) $currentMonth = (int)date('m');
 if ($currentYear < 2000) $currentYear = (int)date('Y');
 
-// Pagination setup
+// Pagination
 $limit = 6;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 $offset = ($page - 1) * $limit;
 
-// Ambil data beasiswa berdasarkan bulan & tahun
+// Filter WHERE clause dinamis
+$where = [
+  "MONTH(mulai_beasiswa) = $currentMonth",
+  "YEAR(mulai_beasiswa) = $currentYear"
+];
+
+if ($search !== '') $where[] = "judul_beasiswa LIKE '%$search%'";
+
+if (!empty($jenjang)) {
+  $jenjangLike = array_map(fn($j) => "jenjang_beasiswa LIKE '%$j%'", $jenjang);
+  $where[] = '(' . implode(' OR ', $jenjangLike) . ')';
+}
+if (!empty($tipe)) {
+  $tipeLike = array_map(fn($t) => "tipe_pendanaan LIKE '%$t%'", $tipe);
+  $where[] = '(' . implode(' OR ', $tipeLike) . ')';
+}
+if ($negara !== '') $where[] = "lokasi_beasiswa LIKE '%$negara%'";
+if ($univ !== '') $where[] = "asal_instansi LIKE '%$univ%'";
+
+$whereClause = implode(' AND ', $where);
+
+// Query utama
 $sql = "SELECT * FROM beasiswa 
-        WHERE MONTH(mulai_beasiswa) = $currentMonth 
-        AND YEAR(mulai_beasiswa) = $currentYear 
+        WHERE $whereClause 
         ORDER BY mulai_beasiswa DESC 
         LIMIT $limit OFFSET $offset";
 $result = $koneksi->query($sql);
 
-// Query untuk hitung total data
-$totalResult = $koneksi->query("SELECT COUNT(*) as total FROM beasiswa
-                              WHERE MONTH(mulai_beasiswa) = $currentMonth 
-                              AND YEAR(mulai_beasiswa) = $currentYear");
+// Hitung total data untuk pagination
+$countQuery = "SELECT COUNT(*) as total FROM beasiswa WHERE $whereClause";
+$totalResult = $koneksi->query($countQuery);
 $totalData = $totalResult->fetch(PDO::FETCH_ASSOC)['total'];
 $totalPages = ceil($totalData / $limit);
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -96,12 +120,13 @@ $totalPages = ceil($totalData / $limit);
         <div class="search-bar">
           <input
             type="text"
-            placeholder="Ketik nama beasiswa/lomba yang ingin kamu cari"
+            placeholder="Ketik nama beasiswa yang ingin kamu cari" id="searchBeasiswa" oninput="searchBeasiswa()"
           />
         </div>
         <div class="search-btn">Cari</div>
       </div>
       <div class="nav-item">
+        
         <div class="search-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -127,7 +152,6 @@ $totalPages = ceil($totalData / $limit);
           </svg>
         </div>
         <?php if (SapresSessionManager::isLoggedIn()): ?>
-          <?php $userData = SapresSessionManager::getUserData(); ?>
           <div
             class="profile-container"
             id="profile-section"
@@ -144,32 +168,6 @@ $totalPages = ceil($totalData / $limit);
             </div>
           </div>
         <?php else: ?>
-          <div
-            class="profile-container"
-            id="profile-section"
-            style="display: none"
-          >
-            <div class="profile-btn">
-              <img
-                src="../assets/img/user_profile/user_profile.png"
-                alt="User Profile"
-              />
-              <div class="dropdown-profile">
-                <a href="dashboard.php">Dashboard</a>
-                <a id="logout">Keluar</a>
-              </div>
-            </div>
-          </div>
-        <?php endif; ?>
-      </div>
-      <?php if (!SapresSessionManager::isLoggedIn()): ?>
-        <div class="auth-buttons">
-          <a href="login.php"><button class="btn btn-login">MASUK</button></a>
-          <a href="register.php"
-            ><button class="btn btn-register">DAFTAR</button></a
-          >
-        </div>
-      <?php else: ?>
         <div class="auth-buttons" style="display: none;">
           <a href="login.php"><button class="btn btn-login">MASUK</button></a>
           <a href="register.php"
@@ -502,6 +500,10 @@ $totalPages = ceil($totalData / $limit);
               <h4>Universitas</h4>
               <input type="text" placeholder="Cari universitas" />
             </div>
+            <div class="filter-footer">
+              <button id="applyFilter" class="btn btn-apply-filter">Terapkan</button>
+              <button class="btn btn-clear-filter">Bersihkan</button>
+            </div>
           </div>
         </div>
       </div>
@@ -653,6 +655,36 @@ $totalPages = ceil($totalData / $limit);
           <div class="beasiswa-container">
             <h3>Daftar Beasiswa</h3>
             <div class="beasiswa-list">
+              <?php if ($result->rowCount() === 0): ?>
+                <div class="empty-state">
+                  <div class="empty-icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      color="#333332"
+                      fill="none"
+                    >
+                      <path
+                        d="M17.5 17.5L22 22"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M20 11C20 6.02944 15.9706 2 11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C15.9706 20 20 15.9706 20 11Z"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <h3>Belum ada beasiswa yang sesuai pencarianmu</h3>
+                  <p>Cek kembali nanti ya!</p>
+                </div>
+                <?php else: ?>
               <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
                 <a
                   href="detailBeasiswa.php?id=<?= $row['beasiswa_id'] ?>"
@@ -741,6 +773,7 @@ $totalPages = ceil($totalData / $limit);
                     </div>
                   </a>
               <?php endwhile; ?>
+              <?php endif; ?>
             </div>
 
             <div class="pagination">
@@ -748,7 +781,8 @@ $totalPages = ceil($totalData / $limit);
               <a href="?page=<?= $page - 1 ?>" class="pagination-btn">&laquo;</a>
             <?php endif; ?>
 
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <?php $queryString = http_build_query(array_merge($_GET, ['page' => null])); 
+              for ($i = 1; $i <= $totalPages; $i++): ?>
               <a href="?page=<?= $i ?>" <?= $i === $page ? 'style="font-weight: bold; background-color: #205781; color: white;"' : '' ?> class="pagination-btn"><?= $i ?></a>
             <?php endfor; ?>
 
