@@ -103,6 +103,7 @@
                 <input type="text" placeholder="Cari beasiswa..." id="searchBeasiswa" oninput="searchBeasiswa()">
                 <div class="crud-btn">
                     <button class="btn-crud btn-add" >Tambah</button>
+                    <a class="btn-crud btn-histori" href="historiBeasiswa.php">Histori</a>
                 </div>
             </div>
             <div class="beasiswa-content">

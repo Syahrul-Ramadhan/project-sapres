@@ -6,6 +6,12 @@ session_start();
 $user_id = $_SESSION['user_id'];
 $tim_id = $_POST['tim_id'];
 
+// Validate tim_id is a valid number
+if (!is_numeric($tim_id)) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid tim_id']);
+    exit;
+}
+
 // Cek apakah tim membutuhkan KTM
 $stmt = $koneksi->prepare("SELECT cek_ktm, ketua_id FROM tim WHERE tim_id = ?");
 $stmt->execute([$tim_id]);
@@ -31,5 +37,7 @@ $pesan = "User ID $user_id mengajukan bergabung ke tim ID $tim_id.";
 $stmtNotif = $koneksi->prepare("INSERT INTO notifikasi (user_id, tipe, pesan, terkait_tim_id, dari_user_id) VALUES (?, 'permintaan_bergabung', ?, ?, ?)");
 $stmtNotif->execute([$ketua_id, $pesan, $tim_id, $user_id]);
 
-echo json_encode(['status' => 'success']);
+// Redirect back to cari tim page
+header('Location: ../cariTim.php');
+exit;
 ?>

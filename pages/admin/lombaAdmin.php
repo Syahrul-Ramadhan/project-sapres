@@ -36,12 +36,23 @@ $stats = ['total' => 0, 'active' => 0, 'expired' => 0];
 
 try {
     // Get stats
-    $stmt = $koneksi->query("SELECT 
-        COUNT(*) as total,
-        SUM(CASE WHEN is_active = 1 AND deadline >= CURDATE() THEN 1 ELSE 0 END) as active,
-        SUM(CASE WHEN deadline < CURDATE() THEN 1 ELSE 0 END) as expired
-        FROM lomba");
-    $stats = $stmt->fetch(PDO::FETCH_ASSOC) ?: $stats;
+    // Menjalankan stored procedure untuk mendapatkan statistik dan daftar lomba
+    $stmt = $koneksi->query("CALL GetLombaStatsAndList()");
+
+    // // Mendapatkan hasil statistik (total, aktif, expired)
+    $stats = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    
+    // if ($stmt->nextRowset()) {
+    // // Mendapatkan hasil daftar lomba
+    // $lombaList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
+    // $stmt = $koneksi->query("SELECT 
+    //     COUNT(*) as total,
+    //     SUM(CASE WHEN is_active = 1 AND deadline >= CURDATE() THEN 1 ELSE 0 END) as active,
+    //     SUM(CASE WHEN deadline < CURDATE() THEN 1 ELSE 0 END) as expired
+    //     FROM lomba");
+    // $stats = $stmt->fetch(PDO::FETCH_ASSOC) ?: $stats;
     
     // Get lomba list
     $stmt = $koneksi->query("SELECT * FROM lomba ORDER BY created_at DESC");

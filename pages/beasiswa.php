@@ -1,5 +1,6 @@
 <?php
 require_once 'php/session_manager.php';
+require_once 'php/check_login.php';
 include "php/koneksi.php";
 
 // Ambil parameter GET untuk filter dan search

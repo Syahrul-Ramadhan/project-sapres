@@ -68,45 +68,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Check login status using session (not localStorage)
   // Note: This will be set by PHP in the actual page
-  let isLoggedIn = false;
+  // let isLoggedIn = false;
 
-  // Try to get login status from a global variable set by PHP
-  if (typeof window.userLoggedIn !== "undefined") {
-    isLoggedIn = window.userLoggedIn;
-  }
+  // // Try to get login status from a global variable set by PHP
+  // if (typeof window.userLoggedIn !== "undefined") {
+  //   isLoggedIn = window.userLoggedIn;
+  // }
 
-  // Show/hide elements based on login status
-  if (isLoggedIn) {
-    // Tampilkan profil jika sudah login
-    if (profileContainer) {
-      profileContainer.style.display = "block";
-    }
-    if (authBtn) {
-      authBtn.style.display = "none";
-    }
-    authResp.forEach((el) => {
-      el.style.display = "none";
-    });
-  } else {
-    // Tampilkan auth buttons jika belum login
-    if (profileContainer) {
-      profileContainer.style.display = "none";
-    }
-    if (authBtn) {
-      authBtn.style.display = "flex";
-    }
-    authResp.forEach((el) => {
-      el.style.display = "block";
-    });
-  }
+  // // Show/hide elements based on login status
+  // if (isLoggedIn) {
+  //   // Tampilkan profil jika sudah login
+  //   if (profileContainer) {
+  //     profileContainer.style.display = "block";
+  //   }
+  //   if (authBtn) {
+  //     authBtn.style.display = "none";
+  //   }
+  //   authResp.forEach((el) => {
+  //     el.style.display = "none";
+  //   });
+  // } else {
+  //   // Tampilkan auth buttons jika belum login
+  //   if (profileContainer) {
+  //     profileContainer.style.display = "none";
+  //   }
+  //   if (authBtn) {
+  //     authBtn.style.display = "flex";
+  //   }
+  //   authResp.forEach((el) => {
+  //     el.style.display = "block";
+  //   });
+  // }
 
   // Dropdown menu profile
   if (profileBtn && dropdownMenu) {
     profileBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      console.log("Profile button clicked"); // Debug log
+      // e.preventDefault();
+      // e.stopPropagation();
 
       // Toggle dropdown visibility
       dropdownMenu.classList.toggle("show");

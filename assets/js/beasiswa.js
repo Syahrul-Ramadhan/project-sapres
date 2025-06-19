@@ -37,6 +37,23 @@ document.addEventListener("DOMContentLoaded", function () {
     // Bersihkan localStorage setelah digunakan (opsional)
     localStorage.removeItem("selectedType");
   }
+
+  // Share (Salin Link) button functionality
+  const shareBtn = document.getElementById("shareBtn");
+  shareBtn.addEventListener("click", function () {
+    // Salin link halaman saat ini ke clipboard
+    const currentUrl = window.location.href;
+
+    // Gunakan Clipboard API untuk menyalin
+    navigator.clipboard
+      .writeText(currentUrl)
+      .then(function () {
+        alert("Link berhasil disalin!");
+      })
+      .catch(function (err) {
+        console.error("Gagal menyalin: ", err);
+      });
+  });
 });
 
 // Ambil elemen tahun dari teks h1
@@ -80,34 +97,6 @@ document.querySelectorAll(".month-item").forEach((item) => {
     changeMonth(parseInt(item.getAttribute("data-month")));
   });
 });
-
-// // fitur search
-// function searchBeasiswa() {
-//   const searchInput = document
-//     .getElementById("searchBeasiswa")
-//     .value.toLowerCase();
-//   const rows = document.querySelectorAll(".beasiswa-list a"); // Select all beasiswa cards
-
-//   console.log("Search Input:", searchInput); // Log input pencarian
-//   console.log("Total Rows:", rows.length); // Log jumlah baris
-
-//   rows.forEach((row) => {
-//     // Grab title from each beasiswa card
-//     const titleCell = row.querySelector(".body-card .title"); // Perbaiki dari .tittle ke .title
-
-//     if (titleCell) {
-//       const title = titleCell.textContent || titleCell.innerText;
-//       console.log("Row Title:", title); // Log judul setiap baris
-
-//       // Check if the search term is in the title
-//       if (title.toLowerCase().includes(searchInput)) {
-//         row.style.display = ""; // Show the row if it matches
-//       } else {
-//         row.style.display = "none"; // Hide if no match
-//       }
-//     }
-//   });
-// }
 
 document.getElementById("applyFilter").addEventListener("click", function () {
   const jenjang = [
@@ -250,5 +239,65 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
     });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const bookmarkBtn = document.querySelector(".beasiswa-section .bookmark-btn");
+  const shareBtn = document.getElementById("shareBtn");
+  const itemId = window.location.search.split("id=")[1]; // Ambil ID beasiswa dari URL
+
+  // Menambahkan event listener untuk tombol Bookmark
+  bookmarkBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const isBookmarked = bookmarkBtn.classList.contains("bookmarked");
+    const action = isBookmarked ? "remove" : "add";
+
+    // Toggle bookmark state
+    bookmarkBtn.classList.toggle("bookmarked");
+
+    // Kirim status bookmark ke server
+    fetch("php/bookmark_handler.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action,
+        item_type: "beasiswa",
+        item_id: itemId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          alert(
+            action === "add"
+              ? "Beasiswa ditambahkan ke bookmark!"
+              : "Bookmark dihapus!"
+          );
+          location.reload(); // Memuat ulang halaman untuk update status bookmark
+        } else {
+          alert(data.message || "Gagal memproses bookmark.");
+        }
+      });
+  });
+
+  // Menambahkan event listener untuk tombol Salin Link
+  shareBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const link = window.location.href; // Ambil link URL halaman ini
+
+    // Salin link ke clipboard
+    navigator.clipboard
+      .writeText(link)
+      .then(() => {
+        alert("Link berhasil disalin ke clipboard!");
+      })
+      .catch((err) => {
+        alert("Gagal menyalin link: " + err);
+      });
   });
 });

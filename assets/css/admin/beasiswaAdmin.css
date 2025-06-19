@@ -299,4 +299,28 @@ textarea {
   display: flex;
 }
 
+.btn-histori {
+  background: #ffc107;
+  color: #212529;
+}
+
+.btn-histori:hover {
+  background: #e0a800;
+}
+
+.restorebtn {
+  padding: 4px 12px;
+  background-color: #28a745;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+  color: white;
+}
+
+.restorebtn:hover {
+  background-color: #155724;
+}
+
 /* ---------- BEASISWA END ---------- */
