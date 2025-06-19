@@ -7,11 +7,6 @@ header('Content-Type: application/json');
 
 $action = $_REQUEST['action'] ?? '';
 
-if (mysqli_connect_errno()) {
-    echo json_encode(['success' => false, 'message' => 'Koneksi database gagal']);
-    exit;
-}
-
 switch ($action) {
     // ---- CREATE ----
     case 'create_announcement':
@@ -32,12 +27,12 @@ switch ($action) {
         break;
 
     // ---- READ ----
+    // ---- READ ----
     case 'get_discussion':
         $topic_id = $_GET['topic_id'] ?? 0;
         $response = ['success' => false];
 
-        // Ambil post utama
-        $stmt_main = $koneksi->prepare("SELECT f.*, u.username FROM forum f JOIN user u ON f.user_id = u.user_id WHERE f.forum_id = ?");
+        $stmt_main = $koneksi->prepare("SELECT f.*, u.fullname FROM forum f JOIN users u ON f.user_id = u.user_id WHERE f.forum_id = ?");
         $stmt_main->execute([$topic_id]);
         $result_main = $stmt_main->fetch();
         if ($result_main) {
@@ -45,8 +40,7 @@ switch ($action) {
             $response['main_post'] = $result_main;
         }
 
-        // Ambil semua balasan menggunakan fetchAll()
-        $stmt_replies = $koneksi->prepare("SELECT f.*, u.username FROM forum f JOIN user u ON f.user_id = u.user_id WHERE f.parent_id = ? ORDER BY f.waktu_postingan ASC");
+        $stmt_replies = $koneksi->prepare("SELECT f.*, u.fullname FROM forum f JOIN users u ON f.user_id = u.user_id WHERE f.parent_id = ? ORDER BY f.waktu_postingan ASC");
         $stmt_replies->execute([$topic_id]);
         $response['replies'] = $stmt_replies->fetchAll(PDO::FETCH_ASSOC);
 
@@ -73,12 +67,34 @@ switch ($action) {
     // ---- DELETE ----
     case 'delete_discussion':
         $topic_id = $_POST['topic_id'] ?? 0;
-        // Hapus parent dan semua children-nya
-        $stmt = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ? OR parent_id = ?");
-        if ($stmt->execute([$topic_id, $topic_id])) {
+        
+        if (empty($topic_id)) {
+            echo json_encode(['success' => false, 'message' => 'ID Topik tidak valid.']);
+            exit;
+        }
+
+        // Gunakan metode PDO untuk transaksi
+        $koneksi->beginTransaction();
+
+        try {
+            // Hapus semua balasan terlebih dahulu
+            $stmt_replies = $koneksi->prepare("DELETE FROM forum WHERE parent_id = ?");
+            // Tidak perlu bind_param, cukup kirim array ke execute()
+            $stmt_replies->execute([$topic_id]);
+
+            // Kemudian hapus topik utamanya
+            $stmt_main = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ?");
+            $stmt_main->execute([$topic_id]);
+
+            // Jika semua berhasil, simpan perubahan
+            $koneksi->commit();
             echo json_encode(['success' => true, 'message' => 'Seluruh diskusi berhasil dihapus.']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Gagal menghapus diskusi.']);
+
+        } catch (PDOException $exception) {
+            // Jika ada error, batalkan semua perubahan
+            $koneksi->rollBack();
+            // Kirim pesan error untuk debugging
+            echo json_encode(['success' => false, 'message' => 'Gagal menghapus diskusi: ' . $exception->getMessage()]);
         }
         break;
 
@@ -91,7 +107,6 @@ switch ($action) {
 
         if ($result_check['parent_id'] === NULL) {
             // Jika ini parent, hapus seluruh diskusi
-            $stmt = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ? OR parent_id = ?");
             $stmt = $koneksi->prepare("DELETE FROM forum WHERE forum_id = ? OR parent_id = ?");
             $stmt->execute([$message_id, $message_id]);
         } else {

@@ -49,6 +49,11 @@ ul {
 /* ---------- FILTER END ---------- */
 
 /* ---------- MAIN CONTENT START ---------- */
+.main-container {
+  display: flex;
+  justify-content: center;
+}
+
 .main-content {
   display: flex;
   flex-direction: column;

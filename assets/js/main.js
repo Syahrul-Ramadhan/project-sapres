@@ -66,12 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const dropdownMenu = document.querySelector(".dropdown-profile");
   const profileBtn = document.querySelector(".profile-btn");
 
-  // // Check login status using session (not localStorage)
-  // // Note: This will be set by PHP in the actual page
+  // Check login status using session (not localStorage)
+  // Note: This will be set by PHP in the actual page
   // let isLoggedIn = false;
 
   // // Try to get login status from a global variable set by PHP
-  // if (typeof window.userLoggedIn !== 'undefined') {
+  // if (typeof window.userLoggedIn !== "undefined") {
   //   isLoggedIn = window.userLoggedIn;
   // }
 
@@ -103,10 +103,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Dropdown menu profile
   if (profileBtn && dropdownMenu) {
     profileBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      console.log("Profile button clicked"); // Debug log
+      // e.preventDefault();
+      // e.stopPropagation();
 
       // Toggle dropdown visibility
       dropdownMenu.classList.toggle("show");

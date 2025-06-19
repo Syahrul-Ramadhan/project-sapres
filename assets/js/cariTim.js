@@ -46,6 +46,7 @@ ktmUpload.addEventListener("change", function () {
 // Function to open the pop-up and populate data based on the clicked card
 function openPopUp(card) {
   // Get the data attributes from the clicked card
+  const timId = card.closest(".card-fteam").getAttribute("data-id");
   const nama = card.closest(".card-fteam").getAttribute("data-nama");
   const judul = card.closest(".card-fteam").getAttribute("data-judul");
   const instansi = card.closest(".card-fteam").getAttribute("data-instansi");
@@ -56,6 +57,7 @@ function openPopUp(card) {
   document.getElementById("pop-up-title").textContent = nama;
   document.getElementById("pop-up-lomba").textContent = judul;
   document.getElementById("pop-up-univ").textContent = instansi;
+  document.getElementById("tim_id_input").value = timId;
 
   // Display the syarat and ketentuan dynamically in the pop-up
   const syaratList = document.getElementById("pop-up-syarat");

@@ -853,6 +853,11 @@ input[type="file"] {
 }
 /* ---------- POP UP CARI TIM END ---------- */
 
+.bookmark-btn.bookmarked svg {
+  fill: var(--Primary-color);
+  stroke: var(--Primary-color);
+}
+
 /* ---------- FOOTER START---------- */
 footer {
   background-color: #13344d;

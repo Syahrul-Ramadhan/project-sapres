@@ -1,13 +1,11 @@
-
-
 <?php
     require_once 'php/check_login.php';
+    require_once 'php/session_manager.php';
     // Get user info from session
-    $user_name = $_SESSION['user_name'];
+    // $user_name = $_SESSION['fullname'];
     $user_id = $_SESSION['user_id'];
 
     include 'php/koneksi.php'; 
-
     $jumlahKategori = [
         'beasiswa' => 0,
         'lomba' => 0,
@@ -81,42 +79,10 @@
           </ul>
         </div>
       </div>
-      <div class="search-container">
-        <div class="search-bar">
-          <input
-            type="text"
-            placeholder="Ketik nama beasiswa/lomba yang ingin kamu cari"
-          />
-        </div>
-        <div class="search-btn">Cari</div>
-      </div>
       <div class="nav-item">
         
-        <div class="search-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-            color="#333332"
-            fill="none"
-          >
-            <path
-              d="M17.5 17.5L22 22"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M20 11C20 6.02944 15.9706 2 11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C15.9706 20 20 15.9706 20 11Z"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if (SapresSessionManager::isLoggedIn()): ?>
+        <?php $userData = SapresSessionManager::getUserData(); ?>
         <div
           class="profile-container"
           id="profile-section"
@@ -240,17 +206,15 @@
             <h5>Terbaru</h5>
             <div class="recently-content">
               <?php
-                  // ...DENGAN BLOK YANG LEBIH SEDERHANA INI
-                  $sql = "SELECT f.forum_id, f.pesan, f.tanggal_pesan, f.kategori, u.username, f.waktu_postingan 
+                  $sql = "SELECT f.forum_id, f.pesan, f.tanggal_pesan, f.kategori, u.fullname, f.waktu_postingan 
                           FROM forum AS f 
-                          JOIN user AS u ON f.user_id = u.user_id 
+                          JOIN users AS u ON f.user_id = u.user_id
                           WHERE f.parent_id IS NULL
                           ORDER BY f.waktu_postingan DESC";
                   $stmt = $koneksi->prepare($sql);
                   $stmt->execute();
                   $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                  // 4. TAMPILKAN DATA (Looping)
                   if (count($result) > 0) {
                       foreach($result as $row) {
                           $tanggal_formatted = date('d M Y', strtotime($row['tanggal_pesan']));
@@ -260,13 +224,13 @@
                               <span class="date"><?php echo $tanggal_formatted; ?></span>
                           </div>
               <?php
-                      } // Akhir loop foreach
+                      } // Akhir loop
                   } else {
                       echo "<p style='text-align: center; color: #888;'>Belum ada pertanyaan terbaru di forum.</p>";
                   }
               ?>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </div>

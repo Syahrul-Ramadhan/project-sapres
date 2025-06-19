@@ -1,10 +1,11 @@
 <?php
 // Admin Authentication Handler
+require_once 'koneksi.php';
 class AdminAuth {
-    private $pdo;
+    private $koneksi;
     
-    public function __construct($pdo) {
-        $this->pdo = $pdo;
+    public function __construct($koneksi) {
+        $this->koneksi = $koneksi;
     }
     
     public function requireAdminLogin() {
@@ -54,7 +55,7 @@ class AdminAuth {
         }
         
         try {
-            $stmt = $this->pdo->prepare("SELECT id, fullname, email, role, created_at FROM users WHERE id = ? AND role = 'admin'");
+            $stmt = $this->koneksi->prepare("SELECT id, fullname, email, role, created_at FROM users WHERE id = ? AND role = 'admin'");
             $stmt->execute([$_SESSION['user_id']]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
@@ -100,7 +101,7 @@ class AdminAuth {
             $token = $_COOKIE['remember_token'];
             $hashedToken = hash('sha256', $token);
             
-            $stmt = $this->pdo->prepare("SELECT id, fullname, email, role FROM users WHERE remember_token = ? AND role = 'admin'");
+            $stmt = $this->koneksi->prepare("SELECT id, fullname, email, role FROM users WHERE remember_token = ? AND role = 'admin'");
             $stmt->execute([$hashedToken]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -129,7 +130,7 @@ class AdminAuth {
     
     private function verifyUser($userId) {
         try {
-            $stmt = $this->pdo->prepare("SELECT id, role FROM users WHERE id = ?");
+            $stmt = $this->koneksi->prepare("SELECT id, role FROM users WHERE id = ?");
             $stmt->execute([$userId]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -143,7 +144,7 @@ class AdminAuth {
     private function updateLastActivity() {
         try {
             $sessionId = session_id();
-            $stmt = $this->pdo->prepare("
+            $stmt = $this->koneksi->prepare("
                 UPDATE user_sessions 
                 SET last_activity = CURRENT_TIMESTAMP 
                 WHERE user_id = ? AND session_id = ? AND is_active = 1
@@ -161,11 +162,11 @@ class AdminAuth {
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
             
             // Deactivate old sessions for this user
-            $stmt = $this->pdo->prepare("UPDATE user_sessions SET is_active = 0 WHERE user_id = ?");
+            $stmt = $this->koneksi->prepare("UPDATE user_sessions SET is_active = 0 WHERE user_id = ?");
             $stmt->execute([$userId]);
             
             // Create new session record
-            $stmt = $this->pdo->prepare("
+            $stmt = $this->koneksi->prepare("
                 INSERT INTO user_sessions (user_id, session_id, ip_address, user_agent, is_active) 
                 VALUES (?, ?, ?, ?, 1)
             ");
@@ -197,7 +198,7 @@ class AdminAuth {
         // Clear session from database
         if (isset($_SESSION['user_id'])) {
             try {
-                $stmt = $this->pdo->prepare("UPDATE user_sessions SET is_active = 0 WHERE user_id = ?");
+                $stmt = $this->koneksi->prepare("UPDATE user_sessions SET is_active = 0 WHERE user_id = ?");
                 $stmt->execute([$_SESSION['user_id']]);
             } catch (Exception $e) {
                 error_log("Failed to deactivate session: " . $e->getMessage());
@@ -221,7 +222,7 @@ class AdminAuth {
         if (isset($_SESSION['user_id'])) {
             try {
                 $sessionId = session_id();
-                $stmt = $this->pdo->prepare("
+                $stmt = $this->koneksi->prepare("
                     UPDATE user_sessions 
                     SET is_active = 0, last_activity = CURRENT_TIMESTAMP 
                     WHERE user_id = ? AND session_id = ?
@@ -238,7 +239,7 @@ class AdminAuth {
         // Clear remember token from database
         if (isset($_SESSION['user_id'])) {
             try {
-                $stmt = $this->pdo->prepare("UPDATE users SET remember_token = NULL WHERE id = ?");
+                $stmt = $this->koneksi->prepare("UPDATE users SET remember_token = NULL WHERE id = ?");
                 $stmt->execute([$_SESSION['user_id']]);
             } catch (Exception $e) {
                 error_log("Failed to clear remember token from database: " . $e->getMessage());
@@ -254,7 +255,7 @@ class AdminAuth {
     
     public function getActiveAdminSessions() {
         try {
-            $stmt = $this->pdo->prepare("
+            $stmt = $this->koneksi->prepare("
                 SELECT us.*, u.fullname, u.email 
                 FROM user_sessions us 
                 JOIN users u ON us.user_id = u.id 
@@ -271,7 +272,7 @@ class AdminAuth {
     
     public function cleanExpiredSessions($expireAfterHours = 24) {
         try {
-            $stmt = $this->pdo->prepare("
+            $stmt = $this->koneksi->prepare("
                 UPDATE user_sessions 
                 SET is_active = 0 
                 WHERE is_active = 1 
@@ -306,7 +307,7 @@ class AdminAuth {
         }
         
         try {
-            $stmt = $this->pdo->prepare("
+            $stmt = $this->koneksi->prepare("
                 INSERT INTO admin_activity_log (admin_id, action, details, ip_address, user_agent, created_at) 
                 VALUES (?, ?, ?, ?, ?, NOW())
             ");
@@ -328,7 +329,7 @@ class AdminAuth {
     
     public function getAdminActivityLog($limit = 50, $offset = 0) {
         try {
-            $stmt = $this->pdo->prepare("
+            $stmt = $this->koneksi->prepare("
                 SELECT aal.*, u.fullname, u.email 
                 FROM admin_activity_log aal 
                 JOIN users u ON aal.admin_id = u.id 
@@ -346,15 +347,15 @@ class AdminAuth {
 
 // Helper function for backward compatibility
 function requireAdminAuth() {
-    global $pdo;
-    $adminAuth = new AdminAuth($pdo);
+    global $koneksi;
+    $adminAuth = new AdminAuth($koneksi);
     return $adminAuth->requireAdminLogin();
 }
 
 // Helper function to get admin info
 function getAdminInfo() {
-    global $pdo;
-    $adminAuth = new AdminAuth($pdo);
+    global $koneksi;
+    $adminAuth = new AdminAuth($koneksi);
     return $adminAuth->getAdminInfo();
 }
 ?>

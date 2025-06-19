@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once 'koneksi.php';
 
 header('Content-Type: application/json');
 
@@ -35,7 +35,7 @@ switch ($action) {
 }
 
 function addBookmark($userId, $input) {
-    global $pdo;
+    global $koneksi;
     
     $itemId = $input['item_id'] ?? 0;
     $itemType = $input['item_type'] ?? '';
@@ -46,7 +46,7 @@ function addBookmark($userId, $input) {
     }
     
     try {
-        $stmt = $pdo->prepare("INSERT IGNORE INTO bookmarks (user_id, item_type, item_id) VALUES (?, ?, ?)");
+        $stmt = $koneksi->prepare("INSERT INTO bookmarks (user_id, item_type, item_id) VALUES (?, ?, ?)");
         $stmt->execute([$userId, $itemType, $itemId]);
         
         echo json_encode(['success' => true, 'message' => 'Bookmark added']);
@@ -56,7 +56,7 @@ function addBookmark($userId, $input) {
 }
 
 function removeBookmark($userId, $input) {
-    global $pdo;
+    global $koneksi;
     
     $itemId = $input['item_id'] ?? 0;
     $itemType = $input['item_type'] ?? '';
@@ -67,7 +67,7 @@ function removeBookmark($userId, $input) {
     }
     
     try {
-        $stmt = $pdo->prepare("DELETE FROM bookmarks WHERE user_id = ? AND item_type = ? AND item_id = ?");
+        $stmt = $koneksi->prepare("DELETE FROM bookmarks WHERE user_id = ? AND item_type = ? AND item_id = ?");
         $stmt->execute([$userId, $itemType, $itemId]);
         
         echo json_encode(['success' => true, 'message' => 'Bookmark removed']);
@@ -77,7 +77,7 @@ function removeBookmark($userId, $input) {
 }
 
 function getBookmarkStatus($userId, $input) {
-    global $pdo;
+    global $koneksi;
     
     $itemIds = $input['item_ids'] ?? [];
     $itemType = $input['item_type'] ?? '';
@@ -89,7 +89,7 @@ function getBookmarkStatus($userId, $input) {
     
     try {
         $placeholders = str_repeat('?,', count($itemIds) - 1) . '?';
-        $stmt = $pdo->prepare("SELECT item_id FROM bookmarks WHERE user_id = ? AND item_type = ? AND item_id IN ($placeholders)");
+        $stmt = $koneksi->prepare("SELECT item_id FROM bookmarks WHERE user_id = ? AND item_type = ? AND item_id IN ($placeholders)");
         $params = array_merge([$userId, $itemType], $itemIds);
         $stmt->execute($params);
         
