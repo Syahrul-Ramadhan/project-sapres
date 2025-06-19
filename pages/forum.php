@@ -1,10 +1,11 @@
 <?php
-    require_once 'php/check_login.php';
-    // Get user info from session
-    // $user_name = $_SESSION['fullname'];
-    $user_id = $_SESSION['user_id'];
+    require_once 'php/session_manager.php';
+    require_once 'php/koneksi.php';
 
-    include 'php/koneksi.php'; 
+    // Pastikan user sudah login untuk akses forum
+    SapresSessionManager::requireLogin('login.php');
+    $userData = SapresSessionManager::getUserData();
+    $user_id = $userData['user_id'];
 
     $jumlahKategori = [
         'beasiswa' => 0,
@@ -89,7 +90,6 @@
         <div class="search-btn">Cari</div>
       </div>
       <div class="nav-item">
-        
         <div class="search-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -114,12 +114,8 @@
             />
           </svg>
         </div>
-        <?php if (isset($_SESSION['user_id'])): ?>
-        <div
-          class="profile-container"
-          id="profile-section"
-          
-        >
+        
+        <div class="profile-container" id="profile-section">
           <div class="profile-btn">
             <img
               src="../assets/img/user_profile/user_profile.png"
@@ -132,14 +128,6 @@
           </div>
         </div>
       </div>
-       <?php else: ?>
-      <div class="auth-buttons">
-        <a href="login.php"><button class="btn btn-login">MASUK</button></a>
-        <a href="register.php"
-          ><button class="btn btn-register">DAFTAR</button></a
-        >
-      </div>
-      <?php endif; ?>
     </nav>
     <!-- NAVBAR END -->
 

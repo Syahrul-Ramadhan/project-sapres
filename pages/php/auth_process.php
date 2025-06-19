@@ -80,27 +80,21 @@ function handleLogin() {
             error_log("User data: " . print_r($user, true));
         }
         
-        if (!$user) {
-            error_log("User not found in database");
-            echo json_encode(['success' => false, 'message' => 'Email tidak ditemukan']);
+        if (!$user || !password_verify($password, $user['password'])) {
+            echo json_encode(['success' => false, 'message' => 'Email atau password salah']);
             return;
         }
         
-        // Verifikasi password
-        $passwordVerified = password_verify($password, $user['password']);
-        error_log("Password verification result: " . ($passwordVerified ? 'true' : 'false'));
-        
-        if (!$passwordVerified) {
-            error_log("Password verification failed");
-            echo json_encode(['success' => false, 'message' => 'Password salah']);
-            return;
-        }
-        
-        error_log("Password verified successfully");
+        // DEBUG: Log before setting session
+        error_log("=== LOGIN DEBUG ===");
+        error_log("User found: " . print_r($user, true));
         
         // Set session
         SapresSessionManager::setUserSession($user);
-        error_log("Session set successfully");
+        
+        // DEBUG: Log after setting session
+        error_log("Session after set: " . print_r($_SESSION, true));
+        error_log("isLoggedIn check: " . (SapresSessionManager::isLoggedIn() ? 'TRUE' : 'FALSE'));
         
         // Update user_sessions table
         $sessionId = session_id();
@@ -122,7 +116,8 @@ function handleLogin() {
         echo json_encode([
             'success' => true, 
             'message' => 'Login berhasil',
-            'redirect' => $redirectUrl
+            'redirect' => $redirectUrl,
+            'debug_session' => $_SESSION // Add for debugging
         ]);
         
     } catch (Exception $e) {
@@ -223,16 +218,14 @@ function handleLogout() {
     global $koneksi;
     
     try {
-        error_log("=== LOGOUT FUNCTION START ===");
+        error_log("Logout function called");
         
-        // Update user_sessions status
+        // Update user_sessions status jika ada
         if (SapresSessionManager::isLoggedIn()) {
             $userData = SapresSessionManager::getUserData();
-            error_log("User logged in, updating session status");
             try {
                 $stmt = $koneksi->prepare("UPDATE user_sessions SET is_active = 0, last_activity = NOW() WHERE user_id = ? AND is_active = 1");
                 $stmt->execute([$userData['user_id']]);
-                error_log("Session status updated");
             } catch (Exception $e) {
                 error_log("Session update error: " . $e->getMessage());
             }
@@ -240,7 +233,6 @@ function handleLogout() {
         
         // Destroy session
         SapresSessionManager::destroySession();
-        error_log("Session destroyed");
         
         echo json_encode([
             'success' => true, 

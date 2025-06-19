@@ -3,17 +3,35 @@
 class SapresSessionManager {
     
     public static function start() {
-        if (session_status() == PHP_SESSION_NONE) {
+        // Force start session jika belum aktif
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            // Set session parameters sebelum start
+            ini_set('session.cookie_httponly', 1);
+            ini_set('session.use_only_cookies', 1);
+            ini_set('session.cookie_secure', 0); // Set 1 jika menggunakan HTTPS
+            
             session_start();
+            
+            // Debug
+            error_log("Session force started. New status: " . session_status());
         }
     }
     
     public static function isLoggedIn() {
-        self::start();
-        return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+        self::start(); // Pastikan session aktif
+        $result = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+        
+        // Debug
+        error_log("Session status in isLoggedIn: " . session_status());
+        error_log("Session ID: " . session_id());
+        error_log("isLoggedIn result: " . ($result ? 'TRUE' : 'FALSE'));
+        
+        return $result;
     }
     
     public static function getUserData() {
+        self::start(); // Pastikan session aktif
+        
         if (self::isLoggedIn()) {
             return [
                 'user_id' => $_SESSION['user_id'],
@@ -26,7 +44,8 @@ class SapresSessionManager {
     }
     
     public static function setUserSession($userData) {
-        self::start();
+        self::start(); // Pastikan session aktif
+        
         $_SESSION['user_id'] = $userData['user_id'];
         $_SESSION['user_name'] = $userData['fullname'];
         $_SESSION['user_email'] = $userData['email'];
@@ -35,10 +54,15 @@ class SapresSessionManager {
         // Backward compatibility
         $_SESSION['fullname'] = $userData['fullname'];
         $_SESSION['email'] = $userData['email'];
+        
+        // Debug
+        error_log("Session set. Status: " . session_status());
+        error_log("Session ID: " . session_id());
+        error_log("Session data: " . print_r($_SESSION, true));
     }
     
     public static function destroySession() {
-        self::start();
+        self::start(); // Pastikan session aktif sebelum destroy
         
         // Hapus semua session variables
         $_SESSION = array();
@@ -54,6 +78,10 @@ class SapresSessionManager {
         
         // Destroy session
         session_destroy();
+        
+        // Start new session untuk mencegah masalah
+        session_start();
+        
         return true;
     }
     

@@ -30,14 +30,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Handle logout buttons
-    const logoutBtns = document.querySelectorAll('#logout, .logout-btn, a[href*="logout"]');
-    logoutBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+    // Handle logout button click
+    const logoutBtn = document.getElementById('logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            handleLogout();
+            
+            // Show confirmation
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                // Send logout request
+                fetch('php/auth_process.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'action=logout'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect to login page
+                        window.location.href = 'login.php?message=logged_out';
+                    } else {
+                        // Fallback: direct redirect
+                        window.location.href = 'php/logout.php';
+                    }
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    // Fallback: direct redirect
+                    window.location.href = 'php/logout.php';
+                });
+            }
         });
-    });
+    }
     
     console.log('Auth event listeners attached');
 });
