@@ -237,6 +237,11 @@ header {
 .button-container .daftar-btn:hover {
   background-color: #1a4667;
 }
+
+.bookmarked {
+  background-color: var(--Primary-color);
+  color: white;
+}
 /* ---------- DAFTAR END---------- */
 
 @media (min-width: 640px) {
